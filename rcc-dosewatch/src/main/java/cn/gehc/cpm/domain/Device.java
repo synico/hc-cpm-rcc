@@ -25,6 +25,9 @@ public class Device {
     @Column(name = "LOCATION", insertable = false, updatable = false)
     private String location;
 
+    @Column(name = "dashboard_page", insertable = false, updatable = false)
+    private String dashboardPage;
+
     @Column(name = "MF_CODE")
     private String mfCode;
 
