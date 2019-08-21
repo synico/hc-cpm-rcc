@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--V_Report_Reviewed -->
+<routes xmlns="http://camel.apache.org/schema/spring">
+    
+    <route id="RisReportReviewedPullJob">
+        <from uri="timer://RISDataPullJob?fixedRate=true&amp;period=15s&amp;delay=10s"/>
+        <setHeader headerName="JobName">
+            <constant>RisReportReviewedPullJob</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>20180101000000</constant>
+        </setHeader>
+        <bean ref="risReportReviewedPullJob" method="startDBReadJob"/>
+        <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
+        <to uri="risSqlComponent:select
+            top 200 *
+            from V_Report_Reviewed
+            where ActionDateTime >=:#${headers[JobObject].lastPolledValue}
+            order by ActionDateTime ASC" />
+
+        <log message="risReportReviewedPullJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
+        <log message="risReportReviewedPullJob get ${body}" loggingLevel="DEBUG"/>
+        
+        <bean ref="risReportReviewedPullJob" method="insertBatchExam"/>
+        <bean ref="risReportReviewedPullJob" method="endDBReadJob"/>
+
+        <log message="RisReportReviewedPullJob finished batch" loggingLevel="INFO"/>
+    </route>
+</routes>
+
+
+    

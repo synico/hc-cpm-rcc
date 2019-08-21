@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- V_Request_ScheduleInfo -->
+<routes xmlns="http://camel.apache.org/schema/spring">
+    
+    <route id="ReqCancelScheduleInfoPullJob">
+        <from uri="timer://HISDataPullJob?fixedRate=true&amp;period=15s&amp;delay=10s"/>
+        <setHeader headerName="JobName">
+            <constant>ReqCancelScheduleInfoPullJob</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>20180101 000000</constant>
+        </setHeader>
+        <bean ref="reqCancelScheduleInfoPullJob" method="startDBReadJob"/>
+        <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
+        <to uri="hisSqlComponent:select
+            top 200 *
+            from V_Request_CancelScheduleInfo
+            where isnull(CancelScheduleDate,'')!='' and CONVERT(varchar(16),CancelScheduleDate + ' ' +  CancelScheduleTime, 20) >=:#${headers[JobObject].lastPolledValue}
+            order by CancelScheduleDate ASC, CancelScheduleTime ASC" />
+
+        <log message="reqCancelScheduleInfoPullJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
+        <log message="reqCancelScheduleInfoPullJob get ${body}" loggingLevel="DEBUG"/>
+        
+        <bean ref="reqCancelScheduleInfoPullJob" method="insertBatchExam"/>
+        <bean ref="reqCancelScheduleInfoPullJob" method="endDBReadJob"/>
+
+        <log message="reqCancelScheduleInfoPullJob finished batch" loggingLevel="INFO"/>
+        
+    </route>
+</routes>
+
+
+    

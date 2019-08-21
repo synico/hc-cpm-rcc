@@ -1,0 +1,31 @@
+camel:
+    springboot:
+        main-run-controller: true
+        xml-routes: classpath:camel/*.xml,classpath:camel/*/*.xml
+
+spring:
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                show_sql: false
+                connection:
+                    charSet: UTF-8
+                    useUnicode: true
+                dialect: org.hibernate.dialect.PostgreSQL95Dialect
+                temp:
+                    use_jdbc_metadata_defaults: false
+
+#Datasource for JPA to update database schema
+custom:
+    datasource:
+        primary:
+            url: jdbc:postgresql://localhost:54321/rcc_cpm
+            driverClassName: org.postgresql.Driver
+            username: postgres
+            password: root
+            connectionTimeout: 30000
+            idleTimeout: 60000
+            maxLifetime: 180000
+            maximumPoolSize: 8

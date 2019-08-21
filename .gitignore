@@ -1,0 +1,9 @@
+/target/
+!.mvn/warpper/maven-warpper.jar
+/log/
+
+### IntelliJ IDEA ###
+.idea
+*.iml
+
+/log/
