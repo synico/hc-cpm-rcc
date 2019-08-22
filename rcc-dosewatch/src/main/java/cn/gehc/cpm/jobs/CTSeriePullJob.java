@@ -75,10 +75,6 @@ public class CTSeriePullJob extends TimerDBReadJob {
             }
         }
 
-        if(studySet.size() > 0) {
-            studyRepository.saveAll(studySet);
-        }
-
         if(ctSerieSet.size() > 0) {
             ctStudyRepository.saveAll(ctStudySet);
         }
@@ -89,6 +85,11 @@ public class CTSeriePullJob extends TimerDBReadJob {
 
         //update study
         List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyWithSerieMap.keySet());
+        for(Study st : studySet) {
+            if(!studyList.contains(st)) {
+                studyList.add(st);
+            }
+        }
         List<Study> study2Update = new ArrayList<>(studyList.size());
         for(Study tmpStudy : studyList) {
             TreeSet<CTSerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());

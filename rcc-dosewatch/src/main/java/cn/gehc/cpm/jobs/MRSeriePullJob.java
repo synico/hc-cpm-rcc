@@ -63,16 +63,17 @@ public class MRSeriePullJob extends TimerDBReadJob {
             }
         }
 
-        if(studySet.size() > 0) {
-            studyRepository.saveAll(studySet);
-        }
-
         if(mrSerieSet.size() > 0) {
             mrSerieRepository.saveAll(mrSerieSet);
         }
 
         //update study
         List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyWithSerieMap.keySet());
+        for(Study st : studySet) {
+            if(!studyList.contains(st)) {
+                studyList.add(st);
+            }
+        }
         List<Study> study2Update = new ArrayList<>(studyList.size());
         for(Study tmpStudy : studyList) {
             TreeSet<MRSerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
