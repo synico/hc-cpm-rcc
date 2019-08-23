@@ -8,9 +8,9 @@
 		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="dwB9" class="com.zaxxer.hikari.HikariDataSource">
+    <bean id="dwOP" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://192.168.113.156:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.131.192:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
         <property name="username" value="root" />
         <property name="password" value="Stra67000" />
         <property name="connectionTimeout" value="30000" />

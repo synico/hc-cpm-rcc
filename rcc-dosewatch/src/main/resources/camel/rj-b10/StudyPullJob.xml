@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring">
+    <route id="spiralSeriePullJob" >
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-spiralSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                sse.exposure_time,
+                sse.dt_last_update,
+                (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
+                from spiral_serie sse join ct_serie ctse on sse.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="constantAngleSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-constantAngleSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                cas.exposure_time,
+                cas.dt_last_update,
+                (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
+                from constant_angle_serie cas join ct_serie ctse on cas.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="stationarySeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-stationarySeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                sse.exposure_time,
+                sse.dt_last_update,
+                (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
+                from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="cineSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-cineSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                cse.exposure_time,
+                cse.dt_last_update,
+                (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
+                from cine_serie cse join ct_serie ctse on cse.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="sequencedSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-sequencedSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                sse.exposure_time,
+                sse.dt_last_update,
+                (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
+                from sequenced_serie sse join ct_serie ctse on sse.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="smartprepSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-smartprepSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                sse.exposure_time,
+                sse.dt_last_update,
+                (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
+                from smartprep_serie sse join ct_serie ctse on sse.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="undefinedSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-undefinedSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="ctSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                cts.ct_dose_length_product_total,
+                cts.dlp_ssde,
+                cts.exam_ctdi,
+                cts.num_series,
+                cts.protocol_key,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                ctse.aapm_factor_ssde,
+                ctse.ctdi_vol_ssde,
+                ctse.dlp_ssde,
+                ctse.end_series_time,
+                us.exposure_time,
+                us.dt_last_update,
+                (unix_timestamp(us.dt_last_update) + se.id) as joint_key
+                from undefined_serie us join ct_serie ctse on us.id=ctse.id
+                    join serie se on ctse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ct_study cts on s.id=cts.id
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and se.series_date is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="ctSeriePullJob" method="insertData"/>
+        <bean ref="ctSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="mrSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-mrSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="mrSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                s.id as local_studyId,
+                s.ae_key,
+                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                s.accession_number,
+                s.dtype as study_dtype,
+                s.modality,
+                s.patient_key,
+                s.patient_age,
+                s.study_id,
+                s.study_instance_uid,
+                s.study_date,
+                se.id as local_serieId,
+                ae.aet,
+                CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                se.serie_id,
+                se.study_key,
+                se.dtype as serie_dtype,
+                se.series_date,
+                mrse.acquisition_datetime,
+                CASE
+                  WHEN mrse.acquisition_duration > 1000000 THEN mrse.acquisition_duration/1000000
+                  ELSE mrse.acquisition_duration
+                END as acquisition_duration,
+                mrse.protocol_key,
+                mrse.dt_last_update,
+                (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
+                from mr_serie mrse join serie se on mrse.id=se.id
+                    join study s on s.id=se.study_key
+                    join ae on ae.id=s.ae_key
+            where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                and mrse.acquisition_datetime is not null
+            order by joint_key asc limit 500?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="mrSeriePullJob" method="insertData"/>
+        <bean ref="mrSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="devicePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-devicePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="devicePullJob" method="startDBReadJob"/>
+        <to uri="sql:select ae.id,
+                        ae.aet,
+                        sdm.device_type,
+                        sdm.name as device_model,
+                        m.code as mf_code,
+                        ae.name as name,
+                        ae.station_name,
+                        ae.timezone,
+                        ae.dt_last_update
+                    from ae join supported_device_model sdm on ae.sdm_key=sdm.id
+                        join manufacturer m on sdm.manufacturer_key=m.id
+                    where ae.dt_last_update > :#${headers[JobObject].lastPolledValue}
+                    order by ae.dt_last_update asc;?dataSource=dwB10"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="devicePullJob" method="insertData"/>
+        <bean ref="devicePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+</routes>
