@@ -77,25 +77,34 @@ public class MRSeriePullJob extends TimerDBReadJob {
         List<Study> study2Update = new ArrayList<>(studyList.size());
         for(Study tmpStudy : studyList) {
             TreeSet<MRSerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
-            Date lastSerieDate = DataUtil.getLastSerieDate(serieSet.last());
-
-            //update study start time
-            if(tmpStudy.getStudyStartTime() == null) {
-                tmpStudy.setStudyStartTime(serieSet.first().getAcquisitionDatetime());
-            } else {
-                if(tmpStudy.getStudyStartTime().compareTo(serieSet.first().getAcquisitionDatetime()) > 0) {
+            if(serieSet != null && serieSet.size() > 0) {
+                MRSerie lastMRSerie = serieSet.last();
+                MRSerie firstMRSerie = serieSet.first();
+                if(lastMRSerie == null || lastMRSerie.getAcquisitionDatetime() == null || lastMRSerie.getAcquisitionDuration() == null) {
+                    return;
+                }
+                if(firstMRSerie == null || firstMRSerie.getAcquisitionDatetime() == null || firstMRSerie.getAcquisitionDuration() == null) {
+                    return;
+                }
+                Date lastSerieDate = DataUtil.getLastSerieDate(serieSet.last());
+                //update study start time
+                if(tmpStudy.getStudyStartTime() == null) {
                     tmpStudy.setStudyStartTime(serieSet.first().getAcquisitionDatetime());
+                } else {
+                    if(tmpStudy.getStudyStartTime().compareTo(serieSet.first().getAcquisitionDatetime()) > 0) {
+                        tmpStudy.setStudyStartTime(serieSet.first().getAcquisitionDatetime());
+                    }
                 }
-            }
-            //update study end time
-            if(tmpStudy.getStudyEndTime() == null) {
-                tmpStudy.setStudyEndTime(lastSerieDate);
-            } else {
-                if(tmpStudy.getStudyEndTime().compareTo(lastSerieDate) < 0) {
+                //update study end time
+                if(tmpStudy.getStudyEndTime() == null) {
                     tmpStudy.setStudyEndTime(lastSerieDate);
+                } else {
+                    if(tmpStudy.getStudyEndTime().compareTo(lastSerieDate) < 0) {
+                        tmpStudy.setStudyEndTime(lastSerieDate);
+                    }
                 }
+                study2Update.add(tmpStudy);
             }
-            study2Update.add(tmpStudy);
         }
 
         if(study2Update.size() > 0) {
