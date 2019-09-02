@@ -171,6 +171,28 @@ public class DataUtil {
         return mrSerie;
     }
 
+    public static XASerie convertProps2XASerie(Map<String, Object> serieProps) {
+        XASerie xaSerie = new XASerie();
+        SerieKey serieKey = new SerieKey();
+
+        serieKey.setId(getLongFromProperties(serieProps, "local_serieId"));
+        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
+        xaSerie.setSerieKey(serieKey);
+
+        xaSerie.setLocalStudyKey(getStringFromProperties(serieProps, "local_study_id"));
+        xaSerie.setLocalSerieId(getStringFromProperties(serieProps, "local_serie_id"));
+        xaSerie.setProtocolKey(getLongFromProperties(serieProps, "protocol_key"));
+        xaSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
+        xaSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
+        xaSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
+        xaSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
+        xaSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
+        xaSerie.setExposureTime(getFloatFromProperties(serieProps,"exposure_time"));
+        xaSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
+
+        return xaSerie;
+    }
+
     public static Date getLastSerieDate(CTSerie lastSerie) {
         Instant lastSerieInstant = lastSerie.getSeriesDate()
                 .toInstant()
@@ -182,6 +204,13 @@ public class DataUtil {
         Instant lastSerieInstant = lastSerie.getAcquisitionDatetime()
                 .toInstant()
                 .plusSeconds(lastSerie.getAcquisitionDuration().longValue());
+        return new Date(lastSerieInstant.toEpochMilli());
+    }
+
+    public static Date getLastSerieDate(XASerie lastSerie) {
+        Instant lastSerieInstant = lastSerie.getSeriesDate()
+                .toInstant()
+                .plusSeconds(lastSerie.getExposureTime().longValue());
         return new Date(lastSerieInstant.toEpochMilli());
     }
 

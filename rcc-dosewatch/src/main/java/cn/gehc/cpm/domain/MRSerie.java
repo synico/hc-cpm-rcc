@@ -48,7 +48,7 @@ public class MRSerie implements Comparable<MRSerie> {
     private Date dtLastUpdate;
 
     public int compareTo(MRSerie anotherSerie) {
-        int result = this.getSeriesDate().compareTo(anotherSerie.getAcquisitionDatetime());
+        int result = this.getSeriesDate().compareTo(anotherSerie.getSeriesDate());
         if(result == 0) {
             result = this.getSerieId().compareTo(anotherSerie.getSerieId());
         }

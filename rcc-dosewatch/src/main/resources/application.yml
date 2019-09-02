@@ -1,7 +1,8 @@
 camel:
     springboot:
         main-run-controller: true
-        xml-routes: classpath:camel/*.xml,classpath:camel/*/*.xml
+#        xml-routes: classpath:camel/*.xml,classpath:camel/*/*.xml
+        xml-routes: classpath:camel/*.xml
 
 spring:
     jpa:

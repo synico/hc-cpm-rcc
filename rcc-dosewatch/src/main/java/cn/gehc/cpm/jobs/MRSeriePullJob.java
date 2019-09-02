@@ -80,19 +80,19 @@ public class MRSeriePullJob extends TimerDBReadJob {
             if(serieSet != null && serieSet.size() > 0) {
                 MRSerie lastMRSerie = serieSet.last();
                 MRSerie firstMRSerie = serieSet.first();
-                if(lastMRSerie == null || lastMRSerie.getAcquisitionDatetime() == null || lastMRSerie.getAcquisitionDuration() == null) {
+                if(lastMRSerie == null || lastMRSerie.getSeriesDate() == null || lastMRSerie.getAcquisitionDuration() == null) {
                     return;
                 }
-                if(firstMRSerie == null || firstMRSerie.getAcquisitionDatetime() == null || firstMRSerie.getAcquisitionDuration() == null) {
+                if(firstMRSerie == null || firstMRSerie.getSeriesDate() == null || firstMRSerie.getAcquisitionDuration() == null) {
                     return;
                 }
                 Date lastSerieDate = DataUtil.getLastSerieDate(serieSet.last());
                 //update study start time
                 if(tmpStudy.getStudyStartTime() == null) {
-                    tmpStudy.setStudyStartTime(serieSet.first().getAcquisitionDatetime());
+                    tmpStudy.setStudyStartTime(serieSet.first().getSeriesDate());
                 } else {
-                    if(tmpStudy.getStudyStartTime().compareTo(serieSet.first().getAcquisitionDatetime()) > 0) {
-                        tmpStudy.setStudyStartTime(serieSet.first().getAcquisitionDatetime());
+                    if(tmpStudy.getStudyStartTime().compareTo(serieSet.first().getSeriesDate()) > 0) {
+                        tmpStudy.setStudyStartTime(serieSet.first().getSeriesDate());
                     }
                 }
                 //update study end time
