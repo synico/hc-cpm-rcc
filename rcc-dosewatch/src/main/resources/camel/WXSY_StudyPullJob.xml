@@ -87,7 +87,7 @@
                 xase.protocol_key,
                 xase.dt_last_update,
                 (unix_timestamp(xase.dt_last_update) + se.id) as joint_key
-                from xa_serie xase join serie se on mrse.id=se.id
+                from xa_serie xase join serie se on xase.id=se.id
                     join study s on s.id=se.study_key
                     join ae on ae.id=s.ae_key
             where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}

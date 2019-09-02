@@ -450,6 +450,53 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
+    <route id="xaSeriePullJob">
+            <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+            <setHeader headerName="JobName">
+                <constant>B9-xaSeriePullJob</constant>
+            </setHeader>
+            <setHeader headerName="JobType">
+                <constant>ReadDoseDB</constant>
+            </setHeader>
+            <setHeader headerName="DefaultStartPollValue">
+                <constant>1</constant>
+            </setHeader>
+            <bean ref="xaSeriePullJob" method="startDBReadJob"/>
+            <to uri="sql:select
+                    s.id as local_studyId,
+                    s.ae_key,
+                    CONCAT(ae.aet,'|',s.id) as local_study_id,
+                    s.accession_number,
+                    s.dtype as study_dtype,
+                    s.modality,
+                    s.patient_key,
+                    s.patient_age,
+                    s.study_id,
+                    s.study_instance_uid,
+                    s.study_date,
+                    se.id as local_serieId,
+                    ae.aet,
+                    CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                    se.serie_id,
+                    se.study_key,
+                    se.dtype as serie_dtype,
+                    se.series_date,
+                    xase.exposure_time/1000 as exposure_time,
+                    xase.protocol_key,
+                    xase.dt_last_update,
+                    (unix_timestamp(xase.dt_last_update) + se.id) as joint_key
+                    from xa_serie xase join serie se on xase.id=se.id
+                        join study s on s.id=se.study_key
+                        join ae on ae.id=s.ae_key
+                where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                    and se.series_date is not null and xase.exposure_time is not null
+                order by joint_key asc limit 500?dataSource=dwB9"/>
+            <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+            <bean ref="xaSeriePullJob" method="insertData"/>
+            <bean ref="xaSeriePullJob" method="endDBReadJob"/>
+            <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+        </route>
+
     <route id="devicePullJob">
         <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">

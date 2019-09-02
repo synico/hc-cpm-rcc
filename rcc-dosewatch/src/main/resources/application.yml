@@ -2,7 +2,7 @@ camel:
     springboot:
         main-run-controller: true
 #        xml-routes: classpath:camel/*.xml,classpath:camel/*/*.xml
-        xml-routes: classpath:camel/*.xml
+        xml-routes: classpath:camel/WXSY_StudyPullJob.xml
 
 spring:
     jpa:
@@ -22,10 +22,10 @@ spring:
 custom:
     datasource:
         primary:
-            url: jdbc:postgresql://192.168.62.79:5432/rcc_cpm_v0801
+            url: jdbc:postgresql://localhost:5432/wxsy_rcc
             driverClassName: org.postgresql.Driver
             username: postgres
-            password: GehcDi9it@l
+            password: root
             connectionTimeout: 30000
             idleTimeout: 60000
             maxLifetime: 180000
