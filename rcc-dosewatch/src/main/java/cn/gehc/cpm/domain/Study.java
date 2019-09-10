@@ -53,8 +53,21 @@ public class Study {
     @Temporal(TemporalType.TIMESTAMP)
     private Date studyEndTime;
 
+    @Column(name = "TARGET_REGION_COUNT")
+    private Integer targetRegionCount;
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
+
+    public boolean equals(Object study) {
+        boolean isEqual = Boolean.FALSE;
+        if(study instanceof Study) {
+            if(this.getLocalStudyId().equals(((Study) study).getLocalStudyId())) {
+                isEqual = Boolean.TRUE;
+            }
+        }
+        return isEqual;
+    }
 
 }

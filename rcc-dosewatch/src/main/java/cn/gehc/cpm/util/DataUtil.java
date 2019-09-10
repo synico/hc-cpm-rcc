@@ -139,6 +139,7 @@ public class DataUtil {
         ctSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
         ctSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
         ctSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
+        ctSerie.setTargetRegion(getStringFromProperties(serieProps, "target_region_key"));
         ctSerie.setAapmFactorSSDE(getDoubleFromProperties(serieProps, "aapm_factor_ssde"));
         ctSerie.setCtdiVolSSDE(getDoubleFromProperties(serieProps, "ctdi_vol_ssde"));
         ctSerie.setDlpSSDE(getDoubleFromProperties(serieProps, "dlp_ssde"));
@@ -164,6 +165,7 @@ public class DataUtil {
         mrSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
         mrSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
         mrSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
+        mrSerie.setProtocolName(getStringFromProperties(serieProps, "protocol_name"));
         mrSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
         mrSerie.setAcquisitionDuration(getDoubleFromProperties(serieProps, "acquisition_duration"));
         mrSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));

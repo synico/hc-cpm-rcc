@@ -43,6 +43,9 @@ public class MRSerie implements Comparable<MRSerie> {
     @Column(name = "study_key")
     private Long studyKey;
 
+    @Column(name = "protocol_name")
+    private String protocolName;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

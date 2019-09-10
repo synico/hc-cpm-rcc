@@ -7,12 +7,14 @@ import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service(value = "mrSeriePullJob")
 public class MRSeriePullJob extends TimerDBReadJob {
@@ -28,10 +30,11 @@ public class MRSeriePullJob extends TimerDBReadJob {
     public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
         log.info("start to insert data to mr_serie");
         List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
-        Set<Study> studySet = new HashSet<>();
+
+        Set<Study> studiesFromJob = new HashSet<>();
         Set<MRSerie> mrSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<MRSerie>> studyWithSerieMap = new HashMap<>();
+        Map<String, TreeSet<MRSerie>> studyWithSeriesMap = new HashMap<>();
 
         Long lastPolledValue = null;
         Study study;
@@ -40,21 +43,12 @@ public class MRSeriePullJob extends TimerDBReadJob {
         for(Map<String, Object> serieProps : dataMap) {
             log.debug(serieProps.toString());
             study = DataUtil.convertProps2Study(serieProps);
-            studySet.add(study);
+            studiesFromJob.add(study);
 
             mrSerie = DataUtil.convertProps2MRSerie(serieProps);
             mrSerieSet.add(mrSerie);
 
             Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
-
-            TreeSet<MRSerie> mrSerieList;
-            if(studyWithSerieMap.get(study.getLocalStudyId()) == null) {
-                mrSerieList = new TreeSet<>();
-            } else {
-                mrSerieList = studyWithSerieMap.get(study.getLocalStudyId());
-            }
-            mrSerieList.add(mrSerie);
-            studyWithSerieMap.put(study.getLocalStudyId(), mrSerieList);
 
             if(lastPolledValue == null) {
                 lastPolledValue = jointKey;
@@ -67,16 +61,28 @@ public class MRSeriePullJob extends TimerDBReadJob {
             mrSerieRepository.saveAll(mrSerieSet);
         }
 
-        //update study
-        List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyWithSerieMap.keySet());
-        for(Study st : studySet) {
+        List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
+        //combine studies from job(hasn't been persisted) with studies from database
+        List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyIds);
+        for(Study st : studiesFromJob) {
             if(!studyList.contains(st)) {
                 studyList.add(st);
             }
         }
+        //retrieve ct serie from database
+        List<MRSerie> mrSeriesFromDB = mrSerieRepository.findByLocalStudyKeyIn(studyIds);
+        for(MRSerie mrse : mrSeriesFromDB) {
+            TreeSet<MRSerie> mrSeries = studyWithSeriesMap.get(mrse.getLocalStudyKey());
+            if(mrSeries == null) {
+                mrSeries = new TreeSet<>();
+            }
+            mrSeries.add(mrse);
+            studyWithSeriesMap.put(mrse.getLocalStudyKey(), mrSeries);
+        }
+
         List<Study> study2Update = new ArrayList<>(studyList.size());
         for(Study tmpStudy : studyList) {
-            TreeSet<MRSerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
+            TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(tmpStudy.getLocalStudyId());
             if(serieSet != null && serieSet.size() > 0) {
                 MRSerie lastMRSerie = serieSet.last();
                 MRSerie firstMRSerie = serieSet.first();
@@ -86,23 +92,28 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 if(firstMRSerie == null || firstMRSerie.getSeriesDate() == null || firstMRSerie.getAcquisitionDuration() == null) {
                     return;
                 }
-                Date lastSerieDate = DataUtil.getLastSerieDate(serieSet.last());
+
                 //update study start time
-                if(tmpStudy.getStudyStartTime() == null) {
-                    tmpStudy.setStudyStartTime(serieSet.first().getSeriesDate());
-                } else {
-                    if(tmpStudy.getStudyStartTime().compareTo(serieSet.first().getSeriesDate()) > 0) {
-                        tmpStudy.setStudyStartTime(serieSet.first().getSeriesDate());
-                    }
-                }
+                tmpStudy.setStudyStartTime(firstMRSerie.getSeriesDate());
                 //update study end time
-                if(tmpStudy.getStudyEndTime() == null) {
-                    tmpStudy.setStudyEndTime(lastSerieDate);
-                } else {
-                    if(tmpStudy.getStudyEndTime().compareTo(lastSerieDate) < 0) {
-                        tmpStudy.setStudyEndTime(lastSerieDate);
-                    }
+                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(serieSet.last()));
+                study2Update.add(tmpStudy);
+
+                //to calculate protocol by serie
+                Long targetRegionCount = serieSet.stream().map(mrse -> mrse.getProtocolName())
+                        .filter(protocolName -> StringUtils.isNotBlank(protocolName))
+                        .distinct()
+                        .count();
+                if(targetRegionCount > 1) {
+                    log.info("***************************************************************");
+                    log.info("study: {}, target_region: {}, target region count: {}",
+                            tmpStudy.getLocalStudyId(),
+                            serieSet.stream().map(mrse -> mrse.getProtocolName()).distinct().reduce((x, y) -> x + "," + y).get(),
+                            targetRegionCount);
+                    log.info("***************************************************************");
                 }
+                tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
+
                 study2Update.add(tmpStudy);
             }
         }

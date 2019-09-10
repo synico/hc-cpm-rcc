@@ -54,6 +54,9 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "exposure_time")
     private Float exposureTime;
 
+    @Column(name = "target_region")
+    private String targetRegion;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

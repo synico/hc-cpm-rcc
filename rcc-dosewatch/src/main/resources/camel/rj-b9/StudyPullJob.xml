@@ -36,6 +36,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -93,6 +94,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -150,6 +152,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -207,6 +210,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -264,6 +268,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -321,6 +326,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -378,6 +384,7 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
+                se.target_region_key,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -436,11 +443,13 @@
                   ELSE mrse.acquisition_duration
                 END as acquisition_duration,
                 mrse.protocol_key,
+                pl.name as protocol_name,
                 mrse.dt_last_update,
                 (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
                 from mr_serie mrse join serie se on mrse.id=se.id
                     join study s on s.id=se.study_key
                     join ae on ae.id=s.ae_key
+                    join protocol pl on mrse.protocol_key=pl.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and mrse.acquisition_datetime is not null and mrse.acquisition_duration is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
