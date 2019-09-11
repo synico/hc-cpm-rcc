@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,6 +135,36 @@ public class CTSeriePullJob extends TimerDBReadJob {
 
         if(study2Update.size() > 0) {
             studyRepository.saveAll(study2Update);
+        }
+
+        // TODO only apply for RJYY, will be removed for other customer
+        // update prev_local_study_id and next_local_study_id
+        Map<String, Set<String>> aetStudyDateMap = new HashMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for(Study s : study2Update) {
+            String aet = s.getStudyKey().getAet();
+            Set studyDateSet = aetStudyDateMap.get(aet);
+            if(studyDateSet == null) {
+                studyDateSet = new HashSet();
+            }
+            studyDateSet.add(sdf.format(s.getStudyDate()));
+            aetStudyDateMap.put(aet, studyDateSet);
+        }
+        for(Map.Entry<String, Set<String>> aetStudyDate : aetStudyDateMap.entrySet()) {
+            String aet = aetStudyDate.getKey();
+            Set<String> studyDateSet = aetStudyDate.getValue();
+            for(String studyDateString : studyDateSet) {
+                List<Study> studies = studyRepository.findByAETAndStudyDateChar(aet, studyDateString);
+                Study prevStudy = (studies != null && studies.size() > 0) ? studies.get(0) : null;
+                Study currentStudy = null;
+                for(int idx = 1; idx < studies.size(); idx++) {
+                    currentStudy = studies.get(idx);
+                    prevStudy.setNextLocalStudyId(currentStudy.getLocalStudyId());
+                    currentStudy.setPrevLocalStudyId(prevStudy.getLocalStudyId());
+                    prevStudy = currentStudy;
+                }
+                studyRepository.saveAll(studies);
+            }
         }
 
         if(lastPolledValue != null) {

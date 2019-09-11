@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "study")
-public class Study {
+public class Study implements Comparable<Study> {
 
     @EmbeddedId
     private StudyKey studyKey;
@@ -29,8 +29,11 @@ public class Study {
     @Column(name = "MODALITY")
     private String modality;
 
-    @Column(name = "PATIENT_KEY")
-    private Long patientKey;
+    @Column(name = "PATIENT_ID")
+    private String patientId;
+
+    @Column(name = "PATIENT_SEX")
+    private String patientSex;
 
     @Column(name = "PATIENT_AGE")
     private Integer patientAge;
@@ -56,6 +59,12 @@ public class Study {
     @Column(name = "TARGET_REGION_COUNT")
     private Integer targetRegionCount;
 
+    @Column(name = "PREV_LOCAL_STUDY_ID")
+    private String prevLocalStudyId;
+
+    @Column(name = "NEXT_LOCAL_STUDY_ID")
+    private String nextLocalStudyId;
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
@@ -68,6 +77,16 @@ public class Study {
             }
         }
         return isEqual;
+    }
+
+    public int compareTo(Study anotherStudy) {
+        int result = 0;
+        if(this.getStudyDate() == null || anotherStudy.getStudyDate() == null) {
+            //do nothing
+        } else {
+            result = this.getStudyDate().compareTo(anotherStudy.getStudyDate());
+        }
+        return result;
     }
 
 }

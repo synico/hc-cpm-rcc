@@ -98,7 +98,8 @@ public class DataUtil {
         study.setAccessionNumber(getStringFromProperties(studyProps, "accession_number"));
         study.setDType(getStringFromProperties(studyProps, "study_dtype"));
         study.setModality(getStringFromProperties(studyProps, "modality"));
-        study.setPatientKey(getLongFromProperties(studyProps, "patient_key"));
+        study.setPatientId(getStringFromProperties(studyProps, "patient_id"));
+        study.setPatientSex(getStringFromProperties(studyProps, "patient_sex"));
         study.setPatientAge(getIntegerFromProperties(studyProps, "patient_age"));
         study.setStudyId(getStringFromProperties(studyProps, "study_id"));
         study.setStudyInstanceUid(getStringFromProperties(studyProps, "study_instance_uid"));

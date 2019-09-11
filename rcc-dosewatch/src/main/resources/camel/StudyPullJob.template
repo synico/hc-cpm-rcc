@@ -21,6 +21,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -49,6 +51,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -79,6 +82,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -107,6 +112,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -137,6 +143,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -165,6 +173,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -195,6 +204,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -223,6 +234,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -253,6 +265,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -281,6 +295,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -311,6 +326,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -339,6 +356,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -369,6 +387,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -397,6 +417,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
@@ -427,6 +448,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -450,8 +473,9 @@
                     join study s on s.id=se.study_key
                     join ae on ae.id=s.ae_key
                     join protocol pl on mrse.protocol_key=pl.id
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and mrse.acquisition_datetime is not null
+                and mrse.acquisition_datetime is not null and mrse.acquisition_duration is not null
             order by joint_key asc limit 500?dataSource=dwB9"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="mrSeriePullJob" method="insertData"/>
@@ -460,18 +484,18 @@
     </route>
 
     <route id="xaSeriePullJob">
-            <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
-            <setHeader headerName="JobName">
-                <constant>B9-xaSeriePullJob</constant>
-            </setHeader>
-            <setHeader headerName="JobType">
-                <constant>ReadDoseDB</constant>
-            </setHeader>
-            <setHeader headerName="DefaultStartPollValue">
-                <constant>1</constant>
-            </setHeader>
-            <bean ref="xaSeriePullJob" method="startDBReadJob"/>
-            <to uri="sql:select
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-xaSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="xaSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
                     s.id as local_studyId,
                     s.ae_key,
                     CONCAT(ae.aet,'|',s.id) as local_study_id,
@@ -480,6 +504,8 @@
                     s.modality,
                     s.patient_key,
                     s.patient_age,
+                    pt.patient_id,
+                    pt.sex as patient_sex,
                     s.study_id,
                     s.study_instance_uid,
                     s.study_date,
@@ -497,14 +523,15 @@
                     from xa_serie xase join serie se on xase.id=se.id
                         join study s on s.id=se.study_key
                         join ae on ae.id=s.ae_key
+                        join patient pt on s.patient_key=pt.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and se.series_date is not null and xase.exposure_time is not null
                 order by joint_key asc limit 500?dataSource=dwB9"/>
-            <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
-            <bean ref="xaSeriePullJob" method="insertData"/>
-            <bean ref="xaSeriePullJob" method="endDBReadJob"/>
-            <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
-        </route>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="xaSeriePullJob" method="insertData"/>
+        <bean ref="xaSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
 
     <route id="devicePullJob">
         <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>

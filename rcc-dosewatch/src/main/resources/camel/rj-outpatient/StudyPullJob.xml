@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
-    <route id="spiralSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="spiralSeriePullJob" >
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-spiralSeriePullJob</constant>
+            <constant>B9-spiralSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -21,6 +21,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -49,6 +51,7 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
@@ -58,10 +61,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="constantAngleSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="constantAngleSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-constantAngleSeriePullJob</constant>
+            <constant>B9-constantAngleSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -79,6 +82,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -107,8 +112,9 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and se.series_date is not null and cas.exposure_time is not null
+                and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
@@ -116,10 +122,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="stationarySeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="stationarySeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-stationarySeriePullJob</constant>
+            <constant>B9-stationarySeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -137,6 +143,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -165,8 +173,9 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and se.series_date is not null and sse.exposure_time is not null
+                and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
@@ -174,10 +183,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="cineSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="cineSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-cineSeriePullJob</constant>
+            <constant>B9-cineSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -195,6 +204,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -223,8 +234,9 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and se.series_date is not null and cse.exposure_time is not null
+                and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
@@ -232,10 +244,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="sequencedSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="sequencedSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-sequencedSeriePullJob</constant>
+            <constant>B9-sequencedSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -253,6 +265,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -281,8 +295,9 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and se.series_date is not null and sse.exposure_time is not null
+                and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
@@ -290,10 +305,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="smartprepSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="smartprepSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-smartprepSeriePullJob</constant>
+            <constant>B9-smartprepSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -311,6 +326,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -339,8 +356,9 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and se.series_date is not null and sse.exposure_time is not null
+                and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
@@ -348,10 +366,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="undefinedSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="undefinedSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-undefinedSeriePullJob</constant>
+            <constant>B9-undefinedSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -369,6 +387,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -397,8 +417,9 @@
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and se.series_date is not null and us.exposure_time is not null
+                and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
@@ -406,10 +427,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="mrSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="mrSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-mrSeriePullJob</constant>
+            <constant>B9-mrSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -427,6 +448,8 @@
                 s.modality,
                 s.patient_key,
                 s.patient_age,
+                pt.patient_id,
+                pt.sex as patient_sex,
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
@@ -450,6 +473,7 @@
                     join study s on s.id=se.study_key
                     join ae on ae.id=s.ae_key
                     join protocol pl on mrse.protocol_key=pl.id
+                    join patient pt on s.patient_key=pt.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and mrse.acquisition_datetime is not null and mrse.acquisition_duration is not null
             order by joint_key asc limit 500?dataSource=dwOP"/>
@@ -459,10 +483,60 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="devicePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="xaSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>OP-devicePullJob</constant>
+            <constant>B9-xaSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="xaSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                    s.id as local_studyId,
+                    s.ae_key,
+                    CONCAT(ae.aet,'|',s.id) as local_study_id,
+                    s.accession_number,
+                    s.dtype as study_dtype,
+                    s.modality,
+                    s.patient_key,
+                    s.patient_age,
+                    pt.patient_id,
+                    pt.sex as patient_sex,
+                    s.study_id,
+                    s.study_instance_uid,
+                    s.study_date,
+                    se.id as local_serieId,
+                    ae.aet,
+                    CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                    se.serie_id,
+                    se.study_key,
+                    se.dtype as serie_dtype,
+                    se.series_date,
+                    xase.exposure_time/1000 as exposure_time,
+                    xase.protocol_key,
+                    xase.dt_last_update,
+                    (unix_timestamp(xase.dt_last_update) + se.id) as joint_key
+                    from xa_serie xase join serie se on xase.id=se.id
+                        join study s on s.id=se.study_key
+                        join ae on ae.id=s.ae_key
+                        join patient pt on s.patient_key=pt.id
+                where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                    and se.series_date is not null and xase.exposure_time is not null
+                order by joint_key asc limit 500?dataSource=dwOP"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="xaSeriePullJob" method="insertData"/>
+        <bean ref="xaSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="devicePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>B9-devicePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
