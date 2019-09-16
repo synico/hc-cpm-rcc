@@ -17,12 +17,13 @@ spring:
 
 camel:
     springboot:
+        main-run-controller: true
         xmlRoutes: classpath:camel/*.xml
 
 custom:
     datasource:
         primary:
-            url: jdbc:postgresql://192.168.62.79:5432/rcc_cpm_v0801
+            url: jdbc:postgresql://192.168.62.79:5432/rjyy_rcc
             driverClassName: org.postgresql.Driver
             username: postgres
             password: GehcDi9it@l

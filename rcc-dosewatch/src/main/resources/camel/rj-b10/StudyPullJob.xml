@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
-    <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="spiralSeriePullJob-dwB10" >
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-spiralSeriePullJob</constant>
+            <constant>B10-spiralSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -61,10 +61,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="constantAngleSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-constantAngleSeriePullJob</constant>
+            <constant>B10-constantAngleSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -122,10 +122,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="stationarySeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-stationarySeriePullJob</constant>
+            <constant>B10-stationarySeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -183,10 +183,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="cineSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-cineSeriePullJob</constant>
+            <constant>B10-cineSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -244,10 +244,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="sequencedSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-sequencedSeriePullJob</constant>
+            <constant>B10-sequencedSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -305,10 +305,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="smartprepSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-smartprepSeriePullJob</constant>
+            <constant>B10-smartprepSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -366,10 +366,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="undefinedSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-undefinedSeriePullJob</constant>
+            <constant>B10-undefinedSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -427,10 +427,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="mrSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-mrSeriePullJob</constant>
+            <constant>B10-mrSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -483,10 +483,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="xaSeriePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-xaSeriePullJob</constant>
+            <constant>B10-xaSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>
@@ -533,10 +533,10 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="devicePullJob-dwB10">
+        <from uri="timer://PullData-dwB10?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
-            <constant>B9-devicePullJob</constant>
+            <constant>B10-devicePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
             <constant>ReadDoseDB</constant>

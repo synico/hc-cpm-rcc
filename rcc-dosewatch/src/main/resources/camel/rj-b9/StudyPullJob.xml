@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
-    <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="spiralSeriePullJob-dwB9" >
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-spiralSeriePullJob</constant>
         </setHeader>
@@ -61,8 +61,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="constantAngleSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-constantAngleSeriePullJob</constant>
         </setHeader>
@@ -122,8 +122,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="stationarySeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-stationarySeriePullJob</constant>
         </setHeader>
@@ -183,8 +183,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="cineSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-cineSeriePullJob</constant>
         </setHeader>
@@ -244,8 +244,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="sequencedSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-sequencedSeriePullJob</constant>
         </setHeader>
@@ -305,8 +305,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="smartprepSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-smartprepSeriePullJob</constant>
         </setHeader>
@@ -366,8 +366,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="undefinedSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-undefinedSeriePullJob</constant>
         </setHeader>
@@ -427,8 +427,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="mrSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-mrSeriePullJob</constant>
         </setHeader>
@@ -483,8 +483,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="xaSeriePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-xaSeriePullJob</constant>
         </setHeader>
@@ -533,8 +533,8 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
-    <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+    <route id="devicePullJob-dwB9">
+        <from uri="timer://PullData-dwB9?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-devicePullJob</constant>
         </setHeader>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-spiralSeriePullJob</constant>
         </setHeader>
@@ -62,7 +62,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-constantAngleSeriePullJob</constant>
         </setHeader>
@@ -123,7 +123,7 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-stationarySeriePullJob</constant>
         </setHeader>
@@ -184,7 +184,7 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-cineSeriePullJob</constant>
         </setHeader>
@@ -245,7 +245,7 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-sequencedSeriePullJob</constant>
         </setHeader>
@@ -306,7 +306,7 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-smartprepSeriePullJob</constant>
         </setHeader>
@@ -367,7 +367,7 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-undefinedSeriePullJob</constant>
         </setHeader>
@@ -428,7 +428,7 @@
     </route>
 
     <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-mrSeriePullJob</constant>
         </setHeader>
@@ -484,7 +484,7 @@
     </route>
 
     <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-xaSeriePullJob</constant>
         </setHeader>
@@ -534,7 +534,7 @@
     </route>
 
     <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=30s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>B9-devicePullJob</constant>
         </setHeader>

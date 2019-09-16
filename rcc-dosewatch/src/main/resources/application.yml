@@ -1,8 +1,7 @@
 camel:
     springboot:
         main-run-controller: true
-#        xml-routes: classpath:camel/*.xml,classpath:camel/*/*.xml
-        xml-routes: classpath:camel/WXSY_StudyPullJob.xml
+        xml-routes: classpath:camel/*/StudyPullJob.xml
 
 spring:
     jpa:
@@ -22,7 +21,7 @@ spring:
 custom:
     datasource:
         primary:
-            url: jdbc:postgresql://localhost:5432/wxsy_rcc
+            url: jdbc:postgresql://localhost:54322/rjyy_rcc
             driverClassName: org.postgresql.Driver
             username: postgres
             password: root
