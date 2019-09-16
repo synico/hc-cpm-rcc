@@ -564,4 +564,27 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
+    <route id="studyCleanJob-dwOP">
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=60s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>OP-studyCleanJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="studyCleanJob" method="startDBReadJob"/>
+        <to uri="sql:select ae.id,
+                        ae.aet,
+                        CONCAT(ae.aet,'|',s.id) as local_study_id
+                    from study s join ae on s.ae_key=ae.id
+                    where date_format(study_date,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d');?dataSource=dwOP"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="studyCleanJob" method="cleanStudies"/>
+        <bean ref="studyCleanJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
 </routes>

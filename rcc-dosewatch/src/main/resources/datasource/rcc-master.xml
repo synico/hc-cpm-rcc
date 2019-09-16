@@ -8,7 +8,7 @@
 
     <bean id="rccDS" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClassName" value="org.postgresql.Driver" />
-        <property name="jdbcUrl" value="jdbc:postgresql://localhost:54322/rjyy_rcc" />
+        <property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/rjyy_rcc" />
         <property name="username" value="postgres" />
         <property name="password" value="root" />
         <property name="connectionTimeout" value="30000" />

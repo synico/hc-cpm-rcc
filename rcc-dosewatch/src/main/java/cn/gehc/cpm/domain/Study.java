@@ -65,6 +65,10 @@ public class Study implements Comparable<Study> {
     @Column(name = "NEXT_LOCAL_STUDY_ID")
     private String nextLocalStudyId;
 
+    // 1 = published, 2 = marked for deletion
+    @Column(name = "PUBLISHED")
+    private Integer published = StudyStatus.PUBLISHED.getStatusId();
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
@@ -87,6 +91,21 @@ public class Study implements Comparable<Study> {
             result = this.getStudyDate().compareTo(anotherStudy.getStudyDate());
         }
         return result;
+    }
+
+    public enum StudyStatus {
+        PUBLISHED(1),
+        MARK_FOR_DELETION(2);
+
+        private Integer statusId;
+
+        StudyStatus(Integer statusId) {
+            this.statusId = statusId;
+        }
+
+        public Integer getStatusId() {
+            return statusId;
+        }
     }
 
 }

@@ -10,8 +10,8 @@
 
     <bean id="dwB10" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <!-- <property name="jdbcUrl" value="jdbc:mysql://192.168.52.58:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" /> -->
-        <property name="jdbcUrl" value="jdbc:mysql://192.168.56.101:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.52.58:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
+        <!-- <property name="jdbcUrl" value="jdbc:mysql://192.168.56.101:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" /> -->
         <property name="username" value="root" />
         <property name="password" value="Stra67000" />
         <property name="connectionTimeout" value="30000" />
