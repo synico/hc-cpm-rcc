@@ -27,7 +27,8 @@ create or replace view public.v_study as
         s.accession_number,
         min(s.study_start_time) over( partition by s.study_date,s.aet ) as up_time,
         max(s.study_end_time) over( partition by s.study_date,s.aet ) as down_time,
-        s.target_region_count as protocolcount
+        s.target_region_count as protocolcount,
+        s.published
         from study s left join device d on s.aet=d.aet
         join study ps on s.prev_local_study_id = ps.local_study_id
         join study ns on s.next_local_study_id = ns.local_study_id
