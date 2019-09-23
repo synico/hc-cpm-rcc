@@ -30,8 +30,8 @@ create or replace view public.v_study as
         s.target_region_count as protocolcount,
         s.published
         from study s left join device d on s.aet=d.aet
-        join study ps on s.prev_local_study_id = ps.local_study_id
-        join study ns on s.next_local_study_id = ns.local_study_id
+        left join study ps on s.prev_local_study_id = ps.local_study_id
+        left join study ns on s.next_local_study_id = ns.local_study_id
     where s.study_start_time is not null and s.study_end_time is not null;
 
 

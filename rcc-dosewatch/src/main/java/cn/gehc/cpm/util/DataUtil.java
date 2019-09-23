@@ -13,9 +13,16 @@ import java.util.Map;
 
 public class DataUtil {
 
+    public enum DatabaseType {
+        MYSQL,
+        POSTGRES
+    }
+
     private static final Logger log = LoggerFactory.getLogger(DataUtil.class);
 
     private static final DateTimeFormatter mysqlDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
+    private static final DateTimeFormatter pgDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static final String LOCAL_TIME_ZONE = "Asia/Shanghai";
 
@@ -75,12 +82,16 @@ public class DataUtil {
         return result;
     }
 
-    public static String ConvertDate2String(Date date) {
+    public static String convertDate2String(Date date, DatabaseType dbType) {
         String result = null;
         if(date != null) {
             Instant instant = date.toInstant();
             ZoneId localZone = ZoneId.of(LOCAL_TIME_ZONE);
-            result = mysqlDateFormatter.format(LocalDateTime.ofInstant(instant, localZone));
+            if(dbType == DatabaseType.MYSQL) {
+                result = mysqlDateFormatter.format(LocalDateTime.ofInstant(instant, localZone));
+            } else {
+                result = pgDateFormatter.format(LocalDateTime.ofInstant(instant, localZone));
+            }
         }
         return result;
     }

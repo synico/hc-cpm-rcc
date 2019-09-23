@@ -76,7 +76,7 @@ public class DevicePullJob extends TimerDBReadJob {
         log.info("last polled value: " + lastPolledValue);
 
         if(lastPolledValue != null) {
-            super.updateLastPullValue(headers, lastPolledValue.toString());
+            super.updateLastPullValue(headers, DataUtil.convertDate2String(lastPolledValue, DataUtil.DatabaseType.POSTGRES));
         }
     }
 }
