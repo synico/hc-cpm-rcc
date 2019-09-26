@@ -5,6 +5,7 @@ create or replace view public.v_study as
         d.name,
         d.location,
         d.aet,
+        d.aet as device_name,
         d.device_type,
         d.org_name,
         null as pattern,
