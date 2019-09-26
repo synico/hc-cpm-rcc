@@ -18,15 +18,15 @@ create or replace view public.v_study as
         ps.study_date as last_study_time,
         s.next_local_study_id,
         ns.study_date as next_study_time,
-        s.study_start_time,
-        s.study_end_time,
+        s.study_start_time as start_time,
+        s.study_end_time as end_time,
         EXTRACT(EPOCH FROM (s.study_end_time - s.study_start_time)) as studyexposuretime,
         s.patient_sex,
         s.patient_age,
         s.patient_id,
         s.accession_number,
-        min(s.study_start_time) over( partition by s.study_date,s.aet ) as up_time,
-        max(s.study_end_time) over( partition by s.study_date,s.aet ) as down_time,
+        min(s.study_start_time) over( partition by date_trunc('day'::text, s.study_date),s.aet ) as up_time,
+        max(s.study_end_time) over( partition by date_trunc('day'::text, s.study_date),s.aet ) as down_time,
         s.target_region_count as protocolcount,
         s.published
         from study s left join device d on s.aet=d.aet
@@ -134,7 +134,7 @@ create or replace view public.v_exam as
             WHEN position('门诊12机房' in ris.actual_exam_place) > 0 THEN '门诊12机房'
             WHEN position('门诊' in ris.actual_exam_place) > 0 THEN '门诊机房'
             ELSE ris.actual_exam_place
-        END as post_exam_place,
+        END as actual_exam_place,
         CASE
             WHEN position('CT' in ris.actual_exam_place) > 0 THEN 'CT'
             WHEN position('MR' in ris.actual_exam_place) > 0 THEN 'MR'
@@ -160,4 +160,4 @@ create or replace view public.v_exam as
         ris.post_exam_approval_status
     from (select his.*,bpm.body_category from his_exam his left join (select distinct body_part,body_category from body_part_mapping) bpm on his.pre_exam_body_part=bpm.body_part) his
     full join (select ris.*,bpm.body_category from ris_exam ris left join (select distinct body_part,body_category from body_part_mapping) bpm on ris.exam_body_part=bpm.body_part) ris
-    on his.sheetid=ris.sheetid
+    on his.sheetid=ris.sheetid;
