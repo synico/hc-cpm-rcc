@@ -21,7 +21,7 @@ spring:
 custom:
     datasource:
         primary:
-            url: jdbc:postgresql://localhost:5432/rjyy_rcc
+            url: jdbc:postgresql://localhost:5432/cpm_rcc
             driverClassName: org.postgresql.Driver
             username: postgres
             password: root
