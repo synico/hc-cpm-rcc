@@ -2,6 +2,7 @@ create or replace view public.v_study as
     select s.id,
         to_char(s.study_date,'yyyy-MM-dd') as studydate,
         s.study_date as studydatetime,
+        extract(DOW from s.study_date) as weekday_num,
         d.name,
         d.location,
         d.aet,
