@@ -106,12 +106,12 @@ public class MRSeriePullJob extends TimerDBReadJob {
                         .distinct()
                         .count();
                 if(targetRegionCount > 1) {
-                    log.info("***************************************************************");
-                    log.info("study: {}, target_region: {}, target region count: {}",
+                    log.debug("***************************************************************");
+                    log.debug("study: {}, target_region: {}, target region count: {}",
                             tmpStudy.getLocalStudyId(),
                             serieSet.stream().map(mrse -> mrse.getProtocolName()).distinct().reduce((x, y) -> x + "," + y).get(),
                             targetRegionCount);
-                    log.info("***************************************************************");
+                    log.debug("***************************************************************");
                 }
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
 
@@ -152,6 +152,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 studyRepository.saveAll(studies);
             }
         }
+        // TODO END
 
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());

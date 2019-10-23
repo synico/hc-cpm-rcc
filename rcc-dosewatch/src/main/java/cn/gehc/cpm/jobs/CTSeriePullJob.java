@@ -7,6 +7,7 @@ import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
+import cn.gehc.cpm.util.SerieType;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
@@ -114,17 +115,19 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(serieSet.last()));
 
                 //to calculate target region count by serie
-                Long targetRegionCount = serieSet.stream().map(se -> se.getTargetRegion())
-                        .filter(targetRegion -> StringUtils.isNotBlank(targetRegion))
+                Long targetRegionCount = serieSet.stream()
+                        .filter(serie -> StringUtils.isNotBlank(serie.getTargetRegion()))
+                        .filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
+                        .map(serie -> serie.getTargetRegion())
                         .distinct()
                         .count();
                 if(targetRegionCount > 1) {
-                    log.info("***************************************************************");
-                    log.info("study: {}, target_region: {}, target region count: {}",
+                    log.debug("***************************************************************");
+                    log.debug("study: {}, target_region: {}, target region count: {}",
                             tmpStudy.getLocalStudyId(),
                             serieSet.stream().map(se -> se.getTargetRegion()).distinct().reduce((x, y) -> x + "," + y).get(),
                             targetRegionCount);
-                    log.info("***************************************************************");
+                    log.debug("***************************************************************");
                 }
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
                 log.debug("study: {}, target region count: {}", tmpStudy.getLocalStudyId(), tmpStudy.getTargetRegionCount());
@@ -166,6 +169,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 studyRepository.saveAll(studies);
             }
         }
+        //TODO END
 
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
