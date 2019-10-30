@@ -1,6 +1,8 @@
 package cn.gehc.cpm.util;
 
 import cn.gehc.cpm.domain.*;
+import java.math.BigDecimal;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,8 +181,15 @@ public class DataUtil {
         mrSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
         mrSerie.setProtocolName(getStringFromProperties(serieProps, "protocol_name"));
         mrSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
-        mrSerie.setAcquisitionDuration(getDoubleFromProperties(serieProps, "acquisition_duration"));
         mrSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
+
+        if(ManufacturerCode.SIEMENS.getMfCode().equals(getStringFromProperties(serieProps, "mf_code"))) {
+            // acquisition_duration of SIEMENS is "TA 01.23*11" or "TA 01:23*11"
+            String acquisitionDuration = getStringFromProperties(serieProps, "acquisition_duration");
+            mrSerie.setAcquisitionDuration(parseAcquisitionDuration(acquisitionDuration));
+        } else {
+            mrSerie.setAcquisitionDuration(getDoubleFromProperties(serieProps, "acquisition_duration"));
+        }
 
         return mrSerie;
     }
@@ -226,6 +235,35 @@ public class DataUtil {
                 .toInstant()
                 .plusSeconds(lastSerie.getExposureTime().longValue());
         return new Date(lastSerieInstant.toEpochMilli());
+    }
+
+    public static Double parseAcquisitionDuration(String duration) {
+        duration = duration.replace("TA ", "");
+        int times = 1;
+        BigDecimal acquisitionDuration = BigDecimal.ZERO;
+        String dStr = duration;
+        if(StringUtils.isNotBlank(duration) && duration.contains("*")) {
+            String durationList [] = duration.split("\\*");
+            if(durationList.length == 2) {
+                dStr = durationList[0];
+                times = Integer.parseInt(durationList[1]);
+            }
+        }
+        if(StringUtils.isNotBlank(dStr)) {
+            if(dStr.contains(".")) {
+                //second
+                acquisitionDuration = new BigDecimal(dStr);
+            }
+            if(dStr.contains(":")) {
+                //min:sec
+                String dStrList[] = dStr.split(":");
+                int min = Integer.parseInt(dStrList[0]);
+                int sec = Integer.parseInt(dStrList[1]);
+                acquisitionDuration = BigDecimal.valueOf(sec + min * 60);
+            }
+        }
+        BigDecimal parsedDuration = acquisitionDuration.multiply(BigDecimal.valueOf(times));
+        return parsedDuration.doubleValue();
     }
 
 }

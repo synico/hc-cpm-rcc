@@ -25,6 +25,12 @@ public class StudyCleanJob extends TimerDBReadJob {
     public void cleanStudies(@Headers Map<String, Object> headers, @Body Object body) {
         log.info("start to clean studies");
         List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
+
+        //Do nothing, if there isn't data selected from database
+        if(dataMap.size() == 0) {
+            return;
+        }
+
         Set<String> localStudyIdsInDW = new HashSet<>();
         Set<String> aets = new HashSet<>();
 
