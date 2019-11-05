@@ -32,6 +32,9 @@ public class CTStudy {
     @Column(name = "PROTOCOL_KEY")
     private Long protocolKey;
 
+    @Column(name = "PROTOCOL_NAME")
+    private String protocolName;
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

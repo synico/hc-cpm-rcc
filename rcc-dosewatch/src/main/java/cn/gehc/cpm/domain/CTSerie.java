@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
 @Data
 @Entity
@@ -56,6 +57,12 @@ public class CTSerie implements Comparable<CTSerie> {
 
     @Column(name = "target_region")
     private String targetRegion;
+
+    @Column(name = "start_slice_location")
+    private Double startSliceLocation;
+
+    @Column(name = "end_slice_location")
+    private Double endSliceLocation;
 
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)

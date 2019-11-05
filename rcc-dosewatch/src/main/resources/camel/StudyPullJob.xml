@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
         </setHeader>
@@ -43,8 +43,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from spiral_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -52,6 +55,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -62,7 +66,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>constantAngleSeriePullJob</constant>
         </setHeader>
@@ -104,8 +108,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 cas.exposure_time,
                 cas.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
                 from constant_angle_serie cas join ct_serie ctse on cas.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -113,6 +120,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -123,7 +131,7 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>stationarySeriePullJob</constant>
         </setHeader>
@@ -165,8 +173,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -174,6 +185,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -184,7 +196,7 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>cineSeriePullJob</constant>
         </setHeader>
@@ -226,8 +238,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 cse.exposure_time,
                 cse.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
                 from cine_serie cse join ct_serie ctse on cse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -235,6 +250,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -245,7 +261,7 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>sequencedSeriePullJob</constant>
         </setHeader>
@@ -287,8 +303,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from sequenced_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -296,6 +315,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -306,7 +326,7 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>smartprepSeriePullJob</constant>
         </setHeader>
@@ -348,8 +368,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from smartprep_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -357,6 +380,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -367,7 +391,7 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>undefinedSeriePullJob</constant>
         </setHeader>
@@ -409,8 +433,11 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 us.exposure_time,
                 us.dt_last_update,
+                pl.name as protocol_name,
                 (unix_timestamp(us.dt_last_update) + se.id) as joint_key
                 from undefined_serie us join ct_serie ctse on us.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -418,6 +445,7 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -428,7 +456,7 @@
     </route>
 
     <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>mrSeriePullJob</constant>
         </setHeader>
@@ -461,13 +489,18 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 m.code as mf_code,
-                IFNULL(mrse.acquisition_datetime, CONVERT(CAST(CONVERT(mrse.column_09,decimal(14)) AS CHAR), DATETIME)) as acquisition_datetime,
                 CASE
-                  WHEN 'SIEMENS'=m.code THEN mrse.column_02
-                  ELSE mrse.acquisition_duration/1000000
+                  WHEN mrse.column_09 is not null THEN CONVERT(CAST(CONVERT(mrse.column_09,decimal(14)) AS CHAR), DATETIME)
+                  WHEN mrse.acquisition_datetime is not null THEN mrse.acquisition_datetime
+                END as acquisition_datetime,
+                CASE
+                  WHEN 'SIEMENS'=m.code THEN IFNULL(mrse.column_02, 0)
+                  ELSE IFNULL(mrse.acquisition_duration, 0)/1000000
                 END as acquisition_duration,
                 mrse.protocol_key,
                 pl.name as protocol_name,
+                mrse.start_slice_location,
+                mrse.end_slice_location,
                 mrse.dt_last_update,
                 (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
                 from mr_serie mrse join serie se on mrse.id=se.id
@@ -478,7 +511,7 @@
                     join supported_device_model sdm on ae.sdm_key=sdm.id
                     join manufacturer m on sdm.manufacturer_key=m.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and (mrse.acquisition_datetime is not null or mrse.column_02 is not null)
+                and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
             order by joint_key asc limit 100?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="mrSeriePullJob" method="insertData"/>
@@ -487,7 +520,7 @@
     </route>
 
     <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>xaSeriePullJob</constant>
         </setHeader>
@@ -537,7 +570,7 @@
     </route>
 
     <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>devicePullJob</constant>
         </setHeader>
@@ -568,7 +601,7 @@
     </route>
 
     <route id="studyCleanJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>studyCleanJob</constant>
         </setHeader>

@@ -69,7 +69,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
             }
         }
 
-        if(ctSerieSet.size() > 0) {
+        if(ctStudySet.size() > 0) {
             ctStudyRepository.saveAll(ctStudySet);
         }
 

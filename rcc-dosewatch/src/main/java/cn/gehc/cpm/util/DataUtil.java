@@ -135,8 +135,22 @@ public class DataUtil {
         ctStudy.setExamCTDI(getDoubleFromProperties(studyProps, "exam_ctdi"));
         ctStudy.setNumSeries(getIntegerFromProperties(studyProps, "num_series"));
         ctStudy.setProtocolKey(getLongFromProperties(studyProps, "protocol_key"));
+        ctStudy.setProtocolName(getStringFromProperties(studyProps, "protocol_name"));
 
         return ctStudy;
+    }
+
+    public static MRStudy convertProps2MRStudy(Map<String, Object> studyProps) {
+        MRStudy mrStudy = new MRStudy();
+        StudyKey studyKey = new StudyKey();
+
+        studyKey.setId(getLongFromProperties(studyProps, "local_studyId"));
+        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        mrStudy.setStudyKey(studyKey);
+
+        mrStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+
+        return mrStudy;
     }
 
     public static CTSerie convertProps2CTSerie(Map<String, Object> serieProps) {
@@ -159,6 +173,8 @@ public class DataUtil {
         ctSerie.setDlpSSDE(getDoubleFromProperties(serieProps, "dlp_ssde"));
         ctSerie.setEndSeriesTime(getDateFromProperties(serieProps, "end_series_time"));
         ctSerie.setExposureTime(getFloatFromProperties(serieProps, "exposure_time"));
+        ctSerie.setStartSliceLocation(getDoubleFromProperties(serieProps, "start_slice_location"));
+        ctSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         return ctSerie;
@@ -181,6 +197,8 @@ public class DataUtil {
         mrSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
         mrSerie.setProtocolName(getStringFromProperties(serieProps, "protocol_name"));
         mrSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
+        mrSerie.setStartSliceLocation(getDoubleFromProperties(serieProps, "start_slice_location"));
+        mrSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
         mrSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         if(ManufacturerCode.SIEMENS.getMfCode().equals(getStringFromProperties(serieProps, "mf_code"))) {
