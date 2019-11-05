@@ -46,6 +46,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
@@ -111,6 +112,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 cas.exposure_time,
+                IFNULL(cas.dlp, 0),
                 cas.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
@@ -177,6 +179,7 @@
                 ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                sse.dlp,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
@@ -241,6 +244,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 cse.exposure_time,
+                cse.dlp,
                 cse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
@@ -306,6 +310,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
@@ -371,6 +376,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
@@ -436,6 +442,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 us.exposure_time,
+                us.dlp,
                 us.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(us.dt_last_update) + se.id) as joint_key

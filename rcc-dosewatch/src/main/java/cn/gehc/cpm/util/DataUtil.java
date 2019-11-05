@@ -175,6 +175,7 @@ public class DataUtil {
         ctSerie.setExposureTime(getFloatFromProperties(serieProps, "exposure_time"));
         ctSerie.setStartSliceLocation(getDoubleFromProperties(serieProps, "start_slice_location"));
         ctSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
+        ctSerie.setDlp(getDoubleFromProperties(serieProps, "dlp"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         return ctSerie;

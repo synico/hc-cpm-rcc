@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
         </setHeader>
@@ -46,6 +46,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
@@ -66,7 +67,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>constantAngleSeriePullJob</constant>
         </setHeader>
@@ -111,6 +112,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 cas.exposure_time,
+                IFNULL(cas.dlp, 0),
                 cas.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
@@ -131,7 +133,7 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>stationarySeriePullJob</constant>
         </setHeader>
@@ -177,6 +179,7 @@
                 ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                sse.dlp,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
@@ -196,7 +199,7 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>cineSeriePullJob</constant>
         </setHeader>
@@ -241,6 +244,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 cse.exposure_time,
+                cse.dlp,
                 cse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
@@ -261,7 +265,7 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>sequencedSeriePullJob</constant>
         </setHeader>
@@ -306,6 +310,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
@@ -326,7 +331,7 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>smartprepSeriePullJob</constant>
         </setHeader>
@@ -371,6 +376,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
@@ -391,7 +397,7 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>undefinedSeriePullJob</constant>
         </setHeader>
@@ -436,6 +442,7 @@
                 ctse.start_slice_location,
                 ctse.end_slice_location,
                 us.exposure_time,
+                us.dlp,
                 us.dt_last_update,
                 pl.name as protocol_name,
                 (unix_timestamp(us.dt_last_update) + se.id) as joint_key
@@ -456,7 +463,7 @@
     </route>
 
     <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>mrSeriePullJob</constant>
         </setHeader>
@@ -520,7 +527,7 @@
     </route>
 
     <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>xaSeriePullJob</constant>
         </setHeader>
@@ -570,7 +577,7 @@
     </route>
 
     <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>devicePullJob</constant>
         </setHeader>
@@ -601,7 +608,7 @@
     </route>
 
     <route id="studyCleanJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3m&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>studyCleanJob</constant>
         </setHeader>

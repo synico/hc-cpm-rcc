@@ -64,6 +64,9 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "end_slice_location")
     private Double endSliceLocation;
 
+    @Column(name = "dlp")
+    private Double dlp;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
