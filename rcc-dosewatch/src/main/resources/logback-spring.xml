@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <contextName>logback</contextName>
-
-    <timestamp key="bySecond" datePattern="yyyyMMddHHmmss"/>
+<configuration scan="true">
+    <contextName>rcc-dosewatch</contextName>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./log/dw_datacollect.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>300MB</totalSizeCap>
+        </rollingPolicy>
+
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
-        <file>./log/dw_datacollect_${bySecond}.log</file>
-        <append>true</append>
     </appender>
+
     <root level="INFO">
         <appender-ref ref="console"/>
         <appender-ref ref="file" />
     </root>
-
 </configuration>

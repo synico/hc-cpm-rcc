@@ -3,7 +3,7 @@
 <routes xmlns="http://camel.apache.org/schema/spring">
     
     <route id="ReqCancelRequestPullJob">
-        <from uri="timer://HISDataPullJob?fixedRate=true&amp;period=15s&amp;delay=10s"/>
+        <from uri="timer://HISDataPullJob?fixedRate=true&amp;period=1m&amp;delay=10s"/>
         <setHeader headerName="JobName">
             <constant>ReqCancelRequestPullJob</constant>
         </setHeader>

@@ -52,7 +52,7 @@ public class StudyCleanJob extends TimerDBReadJob {
         List<Study> localStudies = studyRepository.findByAETsAndStudyDateChar(aets, todayStr);
         List<Study> studies2Delete = new ArrayList<>();
         for(Study study : localStudies) {
-            log.info("study: {} and published: {}", study.getLocalStudyId(), study.getPublished());
+            log.debug("study: {} and published: {}", study.getLocalStudyId(), study.getPublished());
             if(localStudyIdsInDW.contains(study.getLocalStudyId())) {
                 //do nothing
             } else {
