@@ -32,7 +32,7 @@ public class XASeriePullJob extends TimerDBReadJob {
   private XASerieRepository xaSerieRepository;
 
   public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
-    log.info("start to insert data to mr_serie");
+    log.info("start to insert data to xa_serie");
     List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
     Set<Study> studySet = new HashSet<>();
     Set<XASerie> xaSerieSet = new HashSet<>();

@@ -1,10 +1,13 @@
 package cn.gehc.cpm.domain;
 
-import lombok.Data;
-
-import javax.persistence.*;
 import java.util.Date;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import lombok.Data;
 
 @Data
 @Entity
@@ -66,6 +69,9 @@ public class CTSerie implements Comparable<CTSerie> {
 
     @Column(name = "dlp")
     private Double dlp;
+
+    @Column(name = "series_description")
+    private String seriesDescription;
 
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,5 +1,6 @@
 package cn.gehc.cpm.domain;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -68,6 +69,9 @@ public class Study implements Comparable<Study> {
     // 1 = published, 2 = marked for deletion
     @Column(name = "PUBLISHED")
     private Integer published = StudyStatus.PUBLISHED.getStatusId();
+
+    @Column(name = "HAS_REPEATED_SERIES")
+    private Boolean hasRepeatedSeries = Boolean.FALSE;
 
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)

@@ -52,6 +52,9 @@ public class MRSerie implements Comparable<MRSerie> {
     @Column(name = "end_slice_location")
     private Double endSliceLocation;
 
+    @Column(name = "series_description")
+    private String seriesDescription;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

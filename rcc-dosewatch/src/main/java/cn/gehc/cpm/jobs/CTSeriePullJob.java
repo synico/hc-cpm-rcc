@@ -132,6 +132,10 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
                 log.debug("study: {}, target region count: {}", tmpStudy.getLocalStudyId(), tmpStudy.getTargetRegionCount());
 
+                Boolean hasRepeatedSeries = this.hasRepeatedSeries(serieSet);
+                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
+
+
                 study2Update.add(tmpStudy);
             }
         }
@@ -174,5 +178,27 @@ public class CTSeriePullJob extends TimerDBReadJob {
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
         }
+    }
+
+    private Boolean hasRepeatedSeries(Set<CTSerie> ctSeries) {
+        List<CTSerie> baseSeries = new ArrayList<>(ctSeries.size());
+        for(CTSerie ctSerie : ctSeries) {
+            ctSeries.stream().filter(serie -> serie.getLocalSerieId() != ctSerie.getLocalSerieId())
+                .filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
+                .forEach(baseSeries::add);
+            for(CTSerie baseSerie : baseSeries) {
+                if(ctSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
+                    && ctSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
+                    log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
+                    return Boolean.TRUE;
+                }
+                if(ctSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
+                    && ctSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
+                    log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
+                    return Boolean.TRUE;
+                }
+            }
+        }
+        return Boolean.FALSE;
     }
 }

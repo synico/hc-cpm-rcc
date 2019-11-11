@@ -176,6 +176,7 @@ public class DataUtil {
         ctSerie.setStartSliceLocation(getDoubleFromProperties(serieProps, "start_slice_location"));
         ctSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
         ctSerie.setDlp(getDoubleFromProperties(serieProps, "dlp"));
+        ctSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         return ctSerie;
@@ -200,6 +201,7 @@ public class DataUtil {
         mrSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
         mrSerie.setStartSliceLocation(getDoubleFromProperties(serieProps, "start_slice_location"));
         mrSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
+        mrSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
         mrSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         if(ManufacturerCode.SIEMENS.getMfCode().equals(getStringFromProperties(serieProps, "mf_code"))) {

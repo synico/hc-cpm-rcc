@@ -49,6 +49,7 @@
                 sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from spiral_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -57,6 +58,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -115,6 +117,7 @@
                 IFNULL(cas.dlp, 0),
                 cas.dt_last_update,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
                 from constant_angle_serie cas join ct_serie ctse on cas.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -123,6 +126,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -181,6 +185,7 @@
                 sse.dt_last_update,
                 sse.dlp,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -189,6 +194,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -247,6 +253,7 @@
                 cse.dlp,
                 cse.dt_last_update,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
                 from cine_serie cse join ct_serie ctse on cse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -255,6 +262,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -313,6 +321,7 @@
                 sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from sequenced_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -321,6 +330,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -379,6 +389,7 @@
                 sse.dlp,
                 sse.dt_last_update,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from smartprep_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -387,6 +398,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -445,6 +457,7 @@
                 us.dlp,
                 us.dt_last_update,
                 pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(us.dt_last_update) + se.id) as joint_key
                 from undefined_serie us join ct_serie ctse on us.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -453,6 +466,7 @@
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 100?dataSource=dwDS"/>
@@ -508,6 +522,7 @@
                 pl.name as protocol_name,
                 mrse.start_slice_location,
                 mrse.end_slice_location,
+                sd.name as series_description,
                 mrse.dt_last_update,
                 (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
                 from mr_serie mrse join serie se on mrse.id=se.id
@@ -517,6 +532,7 @@
                     join patient pt on s.patient_key=pt.id
                     join supported_device_model sdm on ae.sdm_key=sdm.id
                     join manufacturer m on sdm.manufacturer_key=m.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
             order by joint_key asc limit 100?dataSource=dwDS"/>
