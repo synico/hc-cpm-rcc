@@ -232,6 +232,7 @@ create or replace view public.v_his_exam as
 create or replace view public.v_ris_exam as
     select
         ris.requisition_id,
+        ris.patient_id,
         ris.exam_date,
         ris.post_exam_out_date,
         CASE

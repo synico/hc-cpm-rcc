@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob-dwOP" >
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-spiralSeriePullJob</constant>
         </setHeader>
@@ -43,8 +43,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from spiral_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -52,9 +57,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -62,7 +69,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-constantAngleSeriePullJob</constant>
         </setHeader>
@@ -104,8 +111,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 cas.exposure_time,
+                IFNULL(cas.dlp, 0),
                 cas.dt_last_update,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
                 from constant_angle_serie cas join ct_serie ctse on cas.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -113,9 +125,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -123,7 +137,7 @@
     </route>
 
     <route id="stationarySeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-stationarySeriePullJob</constant>
         </setHeader>
@@ -165,8 +179,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
                 sse.dt_last_update,
+                sse.dlp,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -174,9 +193,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -184,7 +205,7 @@
     </route>
 
     <route id="cineSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-cineSeriePullJob</constant>
         </setHeader>
@@ -226,8 +247,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 cse.exposure_time,
+                cse.dlp,
                 cse.dt_last_update,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
                 from cine_serie cse join ct_serie ctse on cse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -235,9 +261,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -245,7 +273,7 @@
     </route>
 
     <route id="sequencedSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-sequencedSeriePullJob</constant>
         </setHeader>
@@ -287,8 +315,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from sequenced_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -296,9 +329,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -306,7 +341,7 @@
     </route>
 
     <route id="smartprepSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-smartprepSeriePullJob</constant>
         </setHeader>
@@ -348,8 +383,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 sse.exposure_time,
+                sse.dlp,
                 sse.dt_last_update,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from smartprep_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -357,9 +397,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -367,7 +409,7 @@
     </route>
 
     <route id="undefinedSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-undefinedSeriePullJob</constant>
         </setHeader>
@@ -409,8 +451,13 @@
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
                 ctse.end_series_time,
+                ctse.start_slice_location,
+                ctse.end_slice_location,
                 us.exposure_time,
+                us.dlp,
                 us.dt_last_update,
+                pl.name as protocol_name,
+                sd.name as series_description,
                 (unix_timestamp(us.dt_last_update) + se.id) as joint_key
                 from undefined_serie us join ct_serie ctse on us.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -418,9 +465,11 @@
                     join ct_study cts on s.id=cts.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
+                    join protocol pl on cts.protocol_key=pl.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -428,7 +477,7 @@
     </route>
 
     <route id="mrSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-mrSeriePullJob</constant>
         </setHeader>
@@ -460,13 +509,20 @@
                 se.study_key,
                 se.dtype as serie_dtype,
                 se.series_date,
-                mrse.acquisition_datetime,
+                m.code as mf_code,
                 CASE
-                  WHEN mrse.acquisition_duration > 1000000 THEN mrse.acquisition_duration/1000000
-                  ELSE mrse.acquisition_duration
+                  WHEN mrse.column_09 is not null THEN CONVERT(CAST(CONVERT(mrse.column_09,decimal(14)) AS CHAR), DATETIME)
+                  WHEN mrse.acquisition_datetime is not null THEN mrse.acquisition_datetime
+                END as acquisition_datetime,
+                CASE
+                  WHEN 'SIEMENS'=m.code THEN IFNULL(mrse.column_02, 0)
+                  ELSE IFNULL(mrse.acquisition_duration, 0)/1000000
                 END as acquisition_duration,
                 mrse.protocol_key,
                 pl.name as protocol_name,
+                mrse.start_slice_location,
+                mrse.end_slice_location,
+                sd.name as series_description,
                 mrse.dt_last_update,
                 (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
                 from mr_serie mrse join serie se on mrse.id=se.id
@@ -474,9 +530,12 @@
                     join ae on ae.id=s.ae_key
                     join protocol pl on mrse.protocol_key=pl.id
                     join patient pt on s.patient_key=pt.id
+                    join supported_device_model sdm on ae.sdm_key=sdm.id
+                    join manufacturer m on sdm.manufacturer_key=m.id
+                    join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and mrse.acquisition_datetime is not null and mrse.acquisition_duration is not null
-            order by joint_key asc limit 500?dataSource=dwOP"/>
+                and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
+            order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="mrSeriePullJob" method="insertData"/>
         <bean ref="mrSeriePullJob" method="endDBReadJob"/>
@@ -484,7 +543,7 @@
     </route>
 
     <route id="xaSeriePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=1m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-xaSeriePullJob</constant>
         </setHeader>
@@ -526,7 +585,7 @@
                         join patient pt on s.patient_key=pt.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and se.series_date is not null and xase.exposure_time is not null
-                order by joint_key asc limit 500?dataSource=dwOP"/>
+                order by joint_key asc limit 100?dataSource=dwOP"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="xaSeriePullJob" method="insertData"/>
         <bean ref="xaSeriePullJob" method="endDBReadJob"/>
@@ -534,7 +593,7 @@
     </route>
 
     <route id="devicePullJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-devicePullJob</constant>
         </setHeader>
@@ -565,7 +624,7 @@
     </route>
 
     <route id="studyCleanJob-dwOP">
-        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=60s&amp;delay=1s"/>
+        <from uri="timer://PullData-dwOP?fixedRate=true&amp;period=3m&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>OP-studyCleanJob</constant>
         </setHeader>

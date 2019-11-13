@@ -15,3 +15,9 @@ drop index ris_exam_date_idx;
 create index ris_exam_date_idx on ris_exam (exam_date DESC NULLS FIRST);
 
 create index ris_device_type_idx on ris_exam (device_type);
+
+drop index pre_exam_schedule_date_idx;
+create index pre_exam_schedule_date_idx on his_exam(pre_exam_schedule_date);
+
+drop index exam_date_idx;
+create index exam_date_idx on ris_exam(exam_date);
