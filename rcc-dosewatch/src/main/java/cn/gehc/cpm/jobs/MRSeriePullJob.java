@@ -139,6 +139,9 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 }
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
 
+                Boolean hasRepeatedSeries = this.hasRepeatedSeries(serieSet);
+                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
+
                 study2Update.add(tmpStudy);
             }
         }
@@ -185,6 +188,27 @@ public class MRSeriePullJob extends TimerDBReadJob {
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
         }
+    }
+
+    private Boolean hasRepeatedSeries(Set<MRSerie> mrSeries) {
+        List<MRSerie> baseSeries = new ArrayList<>(mrSeries.size());
+        for(MRSerie mrSerie : mrSeries) {
+            mrSeries.stream().filter(serie -> serie.getLocalSerieId() != mrSerie.getLocalSerieId())
+                .forEach(baseSeries::add);
+            for(MRSerie baseSerie : baseSeries) {
+                if(mrSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
+                    && mrSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
+                    log.info("study {} has repeated series", mrSerie.getLocalStudyKey());
+                    return Boolean.TRUE;
+                }
+                if(mrSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
+                    && mrSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
+                    log.info("study {} has repeated series", mrSerie.getLocalStudyKey());
+                    return Boolean.TRUE;
+                }
+            }
+        }
+        return Boolean.FALSE;
     }
 
 }

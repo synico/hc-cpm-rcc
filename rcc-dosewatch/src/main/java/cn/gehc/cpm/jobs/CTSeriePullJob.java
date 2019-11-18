@@ -135,7 +135,6 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 Boolean hasRepeatedSeries = this.hasRepeatedSeries(serieSet);
                 tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
 
-
                 study2Update.add(tmpStudy);
             }
         }
