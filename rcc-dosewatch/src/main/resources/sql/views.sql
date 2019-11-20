@@ -30,7 +30,9 @@ create or replace view public.v_study as
         min(s.study_start_time) over( partition by date_trunc('day'::text, s.study_date),s.aet ) as up_time,
         max(s.study_end_time) over( partition by date_trunc('day'::text, s.study_date),s.aet ) as down_time,
         s.target_region_count as protocolcount,
-        s.published
+        s.published,
+        COALESCE(d.prepare_time1, 0) * 60 as prepare_sec1,
+        COALESCE(d.prepare_time2, 0) * 60 as prepare_sec2
         from study s left join device d on s.aet=d.aet
         left join study ps on s.prev_local_study_id = ps.local_study_id
         left join study ns on s.next_local_study_id = ns.local_study_id
