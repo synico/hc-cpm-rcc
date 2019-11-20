@@ -8,6 +8,7 @@ import cn.gehc.cpm.repository.CTStudyRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import cn.gehc.cpm.util.SerieType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
@@ -132,7 +133,11 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
                 log.debug("study: {}, target region count: {}", tmpStudy.getLocalStudyId(), tmpStudy.getTargetRegionCount());
 
-                Boolean hasRepeatedSeries = this.hasRepeatedSeries(serieSet);
+                Set<CTSerie> filteredSeries = serieSet.stream()
+                    .filter(serie -> serie.getStartSliceLocation() !=null)
+                    .filter(serie -> serie.getEndSliceLocation() != null)
+                    .collect(Collectors.toSet());
+                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
                 tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
 
                 study2Update.add(tmpStudy);
@@ -179,25 +184,66 @@ public class CTSeriePullJob extends TimerDBReadJob {
         }
     }
 
+    /**
+     * For CT series, we need to group series by type(dtype), then check the scan range
+     * to define if there are repeated series in the study
+     * @param ctSeries
+     * @return Boolean
+     */
     private Boolean hasRepeatedSeries(Set<CTSerie> ctSeries) {
-        List<CTSerie> baseSeries = new ArrayList<>(ctSeries.size());
-        for(CTSerie ctSerie : ctSeries) {
-            ctSeries.stream().filter(serie -> serie.getLocalSerieId() != ctSerie.getLocalSerieId())
-                .filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
-                .forEach(baseSeries::add);
-            for(CTSerie baseSerie : baseSeries) {
-                if(ctSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
-                    && ctSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
-                    log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
-                    return Boolean.TRUE;
+        Map<String, List<CTSerie>> seriesByType = new HashMap<>();
+        ctSeries.stream().filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
+            .forEach(serie -> {
+                List<CTSerie> serieList = seriesByType.get(serie.getDType());
+                if(serieList == null) {
+                    serieList = new ArrayList<>();
                 }
-                if(ctSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
-                    && ctSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
-                    log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
-                    return Boolean.TRUE;
+                serieList.add(serie);
+                seriesByType.put(serie.getDType(), serieList);
+            });
+
+        for(Map.Entry<String, List<CTSerie>> seriesEntry : seriesByType.entrySet()) {
+            List<CTSerie> ctSerieList = seriesEntry.getValue();
+            List<CTSerie> series2Compare;
+            if(ctSerieList.size() > 1) {
+                for(CTSerie baseSerie : ctSerieList) {
+                    series2Compare = ctSerieList.stream()
+                        .filter(serie -> baseSerie.getLocalSerieId() != serie.getLocalSerieId())
+                        .collect(Collectors.toList());
+                    for(CTSerie ctSerie : series2Compare) {
+                        //start slice location
+                        if(ctSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
+                            && ctSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
+                            log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
+                            if(log.isDebugEnabled()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                try {
+                                    log.debug("base serie: {}", objectMapper.writeValueAsString(baseSerie));
+                                    log.debug("current serie: {}", objectMapper.writeValueAsString(ctSerie));
+                                } catch(Exception ex) {
+                                }
+                            }
+                            return Boolean.TRUE;
+                        }
+                        //end slice location
+                        if(ctSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
+                            && ctSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
+                            log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
+                            if(log.isDebugEnabled()) {
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                try {
+                                    log.debug("base serie: {}", objectMapper.writeValueAsString(baseSerie));
+                                    log.debug("current serie: {}", objectMapper.writeValueAsString(ctSerie));
+                                } catch(Exception ex) {
+                                }
+                            }
+                            return Boolean.TRUE;
+                        }
+                    }
                 }
             }
         }
+
         return Boolean.FALSE;
     }
 }
