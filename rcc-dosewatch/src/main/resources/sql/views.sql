@@ -227,8 +227,11 @@ create or replace view public.v_his_exam as
             WHEN position('MR' in his.pre_exam_device_type) > 0 THEN 'MR'
             ELSE his.pre_exam_device_type
         END as pre_exam_device_type,
-        his.pre_exam_method
-    from his_exam his;
+        his.pre_exam_method,
+        his.pre_exam_body_part,
+        bpm.body_category
+    from his_exam his left join (select distinct body_part,body_category from body_part_mapping) bpm
+      on his.pre_exam_body_part=bpm.body_part;
 
 
 create or replace view public.v_ris_exam as
@@ -293,5 +296,8 @@ create or replace view public.v_ris_exam as
         ris.approve_report_time,
         ris.post_exam_reviewer_id,
         ris.post_exam_reviewer_name,
-        ris.post_exam_approval_status
-    from ris_exam ris;
+        ris.post_exam_approval_status,
+        ris.exam_body_part,
+        bpm.body_category
+    from ris_exam ris left join (select distinct body_part,body_category from body_part_mapping) bpm
+      on ris.pre_exam_body_part=bpm.body_part;
