@@ -133,12 +133,12 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
                 log.debug("study: {}, target region count: {}", tmpStudy.getLocalStudyId(), tmpStudy.getTargetRegionCount());
 
+                //mark repeated series
                 Set<CTSerie> filteredSeries = serieSet.stream()
                     .filter(serie -> serie.getStartSliceLocation() !=null)
                     .filter(serie -> serie.getEndSliceLocation() != null)
                     .collect(Collectors.toSet());
-                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
-                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
+                this.hasRepeatedSeries(filteredSeries);
 
                 study2Update.add(tmpStudy);
             }
@@ -190,7 +190,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
      * @param ctSeries
      * @return Boolean
      */
-    private Boolean hasRepeatedSeries(Set<CTSerie> ctSeries) {
+    private void hasRepeatedSeries(Set<CTSerie> ctSeries) {
         Map<String, List<CTSerie>> seriesByType = new HashMap<>();
         ctSeries.stream().filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
             .forEach(serie -> {
@@ -205,6 +205,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
         for(Map.Entry<String, List<CTSerie>> seriesEntry : seriesByType.entrySet()) {
             List<CTSerie> ctSerieList = seriesEntry.getValue();
             List<CTSerie> series2Compare;
+            Set<CTSerie> series2Update = new HashSet<>();
             if(ctSerieList.size() > 1) {
                 for(CTSerie baseSerie : ctSerieList) {
                     series2Compare = ctSerieList.stream()
@@ -223,7 +224,10 @@ public class CTSeriePullJob extends TimerDBReadJob {
                                 } catch(Exception ex) {
                                 }
                             }
-                            return Boolean.TRUE;
+                            baseSerie.setIsRepeated(Boolean.TRUE);
+                            ctSerie.setIsRepeated(Boolean.TRUE);
+                            series2Update.add(baseSerie);
+                            series2Update.add(ctSerie);
                         }
                         //end slice location
                         if(ctSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
@@ -237,13 +241,17 @@ public class CTSeriePullJob extends TimerDBReadJob {
                                 } catch(Exception ex) {
                                 }
                             }
-                            return Boolean.TRUE;
+                            baseSerie.setIsRepeated(Boolean.TRUE);
+                            ctSerie.setIsRepeated(Boolean.TRUE);
+                            series2Update.add(baseSerie);
+                            series2Update.add(ctSerie);
                         }
                     }
                 }
             }
+            if(series2Update.size() > 1) {
+                ctSerieRepository.saveAll(series2Update);
+            }
         }
-
-        return Boolean.FALSE;
     }
 }

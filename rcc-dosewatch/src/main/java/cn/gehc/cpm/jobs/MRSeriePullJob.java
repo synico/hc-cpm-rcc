@@ -140,12 +140,12 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 }
                 tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
 
+                //mark repeated series
                 Set<MRSerie> filteredSeries = serieSet.stream()
                     .filter(serie -> serie.getStartSliceLocation() !=null)
                     .filter(serie -> serie.getEndSliceLocation() != null)
                     .collect(Collectors.toSet());
-                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
-                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
+                this.hasRepeatedSeries(filteredSeries);
 
                 study2Update.add(tmpStudy);
             }

@@ -300,4 +300,4 @@ create or replace view public.v_ris_exam as
         ris.exam_body_part,
         bpm.body_category
     from ris_exam ris left join (select distinct body_part,body_category from body_part_mapping) bpm
-      on ris.pre_exam_body_part=bpm.body_part;
+      on ris.exam_body_part=bpm.body_part;

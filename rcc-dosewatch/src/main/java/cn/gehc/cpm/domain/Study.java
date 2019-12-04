@@ -70,9 +70,6 @@ public class Study implements Comparable<Study> {
     @Column(name = "PUBLISHED")
     private Integer published = StudyStatus.PUBLISHED.getStatusId();
 
-    @Column(name = "HAS_REPEATED_SERIES")
-    private Boolean hasRepeatedSeries = Boolean.FALSE;
-
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

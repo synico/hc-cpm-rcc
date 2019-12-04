@@ -55,6 +55,9 @@ public class MRSerie implements Comparable<MRSerie> {
     @Column(name = "series_description")
     private String seriesDescription;
 
+    @Column(name = "is_repeated")
+    private Boolean isRepeated = Boolean.FALSE;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
