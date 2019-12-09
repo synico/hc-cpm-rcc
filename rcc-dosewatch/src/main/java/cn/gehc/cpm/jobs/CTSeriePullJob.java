@@ -101,19 +101,30 @@ public class CTSeriePullJob extends TimerDBReadJob {
         for(Study tmpStudy : studyList) {
             TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(tmpStudy.getLocalStudyId());
             if(serieSet != null && serieSet.size() > 0) {
-                CTSerie lastCTSerie = serieSet.last();
-                CTSerie firstCTSerie = serieSet.first();
-                if(lastCTSerie == null || lastCTSerie.getSeriesDate() == null || lastCTSerie.getExposureTime() == null) {
-                    return;
+                CTSerie firstCTSerie = null, lastCTSerie = null;
+                Iterator<CTSerie> ascItr = serieSet.iterator();
+                while(ascItr.hasNext()) {
+                    CTSerie tmpSerie = ascItr.next();
+                    if(tmpSerie != null && tmpSerie.getSeriesDate() != null) {
+                        firstCTSerie = tmpSerie;
+                        break;
+                    }
                 }
-                if(firstCTSerie == null || firstCTSerie.getSeriesDate() == null || firstCTSerie.getExposureTime() == null) {
-                    return;
+                Iterator<CTSerie> descItr = serieSet.descendingIterator();
+                while (descItr.hasNext()) {
+                    CTSerie tmpSerie = descItr.next();
+                    if(tmpSerie != null
+                        && tmpSerie.getSeriesDate() != null
+                        && tmpSerie.getExposureTime() != null) {
+                        lastCTSerie = tmpSerie;
+                        break;
+                    }
                 }
 
                 //update study start time
                 tmpStudy.setStudyStartTime(firstCTSerie.getSeriesDate());
                 //update study end time
-                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(serieSet.last()));
+                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastCTSerie));
 
                 //to calculate target region count by serie
                 Long targetRegionCount = serieSet.stream()

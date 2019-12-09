@@ -102,19 +102,30 @@ public class MRSeriePullJob extends TimerDBReadJob {
         for(Study tmpStudy : studyList) {
             TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(tmpStudy.getLocalStudyId());
             if(serieSet != null && serieSet.size() > 0) {
-                MRSerie lastMRSerie = serieSet.last();
-                MRSerie firstMRSerie = serieSet.first();
-                if(lastMRSerie == null || lastMRSerie.getSeriesDate() == null || lastMRSerie.getAcquisitionDuration() == null) {
-                    return;
+                MRSerie firstMRSerie = null, lastMRSerie = null;
+                Iterator<MRSerie> ascItr = serieSet.iterator();
+                while (ascItr.hasNext()) {
+                    MRSerie tmpSerie = ascItr.next();
+                    if(tmpSerie != null && tmpSerie.getAcquisitionDatetime() != null) {
+                        firstMRSerie = tmpSerie;
+                        break;
+                    }
                 }
-                if(firstMRSerie == null || firstMRSerie.getSeriesDate() == null || firstMRSerie.getAcquisitionDuration() == null) {
-                    return;
+                Iterator<MRSerie> descItr = serieSet.descendingIterator();
+                while(descItr.hasNext()) {
+                    MRSerie tmpSerie = descItr.next();
+                    if(tmpSerie != null
+                        && tmpSerie.getAcquisitionDatetime() != null
+                        && tmpSerie.getAcquisitionDuration() != null) {
+                        lastMRSerie = tmpSerie;
+                        break;
+                    }
                 }
 
                 //update study start time
-                tmpStudy.setStudyStartTime(firstMRSerie.getSeriesDate());
+                tmpStudy.setStudyStartTime(firstMRSerie.getAcquisitionDatetime());
                 //update study end time
-                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(serieSet.last()));
+                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastMRSerie));
                 study2Update.add(tmpStudy);
 
                 //update protocol_key and protocol_name by first serie of MR study

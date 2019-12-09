@@ -70,6 +70,12 @@ public class Study implements Comparable<Study> {
     @Column(name = "PUBLISHED")
     private Integer published = StudyStatus.PUBLISHED.getStatusId();
 
+    @Column(name = "SD_KEY")
+    private Integer studyDescKey;
+
+    @Column(name = "STUDY_DESCRIPTION")
+    private String studyDescription;
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

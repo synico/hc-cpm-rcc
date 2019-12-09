@@ -117,6 +117,8 @@ public class DataUtil {
         study.setStudyId(getStringFromProperties(studyProps, "study_id"));
         study.setStudyInstanceUid(getStringFromProperties(studyProps, "study_instance_uid"));
         study.setStudyDate(getDateFromProperties(studyProps, "study_date"));
+        study.setStudyDescKey(getIntegerFromProperties(studyProps, "sd_key"));
+        study.setStudyDescription(getStringFromProperties(studyProps, "study_description"));
 
         return study;
     }
@@ -149,8 +151,25 @@ public class DataUtil {
         mrStudy.setStudyKey(studyKey);
 
         mrStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+        //For protocol key and protocol description will be retrieved from 1st serie
 
         return mrStudy;
+    }
+
+    public static XAStudy convertProps2XAStudy(Map<String, Object> studyProps) {
+        XAStudy xaStudy = new XAStudy();
+        StudyKey studyKey = new StudyKey();
+
+        studyKey.setId(getLongFromProperties(studyProps, "local_studyId"));
+        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        xaStudy.setStudyKey(studyKey);
+
+        xaStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+        xaStudy.setDap(getDoubleFromProperties(studyProps, "dap"));
+        xaStudy.setFluoroDap(getDoubleFromProperties(studyProps, "fluoro_dap"));
+        xaStudy.setRecordDap(getDoubleFromProperties(studyProps, "record_dap"));
+
+        return xaStudy;
     }
 
     public static CTSerie convertProps2CTSerie(Map<String, Object> serieProps) {
@@ -225,13 +244,19 @@ public class DataUtil {
 
         xaSerie.setLocalStudyKey(getStringFromProperties(serieProps, "local_study_id"));
         xaSerie.setLocalSerieId(getStringFromProperties(serieProps, "local_serie_id"));
-        xaSerie.setProtocolKey(getLongFromProperties(serieProps, "protocol_key"));
         xaSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
         xaSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
         xaSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
         xaSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
         xaSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
         xaSerie.setExposureTime(getFloatFromProperties(serieProps,"exposure_time"));
+        xaSerie.setTargetRegion(getStringFromProperties(serieProps, "target_region"));
+        xaSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
+        xaSerie.setProtocolKey(getLongFromProperties(serieProps, "protocol_key"));
+        xaSerie.setProtocolName(getStringFromProperties(serieProps, "protocol_name"));
+        xaSerie.setSerieType(getStringFromProperties(serieProps, "serie_type"));
+        xaSerie.setSeriesSubType(getStringFromProperties(serieProps, "series_sub_type"));
+        xaSerie.setSerieDap(getDoubleFromProperties(serieProps, "serie_dap"));
         xaSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         return xaSerie;

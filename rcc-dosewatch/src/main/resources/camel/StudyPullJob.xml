@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
         </setHeader>
@@ -26,6 +26,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -55,13 +57,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -69,7 +72,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>constantAngleSeriePullJob</constant>
         </setHeader>
@@ -94,6 +97,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -123,13 +128,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -137,7 +143,7 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>stationarySeriePullJob</constant>
         </setHeader>
@@ -162,6 +168,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -191,13 +199,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -205,7 +214,7 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>cineSeriePullJob</constant>
         </setHeader>
@@ -230,6 +239,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -259,13 +270,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -273,7 +285,7 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>sequencedSeriePullJob</constant>
         </setHeader>
@@ -298,6 +310,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -327,13 +341,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -341,7 +356,7 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>smartprepSeriePullJob</constant>
         </setHeader>
@@ -366,6 +381,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -395,13 +412,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -409,7 +427,7 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>undefinedSeriePullJob</constant>
         </setHeader>
@@ -434,6 +452,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 cts.ct_dose_length_product_total,
                 cts.dlp_ssde,
                 cts.exam_ctdi,
@@ -463,13 +483,14 @@
                     join serie se on ctse.id=se.id
                     join study s on s.id=se.study_key
                     join ct_study cts on s.id=cts.id
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -477,7 +498,7 @@
     </route>
 
     <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>mrSeriePullJob</constant>
         </setHeader>
@@ -502,6 +523,8 @@
                 s.study_id,
                 s.study_instance_uid,
                 s.study_date,
+                s.sd_key,
+                sdesc.name as study_description,
                 se.id as local_serieId,
                 ae.aet,
                 CONCAT(ae.aet,'|',se.id) as local_serie_id,
@@ -527,6 +550,7 @@
                 (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
                 from mr_serie mrse join serie se on mrse.id=se.id
                     join study s on s.id=se.study_key
+                    join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join protocol pl on mrse.protocol_key=pl.id
                     join patient pt on s.patient_key=pt.id
@@ -535,7 +559,7 @@
                     join series_description sd on se.series_description_key=sd.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
-            order by joint_key asc limit 100?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="mrSeriePullJob" method="insertData"/>
         <bean ref="mrSeriePullJob" method="endDBReadJob"/>
@@ -543,7 +567,7 @@
     </route>
 
     <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>xaSeriePullJob</constant>
         </setHeader>
@@ -568,6 +592,11 @@
                     s.study_id,
                     s.study_instance_uid,
                     s.study_date,
+                    s.sd_key,
+                    sdesc.name as study_description,
+                    xas.ifadp*100 as dap,
+                    xas.fluoro_dap*100 as fluoro_dap,
+                    xas.record_dap*100 as record_dap,
                     se.id as local_serieId,
                     ae.aet,
                     CONCAT(ae.aet,'|',se.id) as local_serie_id,
@@ -575,17 +604,28 @@
                     se.study_key,
                     se.dtype as serie_dtype,
                     se.series_date,
+                    se.acquisition_datetime,
                     xase.exposure_time/1000 as exposure_time,
+                    se.target_region_key as target_region,
+                    sedesc.name as series_description,
                     xase.protocol_key,
+                    pl.name as protocol_name,
+                    xase.serie_type,
+                    xase.series_sub_type as series_sub_type,
+                    xase.DOSE_AREA_PRODUCT*100 as serie_dap,
                     xase.dt_last_update,
                     (unix_timestamp(xase.dt_last_update) + se.id) as joint_key
                     from xa_serie xase join serie se on xase.id=se.id
                         join study s on s.id=se.study_key
+                        join xa_study xas on s.id=xas.id
+                        join study_description sdesc on s.sd_key=sdesc.id
+                        join series_description sedesc on se.series_description_key=sedesc.id
                         join ae on ae.id=s.ae_key
+                        join protocol pl on xase.protocol_key=pl.id
                         join patient pt on s.patient_key=pt.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and se.series_date is not null and xase.exposure_time is not null
-                order by joint_key asc limit 100?dataSource=dwDS"/>
+                order by joint_key asc limit 500?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="xaSeriePullJob" method="insertData"/>
         <bean ref="xaSeriePullJob" method="endDBReadJob"/>
@@ -593,7 +633,7 @@
     </route>
 
     <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>devicePullJob</constant>
         </setHeader>
@@ -624,7 +664,7 @@
     </route>
 
     <route id="studyCleanJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>studyCleanJob</constant>
         </setHeader>

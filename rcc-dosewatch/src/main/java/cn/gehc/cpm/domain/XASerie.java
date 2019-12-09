@@ -38,6 +38,9 @@ public class XASerie implements Comparable<XASerie> {
   @Column(name = "protocol_key")
   private Long protocolKey;
 
+  @Column(name = "protocol_name")
+  private String protocolName;
+
   @Column(name = "serie_id")
   private String serieId;
 
@@ -46,6 +49,21 @@ public class XASerie implements Comparable<XASerie> {
 
   @Column(name = "study_key")
   private Long studyKey;
+
+  @Column(name = "target_region")
+  private String targetRegion;
+
+  @Column(name = "series_description")
+  private String seriesDescription;
+
+  @Column(name = "serie_type")
+  private String serieType;
+
+  @Column(name = "series_sub_type")
+  private String seriesSubType;
+
+  @Column(name = "serie_dap")
+  private Double serieDap;
 
   @Column(name = "dt_last_update")
   @Temporal(TemporalType.TIMESTAMP)
