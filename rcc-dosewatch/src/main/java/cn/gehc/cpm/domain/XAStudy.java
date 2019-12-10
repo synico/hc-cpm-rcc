@@ -27,4 +27,10 @@ public class XAStudy {
   @Column(name = "record_dap")
   private Double recordDap;
 
+  @Column(name = "protocol_key")
+  private Long protocolKey;
+
+  @Column(name = "protocol_name")
+  private String protocolName;
+
 }

@@ -17,10 +17,10 @@ public class MRStudy {
   @Column(name = "local_study_id")
   private String localStudyId;
 
-  @Column(name = "PROTOCOL_KEY")
+  @Column(name = "protocol_key")
   private Long protocolKey;
 
-  @Column(name = "PROTOCOL_NAME")
+  @Column(name = "protocol_name")
   private String protocolName;
 
 }

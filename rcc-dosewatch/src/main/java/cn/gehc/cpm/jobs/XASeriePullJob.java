@@ -9,7 +9,6 @@ import cn.gehc.cpm.repository.XAStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -97,6 +96,7 @@ public class XASeriePullJob extends TimerDBReadJob {
       }
     }
     List<Study> study2Update = new ArrayList<>(studyList.size());
+    List<XAStudy> xaStudy2Update = new ArrayList<>(studyList.size());
     for(Study tmpStudy : studyList) {
       TreeSet<XASerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
       if(serieSet != null && serieSet.size() > 0) {
@@ -124,9 +124,20 @@ public class XASeriePullJob extends TimerDBReadJob {
         tmpStudy.setStudyStartTime(firstXASerie.getSeriesDate());
         //update study end time
         tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastXASerie));
-
         study2Update.add(tmpStudy);
+
+        //update protocol_key and protocol_name by first serie of XA study
+        XAStudy tmpXAStudy = xaStudySet.stream()
+                .filter(xa -> tmpStudy.getLocalStudyId().equals(xa.getLocalStudyId()))
+                .findFirst().get();
+        tmpXAStudy.setProtocolKey(firstXASerie.getProtocolKey());
+        tmpXAStudy.setProtocolName(firstXASerie.getProtocolName());
+        xaStudy2Update.add(tmpXAStudy);
       }
+    }
+
+    if(xaStudy2Update.size() > 0) {
+      xaStudyRepository.saveAll(xaStudy2Update);
     }
 
     if(study2Update.size() > 0) {
