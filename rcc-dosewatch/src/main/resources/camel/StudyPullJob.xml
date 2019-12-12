@@ -604,7 +604,6 @@
                     se.study_key,
                     se.dtype as serie_dtype,
                     se.series_date,
-                    se.acquisition_datetime,
                     xase.exposure_time/1000 as exposure_time,
                     se.target_region_key as target_region,
                     sedesc.name as series_description,

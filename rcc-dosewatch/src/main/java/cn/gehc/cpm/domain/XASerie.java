@@ -29,9 +29,6 @@ public class XASerie implements Comparable<XASerie> {
   @Temporal(TemporalType.TIMESTAMP)
   private Date seriesDate;
 
-  @Column(name = "acquisition_datetime")
-  private Date acquisitionDatetime;
-
   @Column(name = "exposure_time")
   private Float exposureTime;
 

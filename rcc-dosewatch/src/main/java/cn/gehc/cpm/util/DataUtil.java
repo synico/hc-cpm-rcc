@@ -248,7 +248,6 @@ public class DataUtil {
         xaSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
         xaSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
         xaSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
-        xaSerie.setAcquisitionDatetime(getDateFromProperties(serieProps, "acquisition_datetime"));
         xaSerie.setExposureTime(getFloatFromProperties(serieProps,"exposure_time"));
         xaSerie.setTargetRegion(getStringFromProperties(serieProps, "target_region"));
         xaSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
