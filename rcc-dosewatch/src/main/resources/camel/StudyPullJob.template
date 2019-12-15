@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
         </setHeader>
@@ -41,6 +41,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -72,7 +73,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>constantAngleSeriePullJob</constant>
         </setHeader>
@@ -112,6 +113,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -143,7 +145,7 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>stationarySeriePullJob</constant>
         </setHeader>
@@ -183,6 +185,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -214,7 +217,7 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>cineSeriePullJob</constant>
         </setHeader>
@@ -254,6 +257,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -285,7 +289,7 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>sequencedSeriePullJob</constant>
         </setHeader>
@@ -325,6 +329,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -356,7 +361,7 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>smartprepSeriePullJob</constant>
         </setHeader>
@@ -396,6 +401,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -427,7 +433,7 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>undefinedSeriePullJob</constant>
         </setHeader>
@@ -467,6 +473,7 @@
                 se.dtype as serie_dtype,
                 se.series_date,
                 se.target_region_key,
+                se.effective_dose_in_msv,
                 ctse.aapm_factor_ssde,
                 ctse.ctdi_vol_ssde,
                 ctse.dlp_ssde,
@@ -498,7 +505,7 @@
     </route>
 
     <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>mrSeriePullJob</constant>
         </setHeader>
@@ -567,7 +574,7 @@
     </route>
 
     <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>xaSeriePullJob</constant>
         </setHeader>
@@ -604,6 +611,7 @@
                     se.study_key,
                     se.dtype as serie_dtype,
                     se.series_date,
+                    se.effective_dose_in_msv,
                     xase.exposure_time/1000 as exposure_time,
                     se.target_region_key as target_region,
                     sedesc.name as series_description,
@@ -611,7 +619,7 @@
                     pl.name as protocol_name,
                     xase.serie_type,
                     xase.series_sub_type as series_sub_type,
-                    xase.DOSE_AREA_PRODUCT*100 as serie_dap,
+                    xase.dose_area_product*100 as serie_dap,
                     xase.dt_last_update,
                     (unix_timestamp(xase.dt_last_update) + se.id) as joint_key
                     from xa_serie xase join serie se on xase.id=se.id
@@ -632,7 +640,7 @@
     </route>
 
     <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>devicePullJob</constant>
         </setHeader>
@@ -663,7 +671,7 @@
     </route>
 
     <route id="studyCleanJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=10s&amp;delay=1s"/>
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">
             <constant>studyCleanJob</constant>
         </setHeader>

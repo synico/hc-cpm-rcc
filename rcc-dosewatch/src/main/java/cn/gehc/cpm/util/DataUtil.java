@@ -196,6 +196,7 @@ public class DataUtil {
         ctSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
         ctSerie.setDlp(getDoubleFromProperties(serieProps, "dlp"));
         ctSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
+        ctSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         return ctSerie;
@@ -256,6 +257,7 @@ public class DataUtil {
         xaSerie.setSerieType(getStringFromProperties(serieProps, "serie_type"));
         xaSerie.setSeriesSubType(getStringFromProperties(serieProps, "series_sub_type"));
         xaSerie.setSerieDap(getDoubleFromProperties(serieProps, "serie_dap"));
+        xaSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
         xaSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
 
         return xaSerie;

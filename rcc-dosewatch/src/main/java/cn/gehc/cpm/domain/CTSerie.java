@@ -70,6 +70,9 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "dlp")
     private Double dlp;
 
+    @Column(name = "effective_dose")
+    private Double effectiveDose;
+
     @Column(name = "series_description")
     private String seriesDescription;
 

@@ -62,6 +62,9 @@ public class XASerie implements Comparable<XASerie> {
   @Column(name = "serie_dap")
   private Double serieDap;
 
+  @Column(name = "effective_dose")
+  private Double effectiveDose;
+
   @Column(name = "dt_last_update")
   @Temporal(TemporalType.TIMESTAMP)
   private Date dtLastUpdate;
