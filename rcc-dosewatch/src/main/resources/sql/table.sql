@@ -1,4 +1,4 @@
-create table drl_dlp (
+CREATE TABLE drl_dlp (
   exam_type		  	varchar(255) NOT NULL,
   exam_body_part	varchar(255) NOT NULL,
   dlp						  integer
@@ -18,3 +18,14 @@ insert into drl_dlp values('冠脉CTA（回顾）', 'Coronary CTA Angiography（
 insert into drl_dlp values('颅脑CTA', 'Head CT Angiography',1390);
 insert into drl_dlp values('颈部CTA', 'Neck CT Angiography',1130);
 insert into drl_dlp values('胸腹CTA', 'Chest-Abdomen CT Angiography',1440);
+
+
+CREATE TABLE protocol_benchmark (
+   aet varchar(255) NOT NULL,
+   device_type varchar(100) NOT NULL,
+   protocol_name varchar(255) NOT NULL,
+   avg_low float(19),
+   avg_high float(19),
+   median_low float(19),
+   median_high float(19)
+)

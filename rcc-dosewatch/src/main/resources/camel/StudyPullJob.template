@@ -53,6 +53,7 @@
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from spiral_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -63,6 +64,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>

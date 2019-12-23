@@ -119,6 +119,7 @@ public class DataUtil {
         study.setStudyDate(getDateFromProperties(studyProps, "study_date"));
         study.setStudyDescKey(getIntegerFromProperties(studyProps, "sd_key"));
         study.setStudyDescription(getStringFromProperties(studyProps, "study_description"));
+        study.setPerformingPhysician(getStringFromProperties(studyProps, "performing_physician"));
 
         return study;
     }

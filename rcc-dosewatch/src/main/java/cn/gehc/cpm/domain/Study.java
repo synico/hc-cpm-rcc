@@ -1,6 +1,5 @@
 package cn.gehc.cpm.domain;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -75,6 +74,9 @@ public class Study implements Comparable<Study> {
 
     @Column(name = "STUDY_DESCRIPTION")
     private String studyDescription;
+
+    @Column(name = "PERFORMING_PHYSICIAN")
+    private String performingPhysician;
 
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
