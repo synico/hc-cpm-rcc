@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>cn.gehc.cpm</groupId>
 	<artifactId>rcc-dosewatch</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.9</version>
 	<name>rcc-dosewatch</name>
 	<description>Pull data from dosewatch to rcc database</description>
 
@@ -44,6 +44,7 @@
 				<excludes>
 					<exclude>application.yml</exclude>
 					<exclude>datasource/*</exclude>
+					<exclude>sql/*</exclude>
 					<exclude>camel/*</exclude>
 					<exclude>camel/*/*</exclude>
 				</excludes>
