@@ -8,6 +8,7 @@ import cn.gehc.cpm.repository.MRStudyRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
@@ -156,7 +157,8 @@ public class MRSeriePullJob extends TimerDBReadJob {
                     .filter(serie -> serie.getStartSliceLocation() !=null)
                     .filter(serie -> serie.getEndSliceLocation() != null)
                     .collect(Collectors.toSet());
-                this.hasRepeatedSeries(filteredSeries);
+                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
+                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
 
                 study2Update.add(tmpStudy);
             }
@@ -213,6 +215,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
      * @return Boolean
      */
     private Boolean hasRepeatedSeries(Set<MRSerie> mrSeries) {
+        Boolean hasRepeatedSeries = Boolean.FALSE;
         Map<String, List<MRSerie>> seriesByType = new HashMap<>();
         mrSeries.stream().forEach(serie -> {
             List<MRSerie> serieList = seriesByType.get(serie.getSeriesDescription());
@@ -226,6 +229,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
         for(Map.Entry<String, List<MRSerie>> seriesEntry : seriesByType.entrySet()) {
             List<MRSerie> mrSerieList = seriesEntry.getValue();
             List<MRSerie> series2Compare;
+            Set<MRSerie> series2Update = new HashSet<>();
             if(mrSerieList.size() > 1) {
                 for(MRSerie baseSerie : mrSerieList) {
                     series2Compare = mrSerieList.stream()
@@ -244,7 +248,11 @@ public class MRSeriePullJob extends TimerDBReadJob {
                                 } catch(Exception ex) {
                                 }
                             }
-                            return Boolean.TRUE;
+                            baseSerie.setIsRepeated(Boolean.TRUE);
+                            mrSerie.setIsRepeated(Boolean.TRUE);
+                            series2Update.add(baseSerie);
+                            series2Update.add(mrSerie);
+                            hasRepeatedSeries = Boolean.TRUE;
                         }
                         //end slice location
                         if(mrSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
@@ -258,13 +266,20 @@ public class MRSeriePullJob extends TimerDBReadJob {
                                 } catch(Exception ex) {
                                 }
                             }
-                            return Boolean.TRUE;
+                            baseSerie.setIsRepeated(Boolean.TRUE);
+                            mrSerie.setIsRepeated(Boolean.TRUE);
+                            series2Update.add(baseSerie);
+                            series2Update.add(mrSerie);
+                            hasRepeatedSeries = Boolean.TRUE;
                         }
                     }
                 }
             }
+            if(series2Update.size() > 1) {
+                mrSerieRepository.saveAll(series2Update);
+            }
         }
-        return Boolean.FALSE;
+        return hasRepeatedSeries;
     }
 
 }

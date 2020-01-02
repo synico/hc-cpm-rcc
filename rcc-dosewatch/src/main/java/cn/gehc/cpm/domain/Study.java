@@ -78,6 +78,9 @@ public class Study implements Comparable<Study> {
     @Column(name = "PERFORMING_PHYSICIAN")
     private String performingPhysician;
 
+    @Column(name = "HAS_REPEATED_SERIES")
+    private Boolean hasRepeatedSeries = Boolean.FALSE;
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

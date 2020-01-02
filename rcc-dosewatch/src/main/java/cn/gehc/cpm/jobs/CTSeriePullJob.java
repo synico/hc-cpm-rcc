@@ -149,7 +149,8 @@ public class CTSeriePullJob extends TimerDBReadJob {
                     .filter(serie -> serie.getStartSliceLocation() !=null)
                     .filter(serie -> serie.getEndSliceLocation() != null)
                     .collect(Collectors.toSet());
-                this.hasRepeatedSeries(filteredSeries);
+                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
+                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
 
                 study2Update.add(tmpStudy);
             }
@@ -201,7 +202,8 @@ public class CTSeriePullJob extends TimerDBReadJob {
      * @param ctSeries
      * @return Boolean
      */
-    private void hasRepeatedSeries(Set<CTSerie> ctSeries) {
+    private Boolean hasRepeatedSeries(Set<CTSerie> ctSeries) {
+        Boolean hasRepeatedSeries = Boolean.FALSE;
         Map<String, List<CTSerie>> seriesByType = new HashMap<>();
         ctSeries.stream().filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
             .forEach(serie -> {
@@ -239,6 +241,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
                             ctSerie.setIsRepeated(Boolean.TRUE);
                             series2Update.add(baseSerie);
                             series2Update.add(ctSerie);
+                            hasRepeatedSeries = Boolean.TRUE;
                         }
                         //end slice location
                         if(ctSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
@@ -256,6 +259,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
                             ctSerie.setIsRepeated(Boolean.TRUE);
                             series2Update.add(baseSerie);
                             series2Update.add(ctSerie);
+                            hasRepeatedSeries = Boolean.TRUE;
                         }
                     }
                 }
@@ -264,5 +268,6 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 ctSerieRepository.saveAll(series2Update);
             }
         }
+        return hasRepeatedSeries;
     }
 }
