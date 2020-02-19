@@ -1,15 +1,20 @@
 package cn.gehc.cpm.job;
 
+import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.CTStudy;
+import cn.gehc.cpm.domain.CTStudyBuilder;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
+import cn.gehc.cpm.repository.MockCTSerieRepository;
 import cn.gehc.cpm.utils.CTStudyUtils;
 import cn.gehc.cpm.utils.StudyConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @Component
 public class CTStudyJob {
@@ -18,9 +23,9 @@ public class CTStudyJob {
     private CTStudyRepository ctStudyRepository;
 
     @Autowired
-    private CTSerieRepository ctSerieRepository;
+    private MockCTSerieRepository ctSerieRepository;
 
-    public void generateCTStudies(Study study) {
+    public void generateCTStudy(Study study) {
         CTStudy ctStudy = new CTStudy();
         ctStudy.setStudyKey(study.getStudyKey());
         ctStudy.setLocalStudyId(study.getLocalStudyId());
@@ -31,11 +36,20 @@ public class CTStudyJob {
         ctStudy.setProtocolName(StudyConstant.CT_PROTOCOLS.get(protocolKey));
         ctStudy.setDtLastUpdate(new Date());
 
+        List<CTSerie> serieList = CTStudyBuilder.of(study, getMaxSerieId());
+        if(serieList.size() > 0) {
+            ctSerieRepository.saveAll(serieList);
+        }
+
         ctStudyRepository.save(ctStudy);
     }
 
-    public void generateCTSeries() {
-
+    private Long getMaxSerieId() {
+        Long maxSerieId = ctSerieRepository.getMaxSerieId();
+        if(maxSerieId == null) {
+            maxSerieId = 0L;
+        }
+        return maxSerieId;
     }
 
 }

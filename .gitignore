@@ -8,3 +8,4 @@
 
 /log/
 *log
+/rcc-data-mock/target/

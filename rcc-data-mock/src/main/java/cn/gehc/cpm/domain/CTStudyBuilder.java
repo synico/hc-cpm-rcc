@@ -1,57 +1,144 @@
 package cn.gehc.cpm.domain;
 
-import cn.gehc.cpm.utils.DeviceConstant;
-import cn.gehc.cpm.utils.SerieConstant;
+import org.springframework.util.Assert;
 
-import java.util.List;
+import java.util.*;
 
-import cn.gehc.cpm.utils.DeviceConstant.AE;
+import cn.gehc.cpm.utils.SerieConstant.*;
 
 public class CTStudyBuilder {
 
-    public void initSerieMap() {
-        // init SpiralSerie
-        CTSerie spiralSerie = new CTSerie();
+    public static List<List<CTSerie>> serieListByStudy = new ArrayList<>();
 
-        // init StationarySerie
-        CTSerie stationarySerie = new CTSerie();
+    public static List<CTSerie> of(Study study, Long theSerieId) {
+        Random random = new Random();
+        List<CTSerie> serieList = serieListByStudy.get(random.nextInt(serieListByStudy.size()));
+        Long serieId = theSerieId;
+        String aet = study.getStudyKey().getAet();
+        for(CTSerie ctSerie : serieList) {
+            serieId++;
+            SerieKey serieKey = new SerieKey();
+            serieKey.setAet(aet);
+            serieKey.setId(serieId);
+            ctSerie.setSerieKey(serieKey);
 
-        // init CineSerie
-        CTSerie cineSerie = new CTSerie();
-
-        // init SmartPrepSerie
-        CTSerie smartPrepSerie = new CTSerie();
-
-        // init SequencedSerie
-        CTSerie sequenceSerie = new CTSerie();
-
-    }
-
-    private AE initAE() {
-        AE ae = AE.CT1;
-        Long index = System.currentTimeMillis() % 3;
-        switch (index.intValue()) {
-            case 0:
-                ae = AE.CT1;
-            case 1:
-                ae = AE.CT2;
-            case 2:
-                ae = AE.CT3;
+            ctSerie.setDtLastUpdate(new Date());
+            ctSerie.setLocalSerieId(aet + "|" + serieId);
+            ctSerie.setLocalStudyKey(study.getLocalStudyId());
         }
-        return ae;
+        return serieList;
     }
 
-    private void initConstantAngleSerie() {
-        CTSerie serie = new CTSerie();
-        serie.setDType(SerieConstant.CT_SERIE_TYPE.CONSTANT_ANGLE.getSerieType());
-    }
-
-    public static void main(String args[]) {
-        for(int i = 0; i < 100; i++) {
-            long index = System.currentTimeMillis();
-            System.out.println(index%3);
+    private static List<CTSerie> generateCTSeries(CT_SERIE_TYPE ...seriesType) {
+        Assert.notEmpty(seriesType, "Need to specify serie type");
+        List<CTSerie> serieList = new ArrayList<>(seriesType.length);
+        for(CT_SERIE_TYPE serieType : seriesType) {
+            CTSerie serie = createSerie(serieType);
+            serieList.add(serie);
         }
+        return serieList;
     }
 
+    private static final CTSerie createSerie(CT_SERIE_TYPE serieType) {
+        CTSerie ctSerie = new CTSerie();
+        ctSerie.setDType(serieType.getSerieType());
+        ctSerie.setIsRepeated(Boolean.FALSE);
+
+        switch (serieType) {
+            case CONSTANT_ANGLE:
+                ctSerie.setSeriesDescription(generateRandomValue(CT_SERIE_DESCRIPTION.CONSTANT_ANGLE));
+                ctSerie.setTargetRegion(generateRandomValue(CT_TARGET_REGION.CONSTANT_ANGLE));
+                break;
+            case SEQUENCED:
+                ctSerie.setSeriesDescription(generateRandomValue(CT_SERIE_DESCRIPTION.SEQUENCED));
+                ctSerie.setTargetRegion(generateRandomValue(CT_TARGET_REGION.SEQUENCED));
+                break;
+            case STATIONARY:
+                ctSerie.setSeriesDescription(generateRandomValue(CT_SERIE_DESCRIPTION.STATIONARY));
+                ctSerie.setTargetRegion(generateRandomValue(CT_TARGET_REGION.STATIONARY));
+                break;
+            case SPIRAL:
+                ctSerie.setSeriesDescription(generateRandomValue(CT_SERIE_DESCRIPTION.SPIRAL));
+                ctSerie.setTargetRegion(generateRandomValue(CT_TARGET_REGION.SPIRAL));
+                break;
+            case CINE:
+                ctSerie.setSeriesDescription(generateRandomValue(CT_SERIE_DESCRIPTION.CINE));
+                ctSerie.setTargetRegion(generateRandomValue(CT_TARGET_REGION.CINE));
+                break;
+        }
+
+        return ctSerie;
+    }
+
+    private static String generateRandomValue(List<String> seed) {
+        Random random = new Random();
+        return seed.get(random.nextInt(seed.size()));
+    }
+
+    static {
+        // study with 3 series
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SEQUENCED,
+                CT_SERIE_TYPE.SEQUENCED));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.SPIRAL));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.STATIONARY));
+        // study with 4 series
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.SPIRAL));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY));
+        // study with 5 series
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CINE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.SPIRAL,
+                CT_SERIE_TYPE.STATIONARY));
+        serieListByStudy.add(generateCTSeries(CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.CONSTANT_ANGLE,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY,
+                CT_SERIE_TYPE.STATIONARY));
+    }
 
 }

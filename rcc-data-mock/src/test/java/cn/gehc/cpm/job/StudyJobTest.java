@@ -18,5 +18,4 @@ public class StudyJobTest {
         studyJob.generateStudies();
     }
 
-
 }
