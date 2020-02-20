@@ -126,4 +126,87 @@ public class StudyConstant {
             .put(119L, "9.5 knee 5mm")
             .build();
 
+    public static final List<String> MR_STUDY_DESCRIPTIONS = Arrays.asList("MR",
+            "MR Head DWI",
+            "MR MRA",
+            "MR Head CE",
+            "MR LS-spine  PS",
+            "MR C-spine  PS",
+            "MR Right Knee",
+            "MR Left Knee",
+            "MR Head",
+            "MR R Shoulder",
+            "MR MRI",
+            "MR Prostate",
+            "MR MRCP",
+            "MR Hip",
+            "MR Anorectal",
+            "MR L shoulder",
+            "MR Right ankle",
+            "MR Saddle Zone CE",
+            "MR Saddle Zone 3D",
+            "MR Left ankle joint",
+            "MR T-spine  PS",
+            "MR Pelvic",
+            "MR Neck");
+
+    public static final Map<Long, String> MR_PROTOCOLS = ImmutableMap.<Long, String>builder()
+            .put(315L, "AAHead_Scout")
+            .put(48L, "001_8NV_Brain-ALL")
+            .put(68L, "B01-HNU-Brain-ALL")
+            .put(33L, "8HR-Head")
+            .put(30L, "B01-HNU-Brain-ALL")
+            .put(74L, "001_8NV_Brain+MRA")
+            .put(70L, "L-Spine")
+            .put(95L, "001_8CH_ABD")
+            .put(63L, "B01-HNU-Brain")
+            .put(79L, "003-L-Spine")
+            .put(52L, "001_8NV_MRA+DWI")
+            .put(333L, "AAKnee_Scout_15ch")
+            .put(322L, "localizer")
+            .put(395L, "I_AASpine_Scout")
+            .put(441L, "003-YS_CTL_L_Spine")
+            .put(201L, "001_8NV_Brain+bravo")
+            .put(168L, "B01-HNU-Brain+MRA")
+            .put(189L, "001-C-Spine")
+            .put(455L, "localizer_haste")
+            .put(112L, "001-YS_CTL_C_Spine")
+            .put(169L, "02_Quad_ANKLE")
+            .put(228L, "005_8NV_PIT")
+            .put(114L, "AAShoulder_Scout")
+            .put(420L, "B01-HNU-Brain-ALL-FSE")
+            .put(206L, "B01_8HD_HIP")
+            .put(60L, "A01_HD_BREAST-7")
+            .put(36L, "T-Spine/")
+            .put(424L, "localizer_tra")
+            .put(44L, "AAHead_Scout")
+            .put(202L, "A01_HD_BREAST-DTI")
+            .put(275L, "03_8HR_WRIST")
+            .put(207L, "006_8HR_TMJ-2")
+            .put(293L, "005_8NV_PIT-HL")
+            .put(69L, "L-Spine/1,2,3,6,4")
+            .put(93L, "002_8CH_Kidney")
+            .put(283L, "L03-QUAD-Ankle")
+            .put(65L, "C-spine/1,2,3,4,5")
+            .put(237L, "Sag T2fs PROPELLER")
+            .put(156L, "001-ABD")
+            .put(308L, "001_8NV_Brain")
+            .put(58L, "A102_NV_Soft_Tissue")
+            .put(257L, "L02-QUAD-Knee")
+            .put(209L, "L02-QUAD-Knee")
+            .put(212L, "01_3CH_SHOULDER")
+            .put(32L, "8HR-Head/1,5,6,2,3,4")
+            .put(294L, "03_Quad_FOOT-hl")
+            .put(487L, "B01-HNU-Brain+BRAVO")
+            .put(208L, "001_8NV_Brain")
+            .put(500L, "Gammar knife")
+            .put(174L, "B03_8HD_Big-PELVIS")
+            .put(306L, "B03_8HD_FEMALE_PELVIS_LL")
+            .put(203L, "L02-QUAD-Knee")
+            .put(140L, "Sag T2 fs PROPELLER")
+            .put(442L, "02_8HR_ELBOW")
+            .put(438L, "B01-HNU-Brain-HR-Vascula")
+            .put(250L, "B04-HNU-Pituitary")
+            .build();
+
 }

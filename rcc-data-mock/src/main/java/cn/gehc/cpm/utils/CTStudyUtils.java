@@ -30,7 +30,7 @@ public class CTStudyUtils {
 
     public static void main(String args[]) {
         for(int i = 0; i < TRY_NUM; i++) {
-            System.out.println(CTStudyUtils.generateProtocolKey());
+            System.out.println(generateProtocolKey());
         }
     }
 }

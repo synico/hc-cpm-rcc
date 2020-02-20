@@ -63,9 +63,18 @@ public class StudyUtils {
         switch (studyType) {
             case CTSTUDY:
                 targetRegionCount = random.nextInt(3);
+                break;
             case MRSTUDY:
-                targetRegionCount = random.nextInt(18);
+                for(int i = 0; i < TRY_NUM; i++) {
+                    int tmp = random.nextInt(7);
+                    if(tmp > 3) {
+                        targetRegionCount = tmp;
+                        break;
+                    }
+                }
+                break;
         }
+        targetRegionCount++;
         return targetRegionCount;
     }
 

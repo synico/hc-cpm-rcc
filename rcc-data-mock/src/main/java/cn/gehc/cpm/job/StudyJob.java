@@ -7,9 +7,11 @@ import cn.gehc.cpm.utils.DeviceConstant;
 import cn.gehc.cpm.utils.StudyConstant;
 import cn.gehc.cpm.utils.StudyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +33,9 @@ public class StudyJob {
     @Autowired
     private MRStudyJob mrStudyJob;
 
+    @Scheduled(cron = "0 0/3 * * * ?")
     public List<Study> generateStudies() {
+        System.out.println("time: " + LocalDateTime.now());
         Long currentMaxStudyId = this.getMaxStudyId();
         List<DeviceConstant.AE> devices = DEVICE_LIST;
         List<Study> studyList = new ArrayList<>(devices.size());

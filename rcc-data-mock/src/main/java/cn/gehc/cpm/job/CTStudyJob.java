@@ -4,7 +4,6 @@ import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.CTStudy;
 import cn.gehc.cpm.domain.CTStudyBuilder;
 import cn.gehc.cpm.domain.Study;
-import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
 import cn.gehc.cpm.repository.MockCTSerieRepository;
 import cn.gehc.cpm.utils.CTStudyUtils;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 @Component
 public class CTStudyJob {

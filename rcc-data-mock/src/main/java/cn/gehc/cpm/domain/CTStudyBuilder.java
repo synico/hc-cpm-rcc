@@ -15,9 +15,10 @@ public class CTStudyBuilder {
         List<CTSerie> serieList = serieListByStudy.get(random.nextInt(serieListByStudy.size()));
         Long serieId = theSerieId;
         String aet = study.getStudyKey().getAet();
+        SerieKey serieKey;
         for(CTSerie ctSerie : serieList) {
             serieId++;
-            SerieKey serieKey = new SerieKey();
+            serieKey = new SerieKey();
             serieKey.setAet(aet);
             serieKey.setId(serieId);
             ctSerie.setSerieKey(serieKey);
