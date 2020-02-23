@@ -4,6 +4,7 @@ import cn.gehc.cpm.domain.Device;
 import cn.gehc.cpm.domain.DeviceBuilder;
 import cn.gehc.cpm.repository.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -22,9 +23,14 @@ public class DeviceJob {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Scheduled(cron = "0 0/30 7-18 * * ?")
     public List<Device> addDevices() {
-        List<Device> deviceList = initDevices();
-        if(deviceList.size() > 0) {
+        long count = deviceRepository.count();
+        List<Device> deviceList = null;
+        if(count > 0) {
+            //do nothing
+        } else {
+            deviceList = initDevices();
             deviceRepository.saveAll(deviceList);
         }
         return deviceList;

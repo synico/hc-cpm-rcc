@@ -23,7 +23,6 @@ import static cn.gehc.cpm.utils.DeviceConstant.*;
 @Component
 public class StudyJob {
 
-
     @Autowired
     private MockStudyRepository studyRepository;
 
@@ -33,9 +32,10 @@ public class StudyJob {
     @Autowired
     private MRStudyJob mrStudyJob;
 
-    @Scheduled(cron = "0 0/3 * * * ?")
+    @Scheduled(cron = "0 0/5 7-18 * * ?")
     public List<Study> generateStudies() {
         System.out.println("time: " + LocalDateTime.now());
+
         Long currentMaxStudyId = this.getMaxStudyId();
         List<DeviceConstant.AE> devices = DEVICE_LIST;
         List<Study> studyList = new ArrayList<>(devices.size());

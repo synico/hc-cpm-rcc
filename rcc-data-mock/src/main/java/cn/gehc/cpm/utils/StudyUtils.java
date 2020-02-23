@@ -105,8 +105,8 @@ public class StudyUtils {
         Random random = new Random();
         int studyDuration = 180;
         for(int i = 0; i < TRY_NUM; i++) {
-            int tmp = random.nextInt(360);
-            if(tmp > 120) {
+            int tmp = random.nextInt(300);
+            if(tmp > 60) {
                 studyDuration = tmp;
                 break;
             }
