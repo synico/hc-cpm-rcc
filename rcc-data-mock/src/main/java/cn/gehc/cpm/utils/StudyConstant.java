@@ -33,6 +33,11 @@ public class StudyConstant {
         XA
     }
 
+    public static final Integer CT_STUDY_DURATION_LOW = 160;
+    public static final Integer CT_STUDY_DURATION_HIGH = 240;
+    public static final Integer MR_STUDY_DURATION_LOW = 540;
+    public static final Integer MR_STUDY_DURATION_HIGH = 780;
+
     public static final List<String> CT_STUDY_DESCRIPTIONS = Arrays.asList("1_ThoraxRoutine",
             "CT Kidney  PS",
             "CT L-Ankle PS",

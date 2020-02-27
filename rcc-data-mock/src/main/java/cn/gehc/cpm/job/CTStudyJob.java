@@ -7,15 +7,26 @@ import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.repository.CTStudyRepository;
 import cn.gehc.cpm.repository.MockCTSerieRepository;
 import cn.gehc.cpm.utils.CTStudyUtils;
+import cn.gehc.cpm.utils.DeviceConstant;
 import cn.gehc.cpm.utils.StudyConstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Component
 public class CTStudyJob {
+
+    private static final Logger log = LoggerFactory.getLogger(CTStudyJob.class);
+
+    @Autowired
+    private StudyJob studyJob;
 
     @Autowired
     private CTStudyRepository ctStudyRepository;
@@ -23,11 +34,24 @@ public class CTStudyJob {
     @Autowired
     private MockCTSerieRepository ctSerieRepository;
 
-    public void generateCTStudy(Study study) {
+
+    @Schedules(value = {
+            @Scheduled(cron = "0 0/5 7-18 * * MON-FRI"),
+            @Scheduled(cron = "0 0/5 7-13 * * SUN,SAT")
+    })
+    public void generateCTStudies() {
+        log.info("start to generate CT studies at {}", LocalDateTime.now());
+
+        for(DeviceConstant.AE ae : DeviceConstant.CT_LIST) {
+            Study study = studyJob.createStudy(ae);
+            createCTStudy(study);
+        }
+    }
+
+    private void createCTStudy(Study study) {
         CTStudy ctStudy = new CTStudy();
         ctStudy.setStudyKey(study.getStudyKey());
         ctStudy.setLocalStudyId(study.getLocalStudyId());
-        ctStudy.setNumSeries(CTStudyUtils.generateNumSeries());
 
         Long protocolKey = CTStudyUtils.generateProtocolKey();
         ctStudy.setProtocolKey(protocolKey);
@@ -35,6 +59,7 @@ public class CTStudyJob {
         ctStudy.setDtLastUpdate(new Date());
 
         List<CTSerie> serieList = CTStudyBuilder.of(study, getMaxSerieId());
+        ctStudy.setNumSeries(serieList.size());
         if(serieList.size() > 0) {
             ctSerieRepository.saveAll(serieList);
         }

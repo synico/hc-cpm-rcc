@@ -8,14 +8,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StudyJobTest {
+public class MRStudyJobTest {
 
     @Autowired
-    StudyJob studyJob;
+    private MRStudyJob mrStudyJob;
 
     @Test
-    public void testGenerateStudies() {
-//        studyJob.generateStudies();
+    public void testGenerateMRStudies() {
+        mrStudyJob.generateMRStudies();
     }
-
 }

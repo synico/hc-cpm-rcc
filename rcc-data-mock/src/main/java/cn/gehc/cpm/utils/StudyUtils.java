@@ -4,12 +4,14 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.gehc.cpm.utils.DeviceConstant.*;
+import static cn.gehc.cpm.utils.StudyConstant.*;
 
 public class StudyUtils {
 
-    private static final Integer TRY_NUM = 10;
+    private static final ThreadLocalRandom random = ThreadLocalRandom.current();
 
     public static String generateAccessionNumber(String aet) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("YYYYMMddHHmmss");
@@ -17,16 +19,7 @@ public class StudyUtils {
     }
 
     public static Integer generatePatientAge() {
-        Integer patientAge = 20;
-        Random random = new Random();
-        for(int i = 0; i < TRY_NUM; i++) {
-            int tmp = random.nextInt(80);
-            if(tmp > 20 && tmp < 80) {
-                patientAge = tmp;
-                break;
-            }
-        }
-        return patientAge;
+        return random.nextInt(20, 80);
     }
 
     public static String generatePatientId() {
@@ -58,23 +51,15 @@ public class StudyUtils {
     }
 
     public static Integer generateTargetRegionCount(StudyConstant.Type studyType) {
-        Integer targetRegionCount = 0;
-        Random random = new Random();
+        Integer targetRegionCount = 3;
         switch (studyType) {
             case CTSTUDY:
-                targetRegionCount = random.nextInt(3);
+                targetRegionCount = random.nextInt(3, 6);
                 break;
             case MRSTUDY:
-                for(int i = 0; i < TRY_NUM; i++) {
-                    int tmp = random.nextInt(7);
-                    if(tmp > 3) {
-                        targetRegionCount = tmp;
-                        break;
-                    }
-                }
+                targetRegionCount = random.nextInt(4, 9);
                 break;
         }
-        targetRegionCount++;
         return targetRegionCount;
     }
 
@@ -88,35 +73,36 @@ public class StudyUtils {
         return Date.from(zonedDateTime.toInstant());
     }
 
-    public static Date generateStudyStartTime(Instant instant) {
-        Random random = new Random();
-        int buffer = 10;
-        for(int i = 0; i < TRY_NUM; i++) {
-            int tmp = random.nextInt(60);
-            if(tmp > 20) {
-                buffer = tmp;
-                break;
-            }
-        }
-        return Date.from(instant.plusSeconds(buffer));
+    public static Date generateStudyStartTime(Instant studyInstant) {
+        int buffer = random.nextInt(20, 60);
+        return Date.from(studyInstant.plusSeconds(buffer));
     }
 
-    public static Date generateStudyEndTime(Instant instant) {
-        Random random = new Random();
+    /*
+     * @return unit: second
+     */
+    public static Integer generateStudyDuration(String deviceType) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         int studyDuration = 180;
-        for(int i = 0; i < TRY_NUM; i++) {
-            int tmp = random.nextInt(300);
-            if(tmp > 60) {
-                studyDuration = tmp;
+        switch (deviceType) {
+            case CT:
+                studyDuration = random.nextInt(CT_STUDY_DURATION_LOW, CT_STUDY_DURATION_HIGH);
                 break;
-            }
+            case MR:
+                studyDuration = random.nextInt(MR_STUDY_DURATION_LOW, MR_STUDY_DURATION_HIGH);
+                break;
         }
+        return studyDuration;
+    }
+
+    public static Date generateStudyEndTime(Instant instant, String deviceType) {
+        int studyDuration = generateStudyDuration(deviceType);
         return Date.from(instant.plusSeconds(studyDuration));
     }
 
     public static void main(String args[]) {
         for(AE ae : DEVICE_LIST) {
-            System.out.println(generateTargetRegionCount(StudyConstant.Type.CTSTUDY));
+            System.out.println(generateTargetRegionCount(StudyConstant.Type.MRSTUDY));
         }
     }
 

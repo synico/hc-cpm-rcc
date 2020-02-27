@@ -3,6 +3,7 @@ package cn.gehc.cpm.utils;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 public class DeviceConstant {
@@ -46,8 +47,15 @@ public class DeviceConstant {
         }
     }
 
-    public static final List<AE> DEVICE_LIST = Arrays.asList(AE.CT1, AE.CT2, AE.CT3,
-            AE.MR1, AE.MR2);
+    public static final List<AE> DEVICE_LIST = Arrays.asList(AE.CT1, AE.CT2, AE.CT3, AE.MR1, AE.MR2);
+
+    public static final EnumSet<AE> CT_LIST = EnumSet.of(AE.CT1, AE.CT2, AE.CT3);
+
+    public static final EnumSet<AE> MR_LIST = EnumSet.of(AE.MR1, AE.MR2);
+
+    public static final EnumSet<AE> XA_LIST = EnumSet.of(AE.XA1, AE.XA2);
+
+    public static final EnumSet<AE> RF_LIST = EnumSet.of(AE.RF1, AE.RF2);
 
     public enum Type {
         CT,
