@@ -12,6 +12,7 @@
         <module>rcc-his</module>
         <module>rcc-ris</module>
         <module>rcc-dosewatch</module>
+        <module>rcc-data-mock</module>
     </modules>
 
     <properties>

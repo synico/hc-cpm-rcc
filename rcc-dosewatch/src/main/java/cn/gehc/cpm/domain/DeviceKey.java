@@ -26,6 +26,12 @@ public class DeviceKey implements Serializable {
     @Column(name = "DEVICE_TYPE")
     private String deviceType;
 
+    public void of(Long orgId, String aet, String deviceType) {
+        this.orgId = orgId;
+        this.aet = aet;
+        this.deviceType = deviceType;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;

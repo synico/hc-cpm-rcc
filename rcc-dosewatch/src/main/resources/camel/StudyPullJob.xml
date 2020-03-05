@@ -15,7 +15,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -61,6 +62,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -89,7 +91,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -134,6 +137,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -161,7 +165,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -206,6 +211,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -233,7 +239,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -278,6 +285,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -305,7 +313,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -350,6 +359,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -377,7 +387,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -422,6 +433,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -449,7 +461,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -494,6 +507,7 @@
                     join ct_study cts on s.id=cts.id
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
@@ -521,7 +535,8 @@
         <to uri="sql:select
                 s.id as local_studyId,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.id) as local_study_id,
+                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
                 s.modality,
@@ -561,6 +576,7 @@
                     join study s on s.id=se.study_key
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
+                    join facility fac on ae.facility_key = fac.id
                     join protocol pl on mrse.protocol_key=pl.id
                     join patient pt on s.patient_key=pt.id
                     join supported_device_model sdm on ae.sdm_key=sdm.id
@@ -590,7 +606,8 @@
         <to uri="sql:select
                     s.id as local_studyId,
                     s.ae_key,
-                    CONCAT(ae.aet,'|',s.id) as local_study_id,
+                    CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                    fac.code as facility_code,
                     s.accession_number,
                     s.dtype as study_dtype,
                     s.modality,
@@ -630,6 +647,7 @@
                         join study_description sdesc on s.sd_key=sdesc.id
                         join series_description sedesc on se.series_description_key=sedesc.id
                         join ae on ae.id=s.ae_key
+                        join facility fac on ae.facility_key = fac.id
                         join protocol pl on xase.protocol_key=pl.id
                         join patient pt on s.patient_key=pt.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -658,12 +676,14 @@
                         sdm.device_type,
                         sdm.name as device_model,
                         m.code as mf_code,
+                        fac.code as facility_code,
                         ae.name as name,
                         ae.station_name,
                         ae.timezone,
                         ae.dt_last_update
                     from ae join supported_device_model sdm on ae.sdm_key=sdm.id
                         join manufacturer m on sdm.manufacturer_key=m.id
+                        join facility fac on ae.facility_key = fac.id
                     where ae.dt_last_update > :#${headers[JobObject].lastPolledValue}
                     order by ae.dt_last_update asc;?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
@@ -686,8 +706,11 @@
         <bean ref="studyCleanJob" method="startDBReadJob"/>
         <to uri="sql:select ae.id,
                         ae.aet,
-                        CONCAT(ae.aet,'|',s.id) as local_study_id
+                        s.modality,
+                        CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                        fac.code as facility_code
                     from study s join ae on s.ae_key=ae.id
+                        join facility fac on ae.facility_key = fac.id
                     where date_format(study_date,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d');?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="studyCleanJob" method="cleanStudies"/>

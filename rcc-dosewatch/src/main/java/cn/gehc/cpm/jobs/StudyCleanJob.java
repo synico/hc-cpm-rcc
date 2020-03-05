@@ -1,5 +1,7 @@
 package cn.gehc.cpm.jobs;
 
+import cn.gehc.cpm.domain.Device;
+import cn.gehc.cpm.domain.DeviceKey;
 import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.repository.OrgEntityRepository;
@@ -38,16 +40,15 @@ public class StudyCleanJob extends TimerDBReadJob {
         }
 
         Set<String> localStudyIdsInDW = new HashSet<>();
-        Set<String> aets = new HashSet<>();
+        Set<DeviceKey> aeKeys = new HashSet<>();
 
         LocalDate todayDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String todayStr = dateTimeFormatter.format(todayDate);
 
         String localStudyId;
-        String aet;
-        String modality;
         Long orgId = 0L;
+        DeviceKey deviceKey;
         for(Map<String, Object> studiesInDW : dataMap) {
             log.debug(studiesInDW.toString());
 
@@ -65,24 +66,32 @@ public class StudyCleanJob extends TimerDBReadJob {
                 continue;
             }
 
-            aet = DataUtil.getStringFromProperties(studiesInDW, "aet");
-            modality = DataUtil.getStringFromProperties(studiesInDW, "modality");
+            deviceKey = new DeviceKey();
+            deviceKey.of(orgId,
+                    DataUtil.getStringFromProperties(studiesInDW, "aet"),
+                    DataUtil.getStringFromProperties(studiesInDW, "modality"));
+            aeKeys.add(deviceKey);
             localStudyId = orgId + "|" + DataUtil.getStringFromProperties(studiesInDW, "local_study_id");
-            aets.add(aet);
-            localStudyIdsInDW.add(localStudyId);
 
+            localStudyIdsInDW.add(localStudyId);
         }
 
-        List<Study> localStudies = studyRepository.findByAETsAndStudyDateChar(aets, todayStr);
+        List<Study> localStudies;
         List<Study> studies2Delete = new ArrayList<>();
-        for(Study study : localStudies) {
-            log.debug("study: {} and published: {}", study.getLocalStudyId(), study.getPublished());
-            if(localStudyIdsInDW.contains(study.getLocalStudyId())) {
-                //do nothing
-            } else {
-                log.info("study will be marked to deletion: {}", study.getLocalStudyId());
-                study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
-                studies2Delete.add(study);
+        for(DeviceKey aeKey : aeKeys) {
+            localStudies = studyRepository.findByAEAndStudyDateChar(aeKey.getOrgId(),
+                    aeKey.getAet(),
+                    aeKey.getDeviceType(),
+                    "2019-09-05");
+            for(Study study : localStudies) {
+                log.debug("study: {} and published: {}", study.getLocalStudyId(), study.getPublished());
+                if(localStudyIdsInDW.contains(study.getLocalStudyId())) {
+                    //do nothing
+                } else {
+                    log.info("study will be marked to deletion: {}", study.getLocalStudyId());
+                    study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
+                    studies2Delete.add(study);
+                }
             }
         }
 
