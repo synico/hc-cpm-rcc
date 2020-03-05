@@ -16,6 +16,8 @@ create or replace view public.v_study as
         d.station_name as device_number,
         d.mf_code as manufacture,
         d.photo_link,
+        d.province,
+        d.city,
         s.prev_local_study_id,
         ps.study_end_time as last_study_time,
         s.next_local_study_id,

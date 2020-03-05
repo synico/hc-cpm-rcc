@@ -7,27 +7,36 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Consider the installation processes of dosewatch, AET and DEVICE_TYPE will guarantee the ae is unique
+ * in single hospital. With additional field ORG_ID will guarantee the ae is unique in a hospital union which
+ * is composed of more than one hospital.
+ */
+
 @Data
 @Embeddable
 public class DeviceKey implements Serializable {
 
-    @Column(name = "ID")
-    private Long id;
+    @Column(name = "ORG_ID")
+    private Long orgId;
 
     @Column(name = "AET")
     private String aet;
+
+    @Column(name = "DEVICE_TYPE")
+    private String deviceType;
 
     @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;
         if(obj == null || this.getClass() != obj.getClass()) return false;
         DeviceKey key = (DeviceKey) obj;
-        return this.id.equals(key.id) && this.aet.equals(key.aet);
+        return this.orgId.equals(key.orgId) && this.aet.equals(key.aet) && this.deviceType.equals(key.deviceType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.aet);
+        return Objects.hash(this.orgId, this.aet, this.deviceType);
     }
 
 }

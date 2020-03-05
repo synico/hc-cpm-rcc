@@ -1,8 +1,10 @@
 package cn.gehc.cpm.jobs;
 
+import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.domain.XASerie;
 import cn.gehc.cpm.domain.XAStudy;
+import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.repository.XASerieRepository;
 import cn.gehc.cpm.repository.XAStudyRepository;
@@ -18,6 +20,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,9 @@ public class XASeriePullJob extends TimerDBReadJob {
   @Autowired
   private XASerieRepository xaSerieRepository;
 
+  @Autowired
+  private OrgEntityRepository orgEntityRepository;
+
   public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
     log.info("start to insert data to xa_serie");
     List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
@@ -50,9 +56,26 @@ public class XASeriePullJob extends TimerDBReadJob {
     Study study;
     XAStudy xaStudy;
     XASerie xaSerie;
+    Long orgId = 0L;
     // save study, mr_serie
     for(Map<String, Object> serieProps : dataMap) {
       log.debug(serieProps.toString());
+
+      // retrieve org entity id by facility code
+      String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
+      if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+        List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
+        if(orgEntityList.size() > 0) {
+          orgId = orgEntityList.get(0).getOrgId();
+        }
+        log.info("facility {} is retrieved", orgId);
+      }
+      if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+        log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
+        continue;
+      }
+      serieProps.put("org_id", orgId);
+
       study = DataUtil.convertProps2Study(serieProps);
       studySet.add(study);
 

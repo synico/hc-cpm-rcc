@@ -83,6 +83,10 @@ public class CTSerie implements Comparable<CTSerie> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
 
+    @Column(name = "create_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
+
     public int compareTo(CTSerie anotherSerie) {
         int result = this.getSeriesDate().compareTo(anotherSerie.getSeriesDate());
         if(result == 0) {

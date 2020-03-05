@@ -62,6 +62,10 @@ public class MRSerie implements Comparable<MRSerie> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
 
+    @Column(name = "create_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
+
     public int compareTo(MRSerie anotherSerie) {
         int result = this.getSeriesDate().compareTo(anotherSerie.getSeriesDate());
         if(result == 0) {

@@ -2,9 +2,11 @@ package cn.gehc.cpm.jobs;
 
 import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.CTStudy;
+import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
+import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import cn.gehc.cpm.util.SerieType;
@@ -35,6 +37,9 @@ public class CTSeriePullJob extends TimerDBReadJob {
     @Autowired
     private CTSerieRepository ctSerieRepository;
 
+    @Autowired
+    private OrgEntityRepository orgEntityRepository;
+
     public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
         log.info("start to insert/update data to ct_serie");
         List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
@@ -49,9 +54,26 @@ public class CTSeriePullJob extends TimerDBReadJob {
         Study study;
         CTStudy ctStudy;
         CTSerie ctSerie;
+        Long orgId = 0L;
         // save study, ct_study, ct_serie
         for(Map<String, Object> serieProps : dataMap) {
             log.debug(serieProps.toString());
+
+            // retrieve org entity id by facility code
+            String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
+            if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+                List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
+                if(orgEntityList.size() > 0) {
+                    orgId = orgEntityList.get(0).getOrgId();
+                }
+                log.info("facility {} is retrieved", orgId);
+            }
+            if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
+                continue;
+            }
+            serieProps.put("org_id", orgId);
+
             study = DataUtil.convertProps2Study(serieProps);
             studiesFromJob.add(study);
 

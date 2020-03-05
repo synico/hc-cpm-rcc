@@ -104,13 +104,16 @@ public class DataUtil {
 
         studyKey.setId(getLongFromProperties(studyProps,"local_studyId"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
         study.setStudyKey(studyKey);
 
-        study.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+        study.setOrgId(getLongFromProperties(studyProps, "org_id"));
+        String localStudyId = getLongFromProperties(studyProps, "org_id") + "|" +
+                getStringFromProperties(studyProps, "local_study_id");
+        study.setLocalStudyId(localStudyId);
         study.setAeKey(getIntegerFromProperties(studyProps, "ae_key"));
         study.setAccessionNumber(getStringFromProperties(studyProps, "accession_number"));
         study.setDType(getStringFromProperties(studyProps, "study_dtype"));
-        study.setModality(getStringFromProperties(studyProps, "modality"));
         study.setPatientId(getStringFromProperties(studyProps, "patient_id"));
         study.setPatientSex(getStringFromProperties(studyProps, "patient_sex"));
         study.setPatientAge(getIntegerFromProperties(studyProps, "patient_age"));
@@ -120,6 +123,7 @@ public class DataUtil {
         study.setStudyDescKey(getIntegerFromProperties(studyProps, "sd_key"));
         study.setStudyDescription(getStringFromProperties(studyProps, "study_description"));
         study.setPerformingPhysician(getStringFromProperties(studyProps, "performing_physician"));
+        study.setCreateTime(Date.from(Instant.now()));
 
         return study;
     }
@@ -130,15 +134,19 @@ public class DataUtil {
 
         studyKey.setId(getLongFromProperties(studyProps,"local_studyId"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
         ctStudy.setStudyKey(studyKey);
 
-        ctStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+        String localStudyId = getStringFromProperties(studyProps, "org_id") + "|" +
+                getStringFromProperties(studyProps, "local_study_id");
+        ctStudy.setLocalStudyId(localStudyId);
         ctStudy.setDlpTotal(getDoubleFromProperties(studyProps, "ct_dose_length_product_total"));
         ctStudy.setDlpSSDE(getDoubleFromProperties(studyProps, "dlp_ssde"));
         ctStudy.setExamCTDI(getDoubleFromProperties(studyProps, "exam_ctdi"));
         ctStudy.setNumSeries(getIntegerFromProperties(studyProps, "num_series"));
         ctStudy.setProtocolKey(getLongFromProperties(studyProps, "protocol_key"));
         ctStudy.setProtocolName(getStringFromProperties(studyProps, "protocol_name"));
+        ctStudy.setCreateTime(Date.from(Instant.now()));
 
         return ctStudy;
     }
@@ -149,10 +157,13 @@ public class DataUtil {
 
         studyKey.setId(getLongFromProperties(studyProps, "local_studyId"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
         mrStudy.setStudyKey(studyKey);
 
         mrStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
         //For protocol key and protocol description will be retrieved from 1st serie
+
+        mrStudy.setCreateTime(Date.from(Instant.now()));
 
         return mrStudy;
     }
@@ -163,12 +174,14 @@ public class DataUtil {
 
         studyKey.setId(getLongFromProperties(studyProps, "local_studyId"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
         xaStudy.setStudyKey(studyKey);
 
         xaStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
         xaStudy.setDap(getDoubleFromProperties(studyProps, "dap"));
         xaStudy.setFluoroDap(getDoubleFromProperties(studyProps, "fluoro_dap"));
         xaStudy.setRecordDap(getDoubleFromProperties(studyProps, "record_dap"));
+        xaStudy.setCreateTime(Date.from(Instant.now()));
 
         return xaStudy;
     }
@@ -181,7 +194,9 @@ public class DataUtil {
         serieKey.setAet(getStringFromProperties(serieProps, "aet"));
         ctSerie.setSerieKey(serieKey);
 
-        ctSerie.setLocalStudyKey(getStringFromProperties(serieProps, "local_study_id"));
+        String localStudyId = getStringFromProperties(serieProps, "org_id") + "|" +
+                getStringFromProperties(serieProps, "local_study_id");
+        ctSerie.setLocalStudyKey(localStudyId);
         ctSerie.setLocalSerieId(serieKey.toString());
         ctSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
         ctSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
@@ -199,6 +214,7 @@ public class DataUtil {
         ctSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
         ctSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
+        ctSerie.setCreateTime(Date.from(Instant.now()));
 
         return ctSerie;
     }
@@ -224,6 +240,7 @@ public class DataUtil {
         mrSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
         mrSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
         mrSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
+        mrSerie.setCreateTime(Date.from(Instant.now()));
 
         if(ManufacturerCode.SIEMENS.getMfCode().equals(getStringFromProperties(serieProps, "mf_code"))) {
             // acquisition_duration of SIEMENS is "TA 01.23*11" or "TA 01:23*11"
@@ -260,6 +277,7 @@ public class DataUtil {
         xaSerie.setSerieDap(getDoubleFromProperties(serieProps, "serie_dap"));
         xaSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
         xaSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
+        xaSerie.setCreateTime(Date.from(Instant.now()));
 
         return xaSerie;
     }

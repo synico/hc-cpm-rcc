@@ -13,21 +13,21 @@ public class Study implements Comparable<Study> {
     @EmbeddedId
     private StudyKey studyKey;
 
-    //aet|id作为study全局逻辑主键
+    //org_id|aet|modality|id作为study全局逻辑主键
     @Column(name = "local_study_id")
     private String localStudyId;
 
     @Column(name = "ACCESSION_NUMBER")
     private String accessionNumber;
 
+    @Column(name = "ORG_ID")
+    private Long orgId;
+
     @Column(name = "AE_KEY")
     private Integer aeKey;
 
     @Column(name = "DTYPE")
     private String dType;
-
-    @Column(name = "MODALITY")
-    private String modality;
 
     @Column(name = "PATIENT_ID")
     private String patientId;
@@ -84,6 +84,10 @@ public class Study implements Comparable<Study> {
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
+
+    @Column(name = "CREATE_TIME")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
 
     public boolean equals(Object study) {
         boolean isEqual = Boolean.FALSE;

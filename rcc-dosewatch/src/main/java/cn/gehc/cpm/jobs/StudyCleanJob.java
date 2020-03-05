@@ -1,10 +1,13 @@
 package cn.gehc.cpm.jobs;
 
+import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
+import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ public class StudyCleanJob extends TimerDBReadJob {
 
     @Autowired
     private StudyRepository studyRepository;
+
+    @Autowired
+    private OrgEntityRepository orgEntityRepository;
 
     public void cleanStudies(@Headers Map<String, Object> headers, @Body Object body) {
         log.info("start to clean studies");
@@ -40,10 +46,28 @@ public class StudyCleanJob extends TimerDBReadJob {
 
         String localStudyId;
         String aet;
+        String modality;
+        Long orgId = 0L;
         for(Map<String, Object> studiesInDW : dataMap) {
             log.debug(studiesInDW.toString());
+
+            // retrieve org entity id by facility code
+            String facilityCode = DataUtil.getStringFromProperties(studiesInDW, "facility_code");
+            if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+                List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
+                if(orgEntityList.size() > 0) {
+                    orgId = orgEntityList.get(0).getOrgId();
+                }
+                log.info("facility {} is retrieved", orgId);
+            }
+            if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(studiesInDW, "aet"));
+                continue;
+            }
+
             aet = DataUtil.getStringFromProperties(studiesInDW, "aet");
-            localStudyId = DataUtil.getStringFromProperties(studiesInDW, "local_study_id");
+            modality = DataUtil.getStringFromProperties(studiesInDW, "modality");
+            localStudyId = orgId + "|" + DataUtil.getStringFromProperties(studiesInDW, "local_study_id");
             aets.add(aet);
             localStudyIdsInDW.add(localStudyId);
 

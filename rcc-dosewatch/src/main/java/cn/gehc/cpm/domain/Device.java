@@ -16,16 +16,13 @@ public class Device {
     @Column(name = "AE_NAME", insertable = false, updatable = false)
     private String aeName;
 
-    @Column(name = "DEVICE_TYPE")
-    private String deviceType;
-
     @Column(name = "DEVICE_MODEL")
     private String deviceModel;
 
     @Column(name = "LOCATION", insertable = false, updatable = false)
     private String location;
 
-    @Column(name = "dashboard_page", insertable = false, updatable = false)
+    @Column(name = "DASHBOARD_PAGE", insertable = false, updatable = false)
     private String dashboardPage;
 
     @Column(name = "MF_CODE")
@@ -40,9 +37,16 @@ public class Device {
     @Column(name = "TIMEZONE")
     private String timezone;
 
+    @Column(name = "IS_ACTIVE")
+    private Boolean isActive = Boolean.TRUE;
+
     @Column(name = "DT_LAST_UPDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
+
+    @Column(name = "CREATE_TIME")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
 
     @Column(name = "ORG_NAME", insertable = false, updatable = false)
     private String orgName;

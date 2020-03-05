@@ -1,10 +1,10 @@
 package cn.gehc.cpm.domain;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 @Entity
@@ -32,5 +32,9 @@ public class XAStudy {
 
   @Column(name = "protocol_name")
   private String protocolName;
+
+  @Column(name = "create_time")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createTime;
 
 }
