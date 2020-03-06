@@ -659,6 +659,68 @@
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
     </route>
 
+    <route id="nmSeriePullJob">
+        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <setHeader headerName="JobName">
+            <constant>nmSeriePullJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>ReadDoseDB</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="nmSeriePullJob" method="startDBReadJob"/>
+        <to uri="sql:select
+                    s.id as local_studyId,
+                    s.ae_key,
+                    CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                    fac.code as facility_code,
+                    s.accession_number,
+                    s.dtype as study_dtype,
+                    s.modality,
+                    s.patient_key,
+                    s.patient_age,
+                    pt.patient_id,
+                    pt.sex as patient_sex,
+                    s.study_id,
+                    s.study_instance_uid,
+                    s.study_date,
+                    s.sd_key,
+                    sdesc.name as study_description,
+                    nms.radioisotope_mapping_key,
+                    nms.injection_time,
+                    se.id as local_serieId,
+                    ae.aet,
+                    CONCAT(ae.aet,'|',se.id) as local_serie_id,
+                    se.serie_id,
+                    se.study_key,
+                    se.dtype as serie_dtype,
+                    se.series_date,
+                    se.target_region_key as target_region,
+                    sedesc.name as series_description,
+                    nmse.protocol_key,
+                    pl.name as protocol_name,
+                    se.dt_last_update,
+                    (unix_timestamp(se.dt_last_update) + se.id) as joint_key
+                    from nm_serie nmse join serie se on nmse.id=se.id
+                        join study s on s.id=se.study_key
+                        join nm_study nms on s.id=nms.id
+                        join study_description sdesc on s.sd_key=sdesc.id
+                        join series_description sedesc on se.series_description_key=sedesc.id
+                        join ae on ae.id=s.ae_key
+                        join facility fac on ae.facility_key = fac.id
+                        join protocol pl on nmse.protocol_key=pl.id
+                        join patient pt on s.patient_key=pt.id
+                where (unix_timestamp(se.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
+                    and s.study_date is not null
+                order by joint_key asc limit 500?dataSource=dwDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="nmSeriePullJob" method="insertData"/>
+        <bean ref="nmSeriePullJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
     <route id="devicePullJob">
         <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
         <setHeader headerName="JobName">

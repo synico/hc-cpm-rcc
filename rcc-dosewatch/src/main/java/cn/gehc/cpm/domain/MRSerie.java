@@ -13,7 +13,7 @@ public class MRSerie implements Comparable<MRSerie> {
     @EmbeddedId
     private SerieKey serieKey;
 
-    //aet|study_key作为全局逻辑主键
+    //org_id|aet|device_type|study_key作为全局逻辑主键
     @Column(name = "local_study_key")
     private String localStudyKey;
 
