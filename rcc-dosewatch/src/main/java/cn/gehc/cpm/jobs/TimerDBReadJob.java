@@ -6,7 +6,9 @@
 package cn.gehc.cpm.jobs;
 
 import cn.gehc.cpm.domain.TimerJob;
+import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.repository.ReadTimerJobRepository;
+import cn.gehc.cpm.repository.StudyRepository;
 import org.apache.camel.Headers;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,12 @@ public class TimerDBReadJob {
 
     @Autowired
     protected ReadTimerJobRepository jobDao;
+
+    @Autowired
+    protected StudyRepository studyRepository;
+
+    @Autowired
+    protected OrgEntityRepository orgEntityRepository;
 
     public void startDBReadJob(@Headers Map<String, Object> headers) {
         TimerJob job = jobDao.findByJobName(headers.get("JobName").toString());

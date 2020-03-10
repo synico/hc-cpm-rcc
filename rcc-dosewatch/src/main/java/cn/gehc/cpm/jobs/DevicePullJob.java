@@ -4,7 +4,6 @@ import cn.gehc.cpm.domain.Device;
 import cn.gehc.cpm.domain.DeviceKey;
 import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.repository.DeviceRepository;
-import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.util.DataUtil;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
@@ -15,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DevicePullJob extends TimerDBReadJob {
@@ -25,18 +27,15 @@ public class DevicePullJob extends TimerDBReadJob {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    @Autowired
-    private OrgEntityRepository orgEntityRepository;
-
-    public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
+    public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to device");
-        List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
+
         List<Device> deviceList = new ArrayList<>();
 
         Date lastPolledValue = null;
         Device device;
         Long orgId = 0L;
-        for(Map<String, Object> deviceProps : dataMap) {
+        for(Map<String, Object> deviceProps : body) {
             log.debug(deviceProps.toString());
 
             String facilityCode = DataUtil.getStringFromProperties(deviceProps, "facility_code");

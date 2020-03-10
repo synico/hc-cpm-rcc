@@ -4,20 +4,9 @@ import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.domain.XASerie;
 import cn.gehc.cpm.domain.XAStudy;
-import cn.gehc.cpm.repository.OrgEntityRepository;
-import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.repository.XASerieRepository;
 import cn.gehc.cpm.repository.XAStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
@@ -26,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 @Service(value = "xaSeriePullJob")
 public class XASeriePullJob extends TimerDBReadJob {
 
   private static final Logger log = LoggerFactory.getLogger(XASeriePullJob.class);
-
-  @Autowired
-  private StudyRepository studyRepository;
 
   @Autowired
   private XAStudyRepository xaStudyRepository;
@@ -40,12 +29,9 @@ public class XASeriePullJob extends TimerDBReadJob {
   @Autowired
   private XASerieRepository xaSerieRepository;
 
-  @Autowired
-  private OrgEntityRepository orgEntityRepository;
-
-  public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
+  public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
     log.info("start to insert data to xa_serie");
-    List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
+
     Set<Study> studySet = new HashSet<>();
     Set<XAStudy> xaStudySet = new HashSet<>();
     Set<XASerie> xaSerieSet = new HashSet<>();
@@ -58,7 +44,7 @@ public class XASeriePullJob extends TimerDBReadJob {
     XASerie xaSerie;
     Long orgId = 0L;
     // save study, mr_serie
-    for(Map<String, Object> serieProps : dataMap) {
+    for(Map<String, Object> serieProps : body) {
       log.debug(serieProps.toString());
 
       // retrieve org entity id by facility code

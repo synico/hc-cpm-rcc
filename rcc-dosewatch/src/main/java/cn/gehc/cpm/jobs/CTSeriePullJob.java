@@ -6,8 +6,6 @@ import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
-import cn.gehc.cpm.repository.OrgEntityRepository;
-import cn.gehc.cpm.repository.StudyRepository;
 import cn.gehc.cpm.util.DataUtil;
 import cn.gehc.cpm.util.SerieType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,20 +27,13 @@ public class CTSeriePullJob extends TimerDBReadJob {
     private static final Logger log = LoggerFactory.getLogger(CTSeriePullJob.class);
 
     @Autowired
-    private StudyRepository studyRepository;
-
-    @Autowired
     private CTStudyRepository ctStudyRepository;
 
     @Autowired
     private CTSerieRepository ctSerieRepository;
 
-    @Autowired
-    private OrgEntityRepository orgEntityRepository;
-
-    public void insertData(@Headers Map<String, Object> headers, @Body Object body) {
+    public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert/update data to ct_serie");
-        List<Map<String, Object>> dataMap = (List<Map<String, Object>>) body;
 
         Set<Study> studiesFromJob = new HashSet<>();
         Set<CTStudy> ctStudySet = new HashSet<>();
@@ -56,7 +47,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
         CTSerie ctSerie;
         Long orgId = 0L;
         // save study, ct_study, ct_serie
-        for(Map<String, Object> serieProps : dataMap) {
+        for(Map<String, Object> serieProps : body) {
             log.debug(serieProps.toString());
 
             // retrieve org entity id by facility code

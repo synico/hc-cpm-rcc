@@ -7,4 +7,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface DeviceRepository extends PagingAndSortingRepository<Device, String> {
 
     Device findByDeviceKey(DeviceKey deviceKey);
+
+    Device findByOrgIdAndAet(Long orgId, String aet);
+
 }

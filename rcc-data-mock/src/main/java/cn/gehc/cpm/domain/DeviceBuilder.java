@@ -10,12 +10,11 @@ public class DeviceBuilder {
                      String mfCode, String name, String stationName) {
         DeviceKey deviceKey = new DeviceKey();
         deviceKey.setAet(aet);
-        deviceKey.setId(dk);
+//        deviceKey.setDeviceType(type);
 
         Device device = new Device();
         device.setDeviceKey(deviceKey);
         device.setDeviceModel(model);
-        device.setDeviceType(type);
         device.setDtLastUpdate(lastupdate);
         device.setMfCode(mfCode);
         device.setName(name);
