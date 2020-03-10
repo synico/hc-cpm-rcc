@@ -5,6 +5,8 @@
  */
 package cn.gehc.cpm.jobs;
 
+import cn.gehc.cpm.domain.DeviceKey;
+import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.domain.TimerJob;
 import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.repository.ReadTimerJobRepository;
@@ -14,8 +16,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  *
@@ -68,6 +70,40 @@ public class TimerDBReadJob {
         job.setLastPolledValue(value);
         job.setLastUpdatedTime(new Date());
         jobDao.save(job);
+    }
+
+    public void linkStudies(Collection<Study> study2Update) {
+        // update prev_local_study_id and next_local_study_id
+        Map<DeviceKey, Set<String>> aetStudyDateMap = new HashMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        DeviceKey deviceKey = null;
+        for (Study s : study2Update) {
+            deviceKey = new DeviceKey();
+            deviceKey.of(s.getStudyKey().getOrgId(), s.getStudyKey().getAet(), s.getStudyKey().getModality());
+            Set studyDateSet = aetStudyDateMap.get(deviceKey);
+            if (studyDateSet == null) {
+                studyDateSet = new HashSet();
+            }
+            studyDateSet.add(sdf.format(s.getStudyDate()));
+            aetStudyDateMap.put(deviceKey, studyDateSet);
+        }
+        for (Map.Entry<DeviceKey, Set<String>> aetStudyDate : aetStudyDateMap.entrySet()) {
+            DeviceKey aeKey = aetStudyDate.getKey();
+            Set<String> studyDateSet = aetStudyDate.getValue();
+            for (String studyDateString : studyDateSet) {
+                List<Study> studies = studyRepository.findByAEAndStudyDateChar(aeKey.getOrgId(),
+                        aeKey.getAet(), aeKey.getDeviceType(), studyDateString);
+                Study prevStudy = (studies != null && studies.size() > 0) ? studies.get(0) : null;
+                Study currentStudy = null;
+                for (int idx = 1; idx < studies.size(); idx++) {
+                    currentStudy = studies.get(idx);
+                    prevStudy.setNextLocalStudyId(currentStudy.getLocalStudyId());
+                    currentStudy.setPrevLocalStudyId(prevStudy.getLocalStudyId());
+                    prevStudy = currentStudy;
+                }
+                studyRepository.saveAll(studies);
+            }
+        }
     }
     
 }

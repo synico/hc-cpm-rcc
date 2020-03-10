@@ -55,8 +55,12 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 if(orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility {} is retrieved", orgId);
+                } else {
+                    // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
+                    log.warn("The org/device has not been synchronized, job will not save data");
+                    return;
                 }
-                log.info("facility {} is retrieved", orgId);
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
                 log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
@@ -184,36 +188,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
             studyRepository.saveAll(study2Update);
         }
 
-        // TODO only apply for RJYY, will be removed for other customer
-        // update prev_local_study_id and next_local_study_id
-        Map<String, Set<String>> aetStudyDateMap = new HashMap<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        for(Study s : study2Update) {
-            String aet = s.getStudyKey().getAet();
-            Set studyDateSet = aetStudyDateMap.get(aet);
-            if(studyDateSet == null) {
-                studyDateSet = new HashSet();
-            }
-            studyDateSet.add(sdf.format(s.getStudyDate()));
-            aetStudyDateMap.put(aet, studyDateSet);
-        }
-        for(Map.Entry<String, Set<String>> aetStudyDate : aetStudyDateMap.entrySet()) {
-            String aet = aetStudyDate.getKey();
-            Set<String> studyDateSet = aetStudyDate.getValue();
-            for(String studyDateString : studyDateSet) {
-                List<Study> studies = studyRepository.findByAETAndStudyDateChar(aet, studyDateString);
-                Study prevStudy = (studies != null && studies.size() > 0) ? studies.get(0) : null;
-                Study currentStudy = null;
-                for(int idx = 1; idx < studies.size(); idx++) {
-                    currentStudy = studies.get(idx);
-                    prevStudy.setNextLocalStudyId(currentStudy.getLocalStudyId());
-                    currentStudy.setPrevLocalStudyId(prevStudy.getLocalStudyId());
-                    prevStudy = currentStudy;
-                }
-                studyRepository.saveAll(studies);
-            }
-        }
-        // TODO END
+        linkStudies(study2Update);
 
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());

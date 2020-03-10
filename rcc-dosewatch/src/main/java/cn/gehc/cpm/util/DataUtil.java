@@ -102,15 +102,13 @@ public class DataUtil {
         Study study = new Study();
         StudyKey studyKey = new StudyKey();
 
-        studyKey.setId(getLongFromProperties(studyProps,"local_studyId"));
+        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
         studyKey.setModality(getStringFromProperties(studyProps, "modality"));
+        studyKey.setId(getLongFromProperties(studyProps,"dw_study_id"));
         study.setStudyKey(studyKey);
 
-        study.setOrgId(getLongFromProperties(studyProps, "org_id"));
-        String localStudyId = getLongFromProperties(studyProps, "org_id") + "|" +
-                getStringFromProperties(studyProps, "local_study_id");
-        study.setLocalStudyId(localStudyId);
+        study.setLocalStudyId(studyKey.toString());
         study.setAeKey(getIntegerFromProperties(studyProps, "ae_key"));
         study.setAccessionNumber(getStringFromProperties(studyProps, "accession_number"));
         study.setDType(getStringFromProperties(studyProps, "study_dtype"));
@@ -132,14 +130,13 @@ public class DataUtil {
         CTStudy ctStudy = new CTStudy();
         StudyKey studyKey = new StudyKey();
 
-        studyKey.setId(getLongFromProperties(studyProps,"local_studyId"));
+        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
         studyKey.setModality(getStringFromProperties(studyProps, "modality"));
+        studyKey.setId(getLongFromProperties(studyProps,"dw_study_id"));
         ctStudy.setStudyKey(studyKey);
 
-        String localStudyId = getStringFromProperties(studyProps, "org_id") + "|" +
-                getStringFromProperties(studyProps, "local_study_id");
-        ctStudy.setLocalStudyId(localStudyId);
+        ctStudy.setLocalStudyId(studyKey.toString());
         ctStudy.setDlpTotal(getDoubleFromProperties(studyProps, "ct_dose_length_product_total"));
         ctStudy.setDlpSSDE(getDoubleFromProperties(studyProps, "dlp_ssde"));
         ctStudy.setExamCTDI(getDoubleFromProperties(studyProps, "exam_ctdi"));
@@ -155,12 +152,13 @@ public class DataUtil {
         MRStudy mrStudy = new MRStudy();
         StudyKey studyKey = new StudyKey();
 
-        studyKey.setId(getLongFromProperties(studyProps, "local_studyId"));
+        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
         studyKey.setModality(getStringFromProperties(studyProps, "modality"));
+        studyKey.setId(getLongFromProperties(studyProps, "dw_study_id"));
         mrStudy.setStudyKey(studyKey);
 
-        mrStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+        mrStudy.setLocalStudyId(studyKey.toString());
         //For protocol key and protocol description will be retrieved from 1st serie
 
         mrStudy.setCreateTime(Date.from(Instant.now()));
@@ -172,12 +170,13 @@ public class DataUtil {
         XAStudy xaStudy = new XAStudy();
         StudyKey studyKey = new StudyKey();
 
-        studyKey.setId(getLongFromProperties(studyProps, "local_studyId"));
+        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
         studyKey.setModality(getStringFromProperties(studyProps, "modality"));
+        studyKey.setId(getLongFromProperties(studyProps, "dw_study_id"));
         xaStudy.setStudyKey(studyKey);
 
-        xaStudy.setLocalStudyId(getStringFromProperties(studyProps, "local_study_id"));
+        xaStudy.setLocalStudyId(studyKey.toString());
         xaStudy.setDap(getDoubleFromProperties(studyProps, "dap"));
         xaStudy.setFluoroDap(getDoubleFromProperties(studyProps, "fluoro_dap"));
         xaStudy.setRecordDap(getDoubleFromProperties(studyProps, "record_dap"));
@@ -186,17 +185,35 @@ public class DataUtil {
         return xaStudy;
     }
 
+    public static NMStudy convertProps2NMStudy(Map<String, Object> studyProps) {
+        NMStudy nmStudy = new NMStudy();
+        StudyKey studyKey = new StudyKey();
+
+        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
+        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
+        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
+        studyKey.setId(getLongFromProperties(studyProps, "dw_study_id"));
+        nmStudy.setStudyKey(studyKey);
+
+        nmStudy.setLocalStudyId(studyKey.toString());
+        nmStudy.setInjectionTime(getDateFromProperties(studyProps, "injection_time"));
+        nmStudy.setRadioisotopeMappingKey(getIntegerFromProperties(studyProps, "radioisotope_mapping_key"));
+        nmStudy.setCreateTime(Date.from(Instant.now()));
+
+        return nmStudy;
+    }
+
     public static CTSerie convertProps2CTSerie(Map<String, Object> serieProps) {
         CTSerie ctSerie = new CTSerie();
         SerieKey serieKey = new SerieKey();
 
-        serieKey.setId(getLongFromProperties(serieProps, "local_serieId"));
+        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
         serieKey.setAet(getStringFromProperties(serieProps, "aet"));
+        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
+        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
         ctSerie.setSerieKey(serieKey);
 
-        String localStudyId = getStringFromProperties(serieProps, "org_id") + "|" +
-                getStringFromProperties(serieProps, "local_study_id");
-        ctSerie.setLocalStudyKey(localStudyId);
+        ctSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
         ctSerie.setLocalSerieId(serieKey.toString());
         ctSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
         ctSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
@@ -223,12 +240,14 @@ public class DataUtil {
         MRSerie mrSerie = new MRSerie();
         SerieKey serieKey = new SerieKey();
 
-        serieKey.setId(getLongFromProperties(serieProps, "local_serieId"));
+        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
         serieKey.setAet(getStringFromProperties(serieProps, "aet"));
+        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
+        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
         mrSerie.setSerieKey(serieKey);
 
-        mrSerie.setLocalStudyKey(getStringFromProperties(serieProps, "local_study_id"));
-        mrSerie.setLocalSerieId(getStringFromProperties(serieProps, "local_serie_id"));
+        mrSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
+        mrSerie.setLocalSerieId(serieKey.toString());
         mrSerie.setProtocolKey(getLongFromProperties(serieProps, "protocol_key"));
         mrSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
         mrSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
@@ -257,12 +276,14 @@ public class DataUtil {
         XASerie xaSerie = new XASerie();
         SerieKey serieKey = new SerieKey();
 
-        serieKey.setId(getLongFromProperties(serieProps, "local_serieId"));
+        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
         serieKey.setAet(getStringFromProperties(serieProps, "aet"));
+        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
+        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
         xaSerie.setSerieKey(serieKey);
 
-        xaSerie.setLocalStudyKey(getStringFromProperties(serieProps, "local_study_id"));
-        xaSerie.setLocalSerieId(getStringFromProperties(serieProps, "local_serie_id"));
+        xaSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
+        xaSerie.setLocalSerieId(serieKey.toString());
         xaSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
         xaSerie.setStudyKey(getLongFromProperties(serieProps, "study_key"));
         xaSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
@@ -280,6 +301,31 @@ public class DataUtil {
         xaSerie.setCreateTime(Date.from(Instant.now()));
 
         return xaSerie;
+    }
+
+    public static NMSerie convertProps2NMSerie(Map<String, Object> serieProps) {
+        NMSerie nmSerie = new NMSerie();
+        SerieKey serieKey = new SerieKey();
+
+        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
+        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
+        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
+        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
+        nmSerie.setSerieKey(serieKey);
+
+        nmSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
+        nmSerie.setLocalSerieId(serieKey.toString());
+        nmSerie.setSerieId(getStringFromProperties(serieProps, "serie_id"));
+        nmSerie.setDType(getStringFromProperties(serieProps, "serie_dtype"));
+        nmSerie.setSeriesDate(getDateFromProperties(serieProps, "series_date"));
+        nmSerie.setTargetRegion(getStringFromProperties(serieProps, "target_region"));
+        nmSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
+        nmSerie.setProtocolKey(getStringFromProperties(serieProps, "protocol_key"));
+        nmSerie.setProtocalName(getStringFromProperties(serieProps, "protocol_name"));
+        nmSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
+        nmSerie.setCreateTime(Date.from(Instant.now()));
+
+        return nmSerie;
     }
 
     public static Date getLastSerieDate(CTSerie lastSerie) {

@@ -23,7 +23,7 @@ public class StudyCleanJob extends TimerDBReadJob {
     public void cleanStudies(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to clean studies");
 
-        //Do nothing, if there isn't data selected from database
+        //Do nothing, if there isn't data retrieved from database
         if(body.size() == 0) {
             return;
         }
@@ -60,7 +60,7 @@ public class StudyCleanJob extends TimerDBReadJob {
                     DataUtil.getStringFromProperties(studiesInDW, "aet"),
                     DataUtil.getStringFromProperties(studiesInDW, "modality"));
             aeKeys.add(deviceKey);
-            localStudyId = orgId + "|" + DataUtil.getStringFromProperties(studiesInDW, "local_study_id");
+            localStudyId = deviceKey.toString() + "|" + DataUtil.getStringFromProperties(studiesInDW, "dw_study_id");
 
             localStudyIdsInDW.add(localStudyId);
         }

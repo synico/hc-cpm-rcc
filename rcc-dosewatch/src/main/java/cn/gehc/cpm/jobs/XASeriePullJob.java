@@ -1,9 +1,6 @@
 package cn.gehc.cpm.jobs;
 
-import cn.gehc.cpm.domain.OrgEntity;
-import cn.gehc.cpm.domain.Study;
-import cn.gehc.cpm.domain.XASerie;
-import cn.gehc.cpm.domain.XAStudy;
+import cn.gehc.cpm.domain.*;
 import cn.gehc.cpm.repository.XASerieRepository;
 import cn.gehc.cpm.repository.XAStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
@@ -21,170 +18,147 @@ import java.util.*;
 @Service(value = "xaSeriePullJob")
 public class XASeriePullJob extends TimerDBReadJob {
 
-  private static final Logger log = LoggerFactory.getLogger(XASeriePullJob.class);
+    private static final Logger log = LoggerFactory.getLogger(XASeriePullJob.class);
 
-  @Autowired
-  private XAStudyRepository xaStudyRepository;
+    @Autowired
+    private XAStudyRepository xaStudyRepository;
 
-  @Autowired
-  private XASerieRepository xaSerieRepository;
+    @Autowired
+    private XASerieRepository xaSerieRepository;
 
-  public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
-    log.info("start to insert data to xa_serie");
+    public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
+        log.info("start to insert data to xa_serie");
 
-    Set<Study> studySet = new HashSet<>();
-    Set<XAStudy> xaStudySet = new HashSet<>();
-    Set<XASerie> xaSerieSet = new HashSet<>();
+        Set<Study> studySet = new HashSet<>();
+        Set<XAStudy> xaStudySet = new HashSet<>();
+        Set<XASerie> xaSerieSet = new HashSet<>();
 
-    Map<String, TreeSet<XASerie>> studyWithSerieMap = new HashMap<>();
+        Map<String, TreeSet<XASerie>> studyWithSerieMap = new HashMap<>();
 
-    Long lastPolledValue = null;
-    Study study;
-    XAStudy xaStudy;
-    XASerie xaSerie;
-    Long orgId = 0L;
-    // save study, mr_serie
-    for(Map<String, Object> serieProps : body) {
-      log.debug(serieProps.toString());
+        Long lastPolledValue = null;
+        Study study;
+        XAStudy xaStudy;
+        XASerie xaSerie;
+        Long orgId = 0L;
+        // save study, mr_serie
+        for (Map<String, Object> serieProps : body) {
+            log.debug(serieProps.toString());
 
-      // retrieve org entity id by facility code
-      String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
-      if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
-        List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-        if(orgEntityList.size() > 0) {
-          orgId = orgEntityList.get(0).getOrgId();
-        }
-        log.info("facility {} is retrieved", orgId);
-      }
-      if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
-        log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
-        continue;
-      }
-      serieProps.put("org_id", orgId);
+            // retrieve org entity id by facility code
+            String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
+            if (orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+                List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
+                if (orgEntityList.size() > 0) {
+                    orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility {} is retrieved", orgId);
+                } else {
+                    // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
+                    log.warn("The org/device has not been synchronized, job will not save data");
+                    return;
+                }
+            }
+            if (orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
+                continue;
+            }
+            serieProps.put("org_id", orgId);
 
-      study = DataUtil.convertProps2Study(serieProps);
-      studySet.add(study);
+            study = DataUtil.convertProps2Study(serieProps);
+            studySet.add(study);
 
-      xaStudy = DataUtil.convertProps2XAStudy(serieProps);
-      xaStudySet.add(xaStudy);
+            xaStudy = DataUtil.convertProps2XAStudy(serieProps);
+            xaStudySet.add(xaStudy);
 
-      xaSerie = DataUtil.convertProps2XASerie(serieProps);
-      xaSerieSet.add(xaSerie);
+            xaSerie = DataUtil.convertProps2XASerie(serieProps);
+            xaSerieSet.add(xaSerie);
 
-      Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
+            Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
 
-      TreeSet<XASerie> xaSerieList;
-      if(studyWithSerieMap.get(study.getLocalStudyId()) == null) {
-        xaSerieList = new TreeSet<>();
-      } else {
-        xaSerieList = studyWithSerieMap.get(study.getLocalStudyId());
-      }
-      xaSerieList.add(xaSerie);
-      studyWithSerieMap.put(study.getLocalStudyId(), xaSerieList);
+            TreeSet<XASerie> xaSerieList;
+            if (studyWithSerieMap.get(study.getLocalStudyId()) == null) {
+                xaSerieList = new TreeSet<>();
+            } else {
+                xaSerieList = studyWithSerieMap.get(study.getLocalStudyId());
+            }
+            xaSerieList.add(xaSerie);
+            studyWithSerieMap.put(study.getLocalStudyId(), xaSerieList);
 
-      if(lastPolledValue == null) {
-        lastPolledValue = jointKey;
-      } else {
-        lastPolledValue = lastPolledValue > jointKey ? lastPolledValue : jointKey;
-      }
-    }
-
-    if(xaStudySet.size() > 0) {
-      xaStudyRepository.saveAll(xaStudySet);
-    }
-
-    if(xaSerieSet.size() > 0) {
-      xaSerieRepository.saveAll(xaSerieSet);
-    }
-
-    //update study
-    List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyWithSerieMap.keySet());
-    for(Study st : studySet) {
-      if(!studyList.contains(st)) {
-        studyList.add(st);
-      }
-    }
-    List<Study> study2Update = new ArrayList<>(studyList.size());
-    List<XAStudy> xaStudy2Update = new ArrayList<>(studyList.size());
-    for(Study tmpStudy : studyList) {
-      TreeSet<XASerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
-      if(serieSet != null && serieSet.size() > 0) {
-        XASerie firstXASerie = null, lastXASerie = null;
-        Iterator<XASerie> ascItr = serieSet.iterator();
-        while(ascItr.hasNext()) {
-          XASerie tmpSerie = ascItr.next();
-          if(tmpSerie != null && tmpSerie.getSeriesDate() != null) {
-            firstXASerie = tmpSerie;
-            break;
-          }
-        }
-        Iterator<XASerie> descItr = serieSet.descendingIterator();
-        while(descItr.hasNext()) {
-          XASerie tmpSerie = descItr.next();
-          if(tmpSerie != null
-            && tmpSerie.getSeriesDate() != null
-            && tmpSerie.getExposureTime() != null) {
-            lastXASerie = tmpSerie;
-            break;
-          }
+            if (lastPolledValue == null) {
+                lastPolledValue = jointKey;
+            } else {
+                lastPolledValue = lastPolledValue > jointKey ? lastPolledValue : jointKey;
+            }
         }
 
-        //update study start time
-        tmpStudy.setStudyStartTime(firstXASerie.getSeriesDate());
-        //update study end time
-        tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastXASerie));
-        study2Update.add(tmpStudy);
-
-        //update protocol_key and protocol_name by first serie of XA study
-        XAStudy tmpXAStudy = xaStudySet.stream()
-                .filter(xa -> tmpStudy.getLocalStudyId().equals(xa.getLocalStudyId()))
-                .findFirst().get();
-        tmpXAStudy.setProtocolKey(firstXASerie.getProtocolKey());
-        tmpXAStudy.setProtocolName(firstXASerie.getProtocolName());
-        xaStudy2Update.add(tmpXAStudy);
-      }
-    }
-
-    if(xaStudy2Update.size() > 0) {
-      xaStudyRepository.saveAll(xaStudy2Update);
-    }
-
-    if(study2Update.size() > 0) {
-      studyRepository.saveAll(study2Update);
-    }
-
-    // update prev_local_study_id and next_local_study_id
-    Map<String, Set<String>> aetStudyDateMap = new HashMap<>();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    for(Study s : study2Update) {
-      String aet = s.getStudyKey().getAet();
-      Set studyDateSet = aetStudyDateMap.get(aet);
-      if(studyDateSet == null) {
-        studyDateSet = new HashSet();
-      }
-      studyDateSet.add(sdf.format(s.getStudyDate()));
-      aetStudyDateMap.put(aet, studyDateSet);
-    }
-    for(Map.Entry<String, Set<String>> aetStudyDate : aetStudyDateMap.entrySet()) {
-      String aet = aetStudyDate.getKey();
-      Set<String> studyDateSet = aetStudyDate.getValue();
-      for(String studyDateString : studyDateSet) {
-        List<Study> studies = studyRepository.findByAETAndStudyDateChar(aet, studyDateString);
-        Study prevStudy = (studies != null && studies.size() > 0) ? studies.get(0) : null;
-        Study currentStudy = null;
-        for(int idx = 1; idx < studies.size(); idx++) {
-          currentStudy = studies.get(idx);
-          prevStudy.setNextLocalStudyId(currentStudy.getLocalStudyId());
-          currentStudy.setPrevLocalStudyId(prevStudy.getLocalStudyId());
-          prevStudy = currentStudy;
+        if (xaStudySet.size() > 0) {
+            xaStudyRepository.saveAll(xaStudySet);
         }
-        studyRepository.saveAll(studies);
-      }
-    }
 
-    if(lastPolledValue != null) {
-      super.updateLastPullValue(headers, lastPolledValue.toString());
+        if (xaSerieSet.size() > 0) {
+            xaSerieRepository.saveAll(xaSerieSet);
+        }
+
+        //update study
+        List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyWithSerieMap.keySet());
+        for (Study st : studySet) {
+            if (!studyList.contains(st)) {
+                studyList.add(st);
+            }
+        }
+        List<Study> study2Update = new ArrayList<>(studyList.size());
+        List<XAStudy> xaStudy2Update = new ArrayList<>(studyList.size());
+        for (Study tmpStudy : studyList) {
+            TreeSet<XASerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
+            if (serieSet != null && serieSet.size() > 0) {
+                XASerie firstXASerie = null, lastXASerie = null;
+                Iterator<XASerie> ascItr = serieSet.iterator();
+                while (ascItr.hasNext()) {
+                    XASerie tmpSerie = ascItr.next();
+                    if (tmpSerie != null && tmpSerie.getSeriesDate() != null) {
+                        firstXASerie = tmpSerie;
+                        break;
+                    }
+                }
+                Iterator<XASerie> descItr = serieSet.descendingIterator();
+                while (descItr.hasNext()) {
+                    XASerie tmpSerie = descItr.next();
+                    if (tmpSerie != null
+                            && tmpSerie.getSeriesDate() != null
+                            && tmpSerie.getExposureTime() != null) {
+                        lastXASerie = tmpSerie;
+                        break;
+                    }
+                }
+
+                //update study start time
+                tmpStudy.setStudyStartTime(firstXASerie.getSeriesDate());
+                //update study end time
+                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastXASerie));
+                study2Update.add(tmpStudy);
+
+                //update protocol_key and protocol_name by first serie of XA study
+                XAStudy tmpXAStudy = xaStudySet.stream()
+                        .filter(xa -> tmpStudy.getLocalStudyId().equals(xa.getLocalStudyId()))
+                        .findFirst().get();
+                tmpXAStudy.setProtocolKey(firstXASerie.getProtocolKey());
+                tmpXAStudy.setProtocolName(firstXASerie.getProtocolName());
+                xaStudy2Update.add(tmpXAStudy);
+            }
+        }
+
+        if (xaStudy2Update.size() > 0) {
+            xaStudyRepository.saveAll(xaStudy2Update);
+        }
+
+        if (study2Update.size() > 0) {
+            studyRepository.saveAll(study2Update);
+        }
+
+        linkStudies(study2Update);
+
+        if (lastPolledValue != null) {
+            super.updateLastPullValue(headers, lastPolledValue.toString());
+        }
     }
-  }
 
 }

@@ -13,9 +13,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -34,9 +33,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -89,9 +87,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -110,9 +107,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -163,9 +159,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -184,9 +179,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -237,9 +231,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -258,9 +251,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -311,9 +303,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -332,9 +323,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -385,9 +375,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -406,9 +395,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -459,9 +447,8 @@
         </setHeader>
         <bean ref="ctSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -480,9 +467,8 @@
                 cts.exam_ctdi,
                 cts.num_series,
                 cts.protocol_key,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -533,9 +519,8 @@
         </setHeader>
         <bean ref="mrSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                s.id as local_studyId,
+                s.id as dw_study_id,
                 s.ae_key,
-                CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                 fac.code as facility_code,
                 s.accession_number,
                 s.dtype as study_dtype,
@@ -549,9 +534,8 @@
                 s.study_date,
                 s.sd_key,
                 sdesc.name as study_description,
-                se.id as local_serieId,
+                se.id as dw_serie_id,
                 ae.aet,
-                CONCAT(ae.aet,'|',se.id) as local_serie_id,
                 se.serie_id,
                 se.study_key,
                 se.dtype as serie_dtype,
@@ -604,9 +588,8 @@
         </setHeader>
         <bean ref="xaSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                    s.id as local_studyId,
+                    s.id as dw_study_id,
                     s.ae_key,
-                    CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                     fac.code as facility_code,
                     s.accession_number,
                     s.dtype as study_dtype,
@@ -623,9 +606,8 @@
                     xas.ifadp*100 as dap,
                     xas.fluoro_dap*100 as fluoro_dap,
                     xas.record_dap*100 as record_dap,
-                    se.id as local_serieId,
+                    se.id as dw_serie_id,
                     ae.aet,
-                    CONCAT(ae.aet,'|',se.id) as local_serie_id,
                     se.serie_id,
                     se.study_key,
                     se.dtype as serie_dtype,
@@ -672,9 +654,8 @@
         </setHeader>
         <bean ref="nmSeriePullJob" method="startDBReadJob"/>
         <to uri="sql:select
-                    s.id as local_studyId,
+                    s.id as dw_study_id,
                     s.ae_key,
-                    CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
                     fac.code as facility_code,
                     s.accession_number,
                     s.dtype as study_dtype,
@@ -690,9 +671,8 @@
                     sdesc.name as study_description,
                     nms.radioisotope_mapping_key,
                     nms.injection_time,
-                    se.id as local_serieId,
+                    se.id as dw_serie_id,
                     ae.aet,
-                    CONCAT(ae.aet,'|',se.id) as local_serie_id,
                     se.serie_id,
                     se.study_key,
                     se.dtype as serie_dtype,
@@ -735,7 +715,7 @@
         <bean ref="devicePullJob" method="startDBReadJob"/>
         <to uri="sql:select ae.id,
                         ae.aet,
-                        sdm.device_type,
+                        ae.device_type,
                         sdm.name as device_model,
                         m.code as mf_code,
                         fac.code as facility_code,
@@ -766,10 +746,9 @@
             <constant>1</constant>
         </setHeader>
         <bean ref="studyCleanJob" method="startDBReadJob"/>
-        <to uri="sql:select ae.id,
-                        ae.aet,
+        <to uri="sql:select ae.aet,
                         s.modality,
-                        CONCAT(ae.aet,'|',s.modality,'|',s.id) as local_study_id,
+                        ae.id as dw_study_id,
                         fac.code as facility_code
                     from study s join ae on s.ae_key=ae.id
                         join facility fac on ae.facility_key = fac.id

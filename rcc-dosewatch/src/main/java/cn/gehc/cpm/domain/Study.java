@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -19,9 +20,6 @@ public class Study implements Comparable<Study> {
 
     @Column(name = "ACCESSION_NUMBER")
     private String accessionNumber;
-
-    @Column(name = "ORG_ID")
-    private Long orgId;
 
     @Column(name = "AE_KEY")
     private Integer aeKey;
@@ -89,6 +87,7 @@ public class Study implements Comparable<Study> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
+    @Override
     public boolean equals(Object study) {
         boolean isEqual = Boolean.FALSE;
         if(study instanceof Study) {

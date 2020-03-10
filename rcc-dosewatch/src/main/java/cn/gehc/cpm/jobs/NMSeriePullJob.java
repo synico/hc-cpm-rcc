@@ -10,9 +10,12 @@ import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +44,10 @@ public class NMSeriePullJob extends TimerDBReadJob {
 
         Long lastPolledValue = null;
         Study study;
-        StudyKey studyKey;
         NMStudy nmStudy;
         NMSerie nmSerie;
         Long orgId = 0L;
+        DeviceKey deviceKey = null;
         for(Map<String, Object> serieProps : body) {
             log.debug("series prop: {}", serieProps.toString());
 
@@ -54,8 +57,12 @@ public class NMSeriePullJob extends TimerDBReadJob {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 if(orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility {} is retrieved", orgId);
+                } else {
+                    // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
+                    log.warn("The org/device has not been synchronized, job will not save data");
+                    return;
                 }
-                log.info("facility {} is retrieved", orgId);
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
                 log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
@@ -66,14 +73,71 @@ public class NMSeriePullJob extends TimerDBReadJob {
             study = DataUtil.convertProps2Study(serieProps);
             studySet.add(study);
 
-            studyKey = study.getStudyKey();
-            Device device = deviceRepository.findByOrgIdAndAet(orgId, studyKey.getAet());
-            if(studyKey.getModality().equals(device.getDeviceKey().getDeviceType())) {
-                //device has been saved, DO NOTHING
-            } else {
-                
+            // FOR some ECT/PET we need to create device there is only one aet in dw
+            if(deviceKey == null) {
+                StudyKey studyKey = study.getStudyKey();
+                List<Device> deviceList = deviceRepository.findByOrgIdAndAet(orgId, studyKey.getAet());
+                Device ectDevice = null;
+                for(Device device : deviceList) {
+                    if(study.getStudyKey().getOrgId().equals(device.getDeviceKey().getOrgId()) &&
+                        studyKey.getAet().equals(device.getDeviceKey().getAet())) {
+                        if(studyKey.getModality().equals(device.getDeviceKey().getDeviceType())) {
+                            // device(CT and NM) has been saved
+                            deviceKey = device.getDeviceKey();
+                        } else {
+                            // ONLY CT of ECT has been saved
+                            ectDevice = device;
+                            log.warn("only CT has been saved, need to create NM");
+                        }
+                    }
+                }
+                // device has not been saved
+                if(deviceKey == null && ectDevice != null) {
+                    DeviceKey nmDeviceKey = new DeviceKey();
+                    BeanUtils.copyProperties(ectDevice.getDeviceKey(), nmDeviceKey);
+                    nmDeviceKey.setDeviceType(studyKey.getModality());
+                    Device nmDevice = new Device();
+                    BeanUtils.copyProperties(ectDevice, nmDevice, "deviceKey");
+                    nmDevice.setDeviceKey(nmDeviceKey);
+                    nmDevice.setCreateTime(Date.from(Instant.now()));
+                    deviceRepository.save(nmDevice);
+                    deviceKey = nmDeviceKey;
+                    log.info("new device has been added to II: {}", deviceKey.toString());
+                }
             }
 
+            nmStudy = DataUtil.convertProps2NMStudy(serieProps);
+            nmStudySet.add(nmStudy);
+
+            nmSerie = DataUtil.convertProps2NMSerie(serieProps);
+            nmSerieSet.add(nmSerie);
+
+            Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
+
+            if(lastPolledValue == null) {
+                lastPolledValue = jointKey;
+            } else {
+                lastPolledValue = lastPolledValue > jointKey ? lastPolledValue : jointKey;
+            }
+
+        }
+
+        if(studySet.size() > 0) {
+            studyRepository.saveAll(studySet);
+        }
+
+        if(nmStudySet.size() > 0) {
+            nmStudyRepository.saveAll(nmStudySet);
+        }
+
+        if(nmSerieSet.size() > 0) {
+            nmSerieRepository.saveAll(nmSerieSet);
+        }
+
+        linkStudies(studySet);
+
+        if (lastPolledValue != null) {
+            super.updateLastPullValue(headers, lastPolledValue.toString());
         }
     }
 }

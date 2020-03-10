@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -12,6 +13,9 @@ public class Device {
 
     @EmbeddedId
     private DeviceKey deviceKey;
+
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "AE_NAME", insertable = false, updatable = false)
     private String aeName;
@@ -62,5 +66,16 @@ public class Device {
 
     @Column(name = "SITE", insertable = false, updatable = false)
     private String site;
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = Boolean.FALSE;
+        if(obj instanceof Device) {
+            if(this.getDeviceKey().equals(((Device) obj).getDeviceKey())) {
+                isEqual = Boolean.TRUE;
+            }
+        }
+        return isEqual;
+    }
 
 }

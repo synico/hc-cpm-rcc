@@ -45,4 +45,9 @@ public class DeviceKey implements Serializable {
         return Objects.hash(this.orgId, this.aet, this.deviceType);
     }
 
+    @Override
+    public String toString() {
+        return this.orgId + "|" + this.aet + "|" + this.deviceType;
+    }
+
 }

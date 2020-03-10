@@ -52,8 +52,6 @@ public class DevicePullJob extends TimerDBReadJob {
                 }
             }
 
-            Long id = DataUtil.getLongFromProperties(deviceProps, "id");
-            log.debug("Retrieve device id: {} from dosewatch", id);
             String aet = DataUtil.getStringFromProperties(deviceProps, "aet");
             String deviceType = DataUtil.getStringFromProperties(deviceProps, "device_type");
             DeviceKey deviceKey = new DeviceKey();
@@ -61,6 +59,7 @@ public class DevicePullJob extends TimerDBReadJob {
             deviceKey.setAet(aet);
             deviceKey.setDeviceType(deviceType);
 
+            Long id = DataUtil.getLongFromProperties(deviceProps, "id");
             String deviceModel = DataUtil.getStringFromProperties(deviceProps, "device_model");
             String mfCode = DataUtil.getStringFromProperties(deviceProps, "mf_code");
             String name = DataUtil.getStringFromProperties(deviceProps, "name");
@@ -75,6 +74,8 @@ public class DevicePullJob extends TimerDBReadJob {
                 device = new Device();
                 device.setDeviceKey(deviceKey);
             }
+            log.debug("Retrieve device id: {} from dosewatch", id);
+            device.setId(id);
             device.setDeviceModel(deviceModel);
             device.setMfCode(mfCode);
             device.setName(name);
