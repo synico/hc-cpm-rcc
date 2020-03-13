@@ -23,7 +23,7 @@ public class DeviceJob {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    @Scheduled(cron = "0 0/30 7-18 * * ?")
+    @Scheduled(cron = "0 0/30 7-23 * * ?")
     public List<Device> addDevices() {
         long count = deviceRepository.count();
         List<Device> deviceList = null;

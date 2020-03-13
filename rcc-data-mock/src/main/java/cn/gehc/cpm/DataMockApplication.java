@@ -26,7 +26,6 @@ public class DataMockApplication implements SchedulingConfigurer {
         return Executors.newScheduledThreadPool(2);
     }
 
-
     public static void main(String args[]) {
         SpringApplication.run(DataMockApplication.class);
     }

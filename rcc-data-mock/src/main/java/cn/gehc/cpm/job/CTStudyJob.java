@@ -36,8 +36,8 @@ public class CTStudyJob {
 
 
     @Schedules(value = {
-            @Scheduled(cron = "0 0/5 7-18 * * MON-FRI"),
-            @Scheduled(cron = "0 0/5 7-13 * * SUN,SAT")
+            @Scheduled(cron = "0 0/8 7-18 * * MON-FRI"),
+            @Scheduled(cron = "0 0/8 7-13 * * SUN,SAT")
     })
     public void generateCTStudies() {
         log.info("start to generate CT studies at {}", LocalDateTime.now());

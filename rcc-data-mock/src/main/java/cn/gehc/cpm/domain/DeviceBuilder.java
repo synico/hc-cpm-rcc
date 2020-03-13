@@ -9,6 +9,7 @@ public class DeviceBuilder {
     public Device of(String aet, Long dk, String model, String type, Date lastupdate,
                      String mfCode, String name, String stationName) {
         DeviceKey deviceKey = new DeviceKey();
+        deviceKey.setOrgId(1L);
         deviceKey.setAet(aet);
 //        deviceKey.setDeviceType(type);
 
@@ -20,6 +21,7 @@ public class DeviceBuilder {
         device.setName(name);
         device.setStationName(stationName);
         device.setTimezone(DeviceConstant.TIMEZONE);
+        device.setDeviceType(type);
 
         return device;
     }
