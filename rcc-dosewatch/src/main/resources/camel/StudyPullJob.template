@@ -126,6 +126,7 @@
                 cas.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(cas.dt_last_update) + se.id) as joint_key
                 from constant_angle_serie cas join ct_serie ctse on cas.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -137,6 +138,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -198,6 +200,7 @@
                 sse.dlp,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from stationary_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -209,6 +212,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -270,6 +274,7 @@
                 cse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(cse.dt_last_update) + se.id) as joint_key
                 from cine_serie cse join ct_serie ctse on cse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -281,6 +286,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -342,6 +348,7 @@
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from sequenced_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -353,6 +360,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -414,6 +422,7 @@
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(sse.dt_last_update) + se.id) as joint_key
                 from smartprep_serie sse join ct_serie ctse on sse.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -425,6 +434,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -486,6 +496,7 @@
                 us.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(us.dt_last_update) + se.id) as joint_key
                 from undefined_serie us join ct_serie ctse on us.id=ctse.id
                     join serie se on ctse.id=se.id
@@ -497,6 +508,7 @@
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -555,6 +567,7 @@
                 mrse.end_slice_location,
                 sd.name as series_description,
                 mrse.dt_last_update,
+                CONCAT(ph.last_name, ph.first_name) as performing_physician,
                 (unix_timestamp(mrse.dt_last_update) + se.id) as joint_key
                 from mr_serie mrse join serie se on mrse.id=se.id
                     join study s on s.id=se.study_key
@@ -566,6 +579,7 @@
                     join supported_device_model sdm on ae.sdm_key=sdm.id
                     join manufacturer m on sdm.manufacturer_key=m.id
                     join series_description sd on se.series_description_key=sd.id
+                    join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
             order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -622,6 +636,7 @@
                     xase.series_sub_type as series_sub_type,
                     xase.dose_area_product*100 as serie_dap,
                     xase.dt_last_update,
+                    CONCAT(ph.last_name, ph.first_name) as performing_physician,
                     (unix_timestamp(xase.dt_last_update) + se.id) as joint_key
                     from xa_serie xase join serie se on xase.id=se.id
                         join study s on s.id=se.study_key
@@ -632,6 +647,7 @@
                         join facility fac on ae.facility_key = fac.id
                         join protocol pl on xase.protocol_key=pl.id
                         join patient pt on s.patient_key=pt.id
+                        join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and se.series_date is not null and xase.exposure_time is not null
                 order by joint_key asc limit 500?dataSource=dwDS"/>
@@ -682,6 +698,7 @@
                     nmse.protocol_key,
                     pl.name as protocol_name,
                     se.dt_last_update,
+                    CONCAT(ph.last_name, ph.first_name) as performing_physician,
                     (unix_timestamp(se.dt_last_update) + se.id) as joint_key
                     from nm_serie nmse join serie se on nmse.id=se.id
                         join study s on s.id=se.study_key
@@ -692,6 +709,7 @@
                         join facility fac on ae.facility_key = fac.id
                         join protocol pl on nmse.protocol_key=pl.id
                         join patient pt on s.patient_key=pt.id
+                        join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(se.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and s.study_date is not null
                 order by joint_key asc limit 500?dataSource=dwDS"/>
