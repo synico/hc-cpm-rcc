@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>cn.gehc.cpm</groupId>
 	<artifactId>rcc-dosewatch</artifactId>
-	<version>0.9</version>
+	<version>1.0</version>
 	<name>rcc-dosewatch</name>
 	<description>Pull data from dosewatch to rcc database</description>
 
@@ -36,6 +36,26 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+						<id>rcc-dw-pojo</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<classifier>pojo</classifier>
+							<includes>
+								<include>**/cpm/domain/**</include>
+								<include>**/cpm/repository/**</include>
+								<include>**/cpm/util/SerieType**</include>
+							</includes>
+						</configuration>
+					</execution>
+                </executions>
+            </plugin>
 		</plugins>
 		<resources>
 			<resource>
