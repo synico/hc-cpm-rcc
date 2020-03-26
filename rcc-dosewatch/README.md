@@ -1,4 +1,4 @@
-install dw-pojo lib to local mvn repository
+## install dw-pojo lib to local mvn repository
 
 ### Step1 
 ```
@@ -16,4 +16,11 @@ mvn install:install-file -Dfile=rcc-dosewatch-0.9-pojo.jar -DgroupId=cn.gehc.cpm
     <artifactId>dw-pojo</artifactId>
     <version>0.9</version>
 </dependency>
+```
+
+***
+
+## start application
+```
+java -Xbootclasspath/a:config -jar rcc-dosewatch-1.0-SNAPSHOT.jar
 ```
