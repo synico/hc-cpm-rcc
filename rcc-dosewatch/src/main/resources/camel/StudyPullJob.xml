@@ -766,7 +766,7 @@
         <bean ref="studyCleanJob" method="startDBReadJob"/>
         <to uri="sql:select ae.aet,
                         s.modality,
-                        ae.id as dw_study_id,
+                        s.id as dw_study_id,
                         fac.code as facility_code
                     from study s join ae on s.ae_key=ae.id
                         join facility fac on ae.facility_key = fac.id
