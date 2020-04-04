@@ -74,6 +74,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
             studySet.add(study);
 
             // FOR some ECT/PET we need to create device there is only one aet in dw
+            log.info("device key is: {}", deviceKey);
             if(deviceKey == null) {
                 StudyKey studyKey = study.getStudyKey();
                 List<Device> deviceList = deviceRepository.findByOrgIdAndAet(orgId, studyKey.getAet());
@@ -81,9 +82,11 @@ public class NMSeriePullJob extends TimerDBReadJob {
                 for(Device device : deviceList) {
                     if(study.getStudyKey().getOrgId().equals(device.getDeviceKey().getOrgId()) &&
                         studyKey.getAet().equals(device.getDeviceKey().getAet())) {
+                        log.info("retrieved device: {}, studyKey in study: {}", device.getDeviceKey(), study.getStudyKey());
                         if(studyKey.getModality().equals(device.getDeviceKey().getDeviceType())) {
                             // device(CT and NM) has been saved
                             deviceKey = device.getDeviceKey();
+                            log.info("device key has been found: {}", deviceKey.toString());
                         } else {
                             // ONLY CT of ECT has been saved
                             ectDevice = device;
@@ -92,6 +95,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
                     }
                 }
                 // device has not been saved
+                log.info("deviceKey: {}, ectDevice: {}", deviceKey, ectDevice);
                 if(deviceKey == null && ectDevice != null) {
                     DeviceKey nmDeviceKey = new DeviceKey();
                     BeanUtils.copyProperties(ectDevice.getDeviceKey(), nmDeviceKey);

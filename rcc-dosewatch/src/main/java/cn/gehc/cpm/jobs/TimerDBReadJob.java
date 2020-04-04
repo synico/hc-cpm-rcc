@@ -13,6 +13,8 @@ import cn.gehc.cpm.repository.ReadTimerJobRepository;
 import cn.gehc.cpm.repository.StudyRepository;
 import org.apache.camel.Headers;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import java.util.*;
 
 @Service
 public class TimerDBReadJob {
+
+    private static final Logger log = LoggerFactory.getLogger(TimerDBReadJob.class);
 
     @Autowired
     protected ReadTimerJobRepository jobDao;
@@ -45,6 +49,8 @@ public class TimerDBReadJob {
         job.setLastStartTime(new Date());
         jobDao.save(job);
         headers.put("JobObject", job);
+        Thread currentThread = Thread.currentThread();
+        log.info("Thread id: {}, name: {}", currentThread.getId(), currentThread.getName());
     }
 
     public void endDBReadJob(@Headers Map<String, Object> headers) {

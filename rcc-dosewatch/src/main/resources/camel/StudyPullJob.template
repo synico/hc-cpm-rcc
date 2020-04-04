@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -75,12 +75,12 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>constantAngleSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -149,12 +149,12 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>stationarySeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -223,12 +223,12 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>cineSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -297,12 +297,12 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>sequencedSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -371,12 +371,12 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>smartprepSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -445,12 +445,12 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>undefinedSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullCTStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -519,12 +519,12 @@
     </route>
 
     <route id="mrSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullMRData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>mrSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullMRStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -590,12 +590,12 @@
     </route>
 
     <route id="xaSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullXAData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>xaSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullXAStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -658,12 +658,12 @@
     </route>
 
     <route id="nmSeriePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullNMData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>nmSeriePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullNMStudy</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -720,12 +720,12 @@
     </route>
 
     <route id="devicePullJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullDeviceData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>devicePullJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>PullDevice</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
@@ -744,7 +744,8 @@
                     from ae join supported_device_model sdm on ae.sdm_key=sdm.id
                         join manufacturer m on sdm.manufacturer_key=m.id
                         join facility fac on ae.facility_key = fac.id
-                    where ae.dt_last_update > :#${headers[JobObject].lastPolledValue}
+                    where ae.deleted = 0
+                        and ae.dt_last_update > :#${headers[JobObject].lastPolledValue}
                     order by ae.dt_last_update asc;?dataSource=dwDS"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="devicePullJob" method="insertData"/>
@@ -753,12 +754,12 @@
     </route>
 
     <route id="studyCleanJob">
-        <from uri="timer://PullData?fixedRate=true&amp;period=3s&amp;delay=1s"/>
+        <from uri="timer://PullStudies?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>studyCleanJob</constant>
         </setHeader>
         <setHeader headerName="JobType">
-            <constant>ReadDoseDB</constant>
+            <constant>StudyClenJob</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
             <constant>1</constant>
