@@ -230,6 +230,8 @@ public class DataUtil {
         ctSerie.setDlp(getDoubleFromProperties(serieProps, "dlp"));
         ctSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
         ctSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
+        ctSerie.setProtocolKey(getLongFromProperties(serieProps, "series_protocol_key"));
+        ctSerie.setProtocolName(getStringFromProperties(serieProps, "series_protocol_name"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
         ctSerie.setCreateTime(Date.from(Instant.now()));
 

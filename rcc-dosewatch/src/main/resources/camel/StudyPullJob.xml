@@ -47,6 +47,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dlp,
                 sse.dt_last_update,
@@ -63,6 +65,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -121,6 +124,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 cas.exposure_time,
                 IFNULL(cas.dlp, 0),
                 cas.dt_last_update,
@@ -137,6 +142,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -195,6 +201,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dt_last_update,
                 sse.dlp,
@@ -211,6 +219,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -269,6 +278,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 cse.exposure_time,
                 cse.dlp,
                 cse.dt_last_update,
@@ -285,6 +296,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -343,6 +355,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dlp,
                 sse.dt_last_update,
@@ -359,6 +373,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -417,6 +432,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dlp,
                 sse.dt_last_update,
@@ -433,6 +450,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
@@ -491,6 +509,8 @@
                 ctse.end_series_time,
                 ctse.start_slice_location,
                 ctse.end_slice_location,
+                ctse.protocol_key as series_protocol_key,
+                sepl.name as series_protocol_name,
                 us.exposure_time,
                 us.dlp,
                 us.dt_last_update,
@@ -507,6 +527,7 @@
                     join facility fac on ae.facility_key = fac.id
                     join patient pt on s.patient_key=pt.id
                     join protocol pl on cts.protocol_key=pl.id
+                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}

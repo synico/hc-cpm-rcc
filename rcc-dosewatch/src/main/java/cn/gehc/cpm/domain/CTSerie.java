@@ -79,6 +79,12 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "is_repeated")
     private Boolean isRepeated = Boolean.FALSE;
 
+    @Column(name = "protocol_key")
+    private Long protocolKey;
+
+    @Column(name = "protocol_name")
+    private String protocolName;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;
