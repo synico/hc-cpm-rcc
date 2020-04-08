@@ -98,14 +98,43 @@ public class DataUtil {
         return result;
     }
 
-    public static Study convertProps2Study(Map<String, Object> studyProps) {
-        Study study = new Study();
+    public static StudyKey buildStudyKey(Map<String, Object> studyProps) {
         StudyKey studyKey = new StudyKey();
 
         studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
         studyKey.setAet(getStringFromProperties(studyProps, "aet"));
         studyKey.setModality(getStringFromProperties(studyProps, "modality"));
         studyKey.setId(getLongFromProperties(studyProps,"dw_study_id"));
+
+        StringBuilder deviceKey = new StringBuilder();
+        deviceKey.append(studyKey.getOrgId()).append("|")
+                .append(studyKey.getAet()).append("|")
+                .append(studyKey.getModality());
+        studyKey.setDeviceKey(deviceKey.toString());
+
+        return studyKey;
+    }
+
+    public static SerieKey buildSerieKey(Map<String, Object> serieProps) {
+        SerieKey serieKey = new SerieKey();
+
+        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
+        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
+        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
+        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
+
+        StringBuilder deviceKey = new StringBuilder();
+        deviceKey.append(serieKey.getOrgId()).append("|")
+                .append(serieKey.getAet()).append("|")
+                .append(serieKey.getModality());
+        serieKey.setDeviceKey(deviceKey.toString());
+
+        return serieKey;
+    }
+
+    public static Study convertProps2Study(Map<String, Object> studyProps) {
+        Study study = new Study();
+        StudyKey studyKey = buildStudyKey(studyProps);
         study.setStudyKey(studyKey);
 
         study.setLocalStudyId(studyKey.toString());
@@ -128,12 +157,7 @@ public class DataUtil {
 
     public static CTStudy convertProps2CTStudy(Map<String, Object> studyProps) {
         CTStudy ctStudy = new CTStudy();
-        StudyKey studyKey = new StudyKey();
-
-        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
-        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
-        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
-        studyKey.setId(getLongFromProperties(studyProps,"dw_study_id"));
+        StudyKey studyKey = buildStudyKey(studyProps);
         ctStudy.setStudyKey(studyKey);
 
         ctStudy.setLocalStudyId(studyKey.toString());
@@ -150,12 +174,7 @@ public class DataUtil {
 
     public static MRStudy convertProps2MRStudy(Map<String, Object> studyProps) {
         MRStudy mrStudy = new MRStudy();
-        StudyKey studyKey = new StudyKey();
-
-        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
-        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
-        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
-        studyKey.setId(getLongFromProperties(studyProps, "dw_study_id"));
+        StudyKey studyKey = buildStudyKey(studyProps);
         mrStudy.setStudyKey(studyKey);
 
         mrStudy.setLocalStudyId(studyKey.toString());
@@ -168,12 +187,7 @@ public class DataUtil {
 
     public static XAStudy convertProps2XAStudy(Map<String, Object> studyProps) {
         XAStudy xaStudy = new XAStudy();
-        StudyKey studyKey = new StudyKey();
-
-        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
-        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
-        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
-        studyKey.setId(getLongFromProperties(studyProps, "dw_study_id"));
+        StudyKey studyKey = buildStudyKey(studyProps);
         xaStudy.setStudyKey(studyKey);
 
         xaStudy.setLocalStudyId(studyKey.toString());
@@ -187,12 +201,7 @@ public class DataUtil {
 
     public static NMStudy convertProps2NMStudy(Map<String, Object> studyProps) {
         NMStudy nmStudy = new NMStudy();
-        StudyKey studyKey = new StudyKey();
-
-        studyKey.setOrgId(getLongFromProperties(studyProps, "org_id"));
-        studyKey.setAet(getStringFromProperties(studyProps, "aet"));
-        studyKey.setModality(getStringFromProperties(studyProps, "modality"));
-        studyKey.setId(getLongFromProperties(studyProps, "dw_study_id"));
+        StudyKey studyKey = buildStudyKey(studyProps);
         nmStudy.setStudyKey(studyKey);
 
         nmStudy.setLocalStudyId(studyKey.toString());
@@ -205,12 +214,7 @@ public class DataUtil {
 
     public static CTSerie convertProps2CTSerie(Map<String, Object> serieProps) {
         CTSerie ctSerie = new CTSerie();
-        SerieKey serieKey = new SerieKey();
-
-        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
-        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
-        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
-        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
+        SerieKey serieKey = buildSerieKey(serieProps);
         ctSerie.setSerieKey(serieKey);
 
         ctSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
@@ -240,12 +244,7 @@ public class DataUtil {
 
     public static MRSerie convertProps2MRSerie(Map<String, Object> serieProps) {
         MRSerie mrSerie = new MRSerie();
-        SerieKey serieKey = new SerieKey();
-
-        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
-        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
-        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
-        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
+        SerieKey serieKey = buildSerieKey(serieProps);
         mrSerie.setSerieKey(serieKey);
 
         mrSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
@@ -276,12 +275,7 @@ public class DataUtil {
 
     public static XASerie convertProps2XASerie(Map<String, Object> serieProps) {
         XASerie xaSerie = new XASerie();
-        SerieKey serieKey = new SerieKey();
-
-        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
-        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
-        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
-        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
+        SerieKey serieKey = buildSerieKey(serieProps);
         xaSerie.setSerieKey(serieKey);
 
         xaSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));
@@ -307,12 +301,7 @@ public class DataUtil {
 
     public static NMSerie convertProps2NMSerie(Map<String, Object> serieProps) {
         NMSerie nmSerie = new NMSerie();
-        SerieKey serieKey = new SerieKey();
-
-        serieKey.setOrgId(getLongFromProperties(serieProps, "org_id"));
-        serieKey.setAet(getStringFromProperties(serieProps, "aet"));
-        serieKey.setModality(getStringFromProperties(serieProps, "modality"));
-        serieKey.setId(getLongFromProperties(serieProps, "dw_serie_id"));
+        SerieKey serieKey = buildSerieKey(serieProps);
         nmSerie.setSerieKey(serieKey);
 
         nmSerie.setLocalStudyKey(serieKey.getDeviceKey() + "|" + getLongFromProperties(serieProps, "dw_study_id"));

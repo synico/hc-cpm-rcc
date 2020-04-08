@@ -24,6 +24,10 @@ public class SerieKey implements Serializable {
     @Column(name = "ID")
     private Long id;
 
+    //org_id|aet|modality
+    @Column(name = "device_key")
+    private String deviceKey;
+
     @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;
@@ -43,10 +47,6 @@ public class SerieKey implements Serializable {
     @Override
     public String toString() {
         return this.orgId + "|" + this.aet + "|" + this.modality + "|" + this.id;
-    }
-
-    public String getDeviceKey() {
-        return this.orgId + "|" + this.aet + "|" + this.modality;
     }
 
 }

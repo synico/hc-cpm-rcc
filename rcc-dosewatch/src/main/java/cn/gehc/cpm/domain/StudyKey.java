@@ -20,6 +20,10 @@ public class StudyKey implements Serializable {
     @Column(name = "MODALITY")
     private String modality;
 
+    //org_id|aet|modality
+    @Column(name = "device_key")
+    private String deviceKey;
+
     //id in dw study table
     @Column(name = "ID")
     private Long id;
@@ -43,10 +47,6 @@ public class StudyKey implements Serializable {
     @Override
     public String toString() {
         return this.orgId + "|" + this.aet + "|" + this.modality + "|" + this.id;
-    }
-
-    public String getDeviceKey() {
-        return this.orgId + "|" + this.aet + "|" + this.modality;
     }
 
 }
