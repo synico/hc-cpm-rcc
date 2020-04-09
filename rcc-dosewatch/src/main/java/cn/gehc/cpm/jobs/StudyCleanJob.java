@@ -21,7 +21,7 @@ public class StudyCleanJob extends TimerDBReadJob {
     private static final Logger log = LoggerFactory.getLogger(StudyCleanJob.class);
 
     public void cleanStudies(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
-        log.info("start to clean studies");
+        log.info("start to clean studies, [ {} ] records will be processed", body.size());
 
         //Do nothing, if there isn't data retrieved from database
         if(body.size() == 0) {
@@ -51,7 +51,7 @@ public class StudyCleanJob extends TimerDBReadJob {
                 log.info("facility {} is retrieved", orgId);
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
-                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(studiesInDW, "aet"));
+                log.error("facility hasn't been configured for aet: [ {} ]", DataUtil.getStringFromProperties(studiesInDW, "aet"));
                 continue;
             }
 
@@ -73,11 +73,11 @@ public class StudyCleanJob extends TimerDBReadJob {
                     aeKey.getDeviceType(),
                     todayStr);
             for(Study study : localStudies) {
-                log.debug("study: {} and published: {}", study.getLocalStudyId(), study.getPublished());
+                log.debug("study: [ {} ] and published: [ {} ]", study.getLocalStudyId(), study.getPublished());
                 if(localStudyIdsInDW.contains(study.getLocalStudyId())) {
                     //do nothing
                 } else {
-                    log.info("study will be marked to deletion: {}", study.getLocalStudyId());
+                    log.info("study will be marked to deletion: [ {} ]", study.getLocalStudyId());
                     study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
                     studies2Delete.add(study);
                 }

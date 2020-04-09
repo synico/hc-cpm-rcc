@@ -32,7 +32,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
     private CTSerieRepository ctSerieRepository;
 
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
-        log.info("start to insert/update data to ct_serie");
+        log.info("start to insert/update data to ct_serie, [ {} ] records will be processed", body.size());
 
         Set<Study> studiesFromJob = new HashSet<>();
         Set<CTStudy> ctStudySet = new HashSet<>();
@@ -55,7 +55,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 if(orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility {} is retrieved", orgId);
+                    log.info("facility < {} > is retrieved", orgId);
                 } else {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
@@ -63,7 +63,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 }
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
-                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
+                log.error("facility hasn't been configured for aet: < {} >", DataUtil.getStringFromProperties(serieProps, "aet"));
                 continue;
             }
             serieProps.put("org_id", orgId);
@@ -175,6 +175,9 @@ public class CTSeriePullJob extends TimerDBReadJob {
         if(study2Update.size() > 0) {
             studyRepository.saveAll(study2Update);
         }
+
+        log.info("[ {} ] studies have been saved, [ {} ] ct studies have been saved, [ {} ] ct series have been saved",
+                study2Update.size(), ctStudySet.size(), ctSerieSet.size());
 
         linkStudies(study2Update);
 

@@ -36,7 +36,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
     private NMSerieRepository nmSerieRepository;
 
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
-        log.info("start to insert data to nm_serie");
+        log.info("start to insert data to nm_serie, [ {} ] records will be processed", body.size());
 
         Set<Study> studySet = new HashSet<>();
         Set<NMStudy> nmStudySet = new HashSet<>();
@@ -57,7 +57,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 if(orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility {} is retrieved", orgId);
+                    log.info("facility [ {} ] is retrieved", orgId);
                 } else {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
@@ -65,7 +65,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
                 }
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
-                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
+                log.error("facility hasn't been configured for aet: [ {} ]", DataUtil.getStringFromProperties(serieProps, "aet"));
                 continue;
             }
             serieProps.put("org_id", orgId);
@@ -74,7 +74,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
             studySet.add(study);
 
             // FOR some ECT/PET we need to create device there is only one aet in dw
-            log.info("device key is: {}", deviceKey);
+            log.info("device key is: [ {} ]", deviceKey);
             if(deviceKey == null) {
                 StudyKey studyKey = study.getStudyKey();
                 List<Device> deviceList = deviceRepository.findByOrgIdAndAet(orgId, studyKey.getAet());
@@ -82,11 +82,11 @@ public class NMSeriePullJob extends TimerDBReadJob {
                 for(Device device : deviceList) {
                     if(study.getStudyKey().getOrgId().equals(device.getDeviceKey().getOrgId()) &&
                         studyKey.getAet().equals(device.getDeviceKey().getAet())) {
-                        log.info("retrieved device: {}, studyKey in study: {}", device.getDeviceKey(), study.getStudyKey());
+                        log.info("retrieved device: [ {} ], studyKey in study: [ {} ]", device.getDeviceKey(), study.getStudyKey());
                         if(studyKey.getModality().equals(device.getDeviceKey().getDeviceType())) {
                             // device(CT and NM) has been saved
                             deviceKey = device.getDeviceKey();
-                            log.info("device key has been found: {}", deviceKey.toString());
+                            log.info("device key has been found: [ {} ]", deviceKey.toString());
                         } else {
                             // ONLY CT of ECT has been saved
                             ectDevice = device;
@@ -106,7 +106,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
                     nmDevice.setCreateTime(Date.from(Instant.now()));
                     deviceRepository.save(nmDevice);
                     deviceKey = nmDeviceKey;
-                    log.info("new device has been added to II: {}", deviceKey.toString());
+                    log.info("new device has been added to II: [ {} ]", deviceKey.toString());
                 }
             }
 
@@ -137,6 +137,9 @@ public class NMSeriePullJob extends TimerDBReadJob {
         if(nmSerieSet.size() > 0) {
             nmSerieRepository.saveAll(nmSerieSet);
         }
+
+        log.info("[ {} ] studies have been saved, [ {} ] nm studies have been saved, [ {} ] nm series have been saved",
+                studySet.size(), nmStudySet.size(), nmSerieSet.size());
 
         linkStudies(studySet);
 

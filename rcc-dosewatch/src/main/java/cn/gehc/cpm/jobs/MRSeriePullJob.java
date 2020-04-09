@@ -32,7 +32,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
     private MRSerieRepository mrSerieRepository;
 
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
-        log.info("start to insert data to mr_serie");
+        log.info("start to insert data to mr_serie, [ {} ] records will be processed", body.size());
 
         Set<Study> studiesFromJob = new HashSet<>();
         Set<MRStudy> mrStudySet = new HashSet<>();
@@ -55,7 +55,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 if(orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility {} is retrieved", orgId);
+                    log.info("facility [ {} ] is retrieved", orgId);
                 } else {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
@@ -63,7 +63,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
                 }
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
-                log.error("facility hasn't been configured for aet: {}", DataUtil.getStringFromProperties(serieProps, "aet"));
+                log.error("facility hasn't been configured for aet: [ {} ]", DataUtil.getStringFromProperties(serieProps, "aet"));
                 continue;
             }
             serieProps.put("org_id", orgId);
@@ -187,6 +187,9 @@ public class MRSeriePullJob extends TimerDBReadJob {
         if(study2Update.size() > 0) {
             studyRepository.saveAll(study2Update);
         }
+
+        log.info("[ {} ] studies have been saved, [ {} ] mr studies have been saved, [ {} ] mr series have been saved",
+                study2Update.size(), mrStudySet.size(), mrSerieSet.size());
 
         linkStudies(study2Update);
 

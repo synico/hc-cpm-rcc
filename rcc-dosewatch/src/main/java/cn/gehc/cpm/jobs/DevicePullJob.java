@@ -28,7 +28,7 @@ public class DevicePullJob extends TimerDBReadJob {
     private DeviceRepository deviceRepository;
 
     public synchronized void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
-        log.info("start to insert data to device");
+        log.info("start to insert data to device, [ {} ] records will be processed", body.size());
 
         List<Device> deviceList = new ArrayList<>();
 
@@ -39,11 +39,11 @@ public class DevicePullJob extends TimerDBReadJob {
             log.debug(deviceProps.toString());
 
             String facilityCode = DataUtil.getStringFromProperties(deviceProps, "facility_code");
-            log.info("Current thread: {} MAY add orgEntity by facility code: {}", Thread.currentThread().getId(), facilityCode);
+            log.info("Current thread: [ {} ] MAY add orgEntity by facility code: [ {} ]", Thread.currentThread().getId(), facilityCode);
             if(StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 OrgEntity orgEntity = (orgEntityList.size() == 1) ? orgEntityList.get(0) : new OrgEntity();
-                log.info("Num of orgEntity found by facilityCode: {}, and orgEntity: {}", orgEntityList.size(), orgEntity.getOrgId());
+                log.info("Num of orgEntity found by facilityCode: [ {} ], and orgEntity: [ {} ]", orgEntityList.size(), orgEntity.getOrgId());
                 if(orgEntity.getOrgId() != null) {
                     orgId = orgEntity.getOrgId();
                 } else {
@@ -51,7 +51,7 @@ public class DevicePullJob extends TimerDBReadJob {
                     orgEntity.setCreateTime(Date.from(Instant.now()));
                     OrgEntity savedOrgEntity = orgEntityRepository.save(orgEntity);
                     orgId = savedOrgEntity.getOrgId();
-                    log.info("New orgEntity will be created by facilityCode: {} - {}", facilityCode, orgId);
+                    log.info("New orgEntity will be created by facilityCode: [ {} - {} ]", facilityCode, orgId);
                 }
             }
 
@@ -77,7 +77,7 @@ public class DevicePullJob extends TimerDBReadJob {
                 device = new Device();
                 device.setDeviceKey(deviceKey);
             }
-            log.debug("Retrieve device id: {} from dosewatch", id);
+            log.debug("Retrieve device id: [ {} ] from dosewatch", id);
             device.setId(id);
             device.setDeviceModel(deviceModel);
             device.setMfCode(mfCode);
@@ -99,6 +99,8 @@ public class DevicePullJob extends TimerDBReadJob {
         if(deviceList.size() > 0) {
             deviceRepository.saveAll(deviceList);
         }
+
+        log.info("[ {} ] devices have been saved", deviceList.size());
 
         log.info("last polled value: {}", lastPolledValue);
 
