@@ -137,6 +137,11 @@ public class CTSeriePullJob extends TimerDBReadJob {
                     }
                 }
 
+                if(firstCTSerie == null || lastCTSerie == null) {
+                    // As can't calculate the duration of study, ignore this study
+                    continue;
+                }
+
                 //update study start time
                 tmpStudy.setStudyStartTime(firstCTSerie.getSeriesDate());
                 //update study end time
