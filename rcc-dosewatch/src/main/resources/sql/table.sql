@@ -77,3 +77,11 @@ CREATE TABLE protocol_benchmark (
    median_low float(19),
    median_high float(19)
 )
+
+CREATE TABLE body_part_mapping (
+    org_id integer NOT NULL,
+    aet varchar(255) NOT NULL,
+    device_type varchar(255) NOT NULL,
+    protocol_name varchar(255) NOT NULL,
+    body_category varchar(255) NOT NULL
+)
