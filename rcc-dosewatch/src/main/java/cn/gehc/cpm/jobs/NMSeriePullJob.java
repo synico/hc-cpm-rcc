@@ -35,6 +35,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
     @Autowired
     private NMSerieRepository nmSerieRepository;
 
+    @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to nm_serie, [ {} ] records will be processed", body.size());
 

@@ -5,6 +5,9 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * @author 212706300
+ */
 @Data
 @Entity
 @Table(name = "ct_study")
@@ -13,7 +16,9 @@ public class CTStudy {
     @EmbeddedId
     private StudyKey studyKey;
 
-    //aet|id作为study全局逻辑主键
+    /**
+     * aet|id作为study全局逻辑主键
+     */
     @Column(name = "local_study_id")
     private String localStudyId;
 

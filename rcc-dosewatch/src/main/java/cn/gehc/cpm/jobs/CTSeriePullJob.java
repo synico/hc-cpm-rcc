@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author 212706300
+ */
 @Service(value = "ctSeriePullJob")
 public class CTSeriePullJob extends TimerDBReadJob {
 
@@ -31,6 +34,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
     @Autowired
     private CTSerieRepository ctSerieRepository;
 
+    @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert/update data to ct_serie, [ {} ] records will be processed", body.size());
 
@@ -55,9 +59,9 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
                 if(orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility < {} > is retrieved", orgId);
+                    log.info("facility < {} > has been retrieved", orgId);
                 } else {
-                    // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
+                    // !!! IMPORTANT !!! job will not save data to database since org_entity has not been properly configured
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
                 }

@@ -11,6 +11,7 @@ import cn.gehc.cpm.domain.TimerJob;
 import cn.gehc.cpm.repository.OrgEntityRepository;
 import cn.gehc.cpm.repository.ReadTimerJobRepository;
 import cn.gehc.cpm.repository.StudyRepository;
+import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -26,8 +27,7 @@ import java.util.*;
  * @author 212579464
  */
 
-@Service
-public class TimerDBReadJob {
+public abstract class TimerDBReadJob {
 
     private static final Logger log = LoggerFactory.getLogger(TimerDBReadJob.class);
 
@@ -70,6 +70,13 @@ public class TimerDBReadJob {
         job.setLastPolledValue(headers.get("DefaultStartPollValue").toString());
         return job;
     }
+
+    /**
+     * method to process incoming data and return output
+     * @param headers
+     * @param body
+     */
+    public abstract void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body);
     
     protected void updateLastPullValue(Map<String, Object> headers , String value){
         TimerJob job = (TimerJob)headers.get("JobObject");

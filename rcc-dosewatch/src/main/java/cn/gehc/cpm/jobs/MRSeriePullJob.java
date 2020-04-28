@@ -31,6 +31,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
     @Autowired
     private MRSerieRepository mrSerieRepository;
 
+    @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to mr_serie, [ {} ] records will be processed", body.size());
 

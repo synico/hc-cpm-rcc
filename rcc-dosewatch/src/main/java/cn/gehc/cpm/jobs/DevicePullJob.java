@@ -27,6 +27,7 @@ public class DevicePullJob extends TimerDBReadJob {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Override
     public synchronized void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to device, [ {} ] records will be processed", body.size());
 

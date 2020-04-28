@@ -26,6 +26,7 @@ public class XASeriePullJob extends TimerDBReadJob {
     @Autowired
     private XASerieRepository xaSerieRepository;
 
+    @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to xa_serie, [ {} ] records will be processed", body.size());
 

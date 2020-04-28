@@ -89,4 +89,8 @@ public class StudyCleanJob extends TimerDBReadJob {
         }
     }
 
+    @Override
+    public void insertData(Map<String, Object> headers, List<Map<String, Object>> body) {
+
+    }
 }
