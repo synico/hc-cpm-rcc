@@ -1,5 +1,6 @@
 package cn.gehc.cpm;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +10,11 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
+/**
+ * @author Nick Liu
+ */
 
 @SpringBootApplication
 @ImportResource(locations = "datasource/*.xml")
@@ -23,10 +28,12 @@ public class DataMockApplication implements SchedulingConfigurer {
 
     @Bean(destroyMethod = "shutdown")
     public Executor taskExecutor() {
-        return Executors.newScheduledThreadPool(2);
+        Executor taskExecutor = new ScheduledThreadPoolExecutor(2,
+                new BasicThreadFactory.Builder().namingPattern("schedule-pool-%d").daemon(true).build());
+        return taskExecutor;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         SpringApplication.run(DataMockApplication.class);
     }
 }
