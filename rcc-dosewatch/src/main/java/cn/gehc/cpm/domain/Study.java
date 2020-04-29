@@ -6,6 +6,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * @author 212706300
+ */
 @Data
 @Entity
 @Table(name = "study")
@@ -14,7 +17,9 @@ public class Study implements Comparable<Study> {
     @EmbeddedId
     private StudyKey studyKey;
 
-    //org_id|aet|modality|id作为study全局逻辑主键
+    /**
+     * org_id|aet|modality|id作为study全局逻辑主键
+     */
     @Column(name = "local_study_id")
     private String localStudyId;
 
@@ -63,7 +68,9 @@ public class Study implements Comparable<Study> {
     @Column(name = "NEXT_LOCAL_STUDY_ID")
     private String nextLocalStudyId;
 
-    // 1 = published, 2 = marked for deletion
+    /**
+     * 1 = published, 2 = marked for deletion
+     */
     @Column(name = "PUBLISHED")
     private Integer published = StudyStatus.PUBLISHED.getStatusId();
 
@@ -98,6 +105,7 @@ public class Study implements Comparable<Study> {
         return isEqual;
     }
 
+    @Override
     public int compareTo(Study anotherStudy) {
         int result = 0;
         if(this.getStudyDate() == null || anotherStudy.getStudyDate() == null) {
