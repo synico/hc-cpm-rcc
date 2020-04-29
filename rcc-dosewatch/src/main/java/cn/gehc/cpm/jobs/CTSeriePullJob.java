@@ -4,6 +4,8 @@ import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.CTStudy;
 import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
+import cn.gehc.cpm.process.ct.StudyDurationProcess;
+import cn.gehc.cpm.process.ct.TargetRegionCountProcess;
 import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
@@ -33,6 +35,12 @@ public class CTSeriePullJob extends TimerDBReadJob {
 
     @Autowired
     private CTSerieRepository ctSerieRepository;
+
+    @Autowired
+    private StudyDurationProcess studyDurationProcess;
+
+    @Autowired
+    private TargetRegionCountProcess targetRegionCountProcess;
 
     @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
@@ -97,6 +105,13 @@ public class CTSeriePullJob extends TimerDBReadJob {
         if(ctSerieSet.size() > 0) {
             ctSerieRepository.saveAll(ctSerieSet);
         }
+
+        // since v1.1
+        Set<Study> mergedStudies = this.mergeStudies(studiesFromJob);
+        studyWithSeriesMap = this.buildSeriesMap(mergedStudies);
+        studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
+        targetRegionCountProcess.process(mergedStudies, studyWithSeriesMap);
+
 
         List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
         //combine studies from job(hasn't been persisted) with studies from database
@@ -268,5 +283,40 @@ public class CTSeriePullJob extends TimerDBReadJob {
             }
         }
         return hasRepeatedSeries;
+    }
+
+    /**
+     * As some studies have been persisted to database in previous job, to avoid values of study been
+     * overwritten, need to merge studies from job and database.
+     * @param studiesFromJob
+     * @return merged studies
+     * @since v1.1
+     */
+    private Set<Study> mergeStudies(Set<Study> studiesFromJob) {
+        List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
+        List<Study> studyFromDB = studyRepository.findByLocalStudyIdIn(studyIds);
+        studiesFromJob.stream().filter(s -> !studyFromDB.contains(s)).forEach(studyFromDB::add);
+        return new HashSet<>(studyFromDB);
+    }
+
+    /**
+     * retrieve all ct series belongs to studies from database
+     * @param studySet
+     * @return a Map, local study id as key, and series belong to the study
+     * @since v1.1
+     */
+    private Map<String, TreeSet<CTSerie>> buildSeriesMap(Set<Study> studySet) {
+        Map<String, TreeSet<CTSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
+        List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
+        List<CTSerie> ctSeriesFromDB = ctSerieRepository.findByLocalStudyKeyIn(studyIds);
+        for(CTSerie ctse : ctSeriesFromDB) {
+            TreeSet<CTSerie> ctSeries = studyWithSeriesMap.get(ctse.getLocalStudyKey());
+            if(ctSeries == null) {
+                ctSeries = new TreeSet<>();
+            }
+            ctSeries.add(ctse);
+            studyWithSeriesMap.put(ctse.getLocalStudyKey(), ctSeries);
+        }
+        return studyWithSeriesMap;
     }
 }

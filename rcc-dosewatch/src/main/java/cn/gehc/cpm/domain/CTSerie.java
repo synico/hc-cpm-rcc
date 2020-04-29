@@ -17,11 +17,15 @@ public class CTSerie implements Comparable<CTSerie> {
     @EmbeddedId
     private SerieKey serieKey;
 
-    //org_id|aet|device_type|study_key作为全局逻辑主键
+    /**
+     * org_id|aet|device_type|study_key作为全局逻辑主键
+     */
     @Column(name = "local_study_key")
     private String localStudyKey;
 
-    //aet|id作为serie全局主键
+    /**
+     * aet|id作为serie全局主键
+     */
     @Column(name = "local_serie_id")
     private String localSerieId;
 

@@ -1,35 +1,26 @@
-package cn.gehc.cpm.process;
+package cn.gehc.cpm.process.ct;
 
 import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.Study;
-import cn.gehc.cpm.repository.CTSerieRepository;
-import cn.gehc.cpm.repository.StudyRepository;
+import cn.gehc.cpm.process.StudyPostProcess;
 import cn.gehc.cpm.util.DataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
- * This process is used for update field
+ * This process is used for updating fields
  * study.study_start_time, study.study_end_time, study.published
  * @author 212706300
  */
 @Component
-public class CTStudyDurationProcess implements StudyPostProcess {
+public class StudyDurationProcess implements StudyPostProcess<CTSerie> {
 
-    private static final Logger log = LoggerFactory.getLogger(CTStudyDurationProcess.class);
+    private static final Logger log = LoggerFactory.getLogger(StudyDurationProcess.class);
 
     private Integer priority;
-
-    @Autowired
-    private StudyRepository studyRepository;
-
-    @Autowired
-    private CTSerieRepository ctSerieRepository;
 
     @Override
     public void setPriority(Integer priority) {
@@ -38,31 +29,13 @@ public class CTStudyDurationProcess implements StudyPostProcess {
 
     /**
      * @param studyList studies from job (dosewatch database)
+     * @param studyWithSeriesMap
      */
     @Override
-    public void process(Collection<Study> studyList) {
+    public void process(Collection<Study> studyList, Map<String, TreeSet<CTSerie>> studyWithSeriesMap) {
         log.info("start to process studies for study duration, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
-        // As some studies have been persisted to database in previous job, to avoid values of study been
-        // overwritten, need to merge studies from job and database.
-        List<String> studyIds = studyList.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
-        List<Study> studyFromDB = studyRepository.findByLocalStudyIdIn(studyIds);
-        studyList.stream().filter(s -> studyFromDB.contains(s)).forEach(studyFromDB::add);
 
-        Map<String, TreeSet<CTSerie>> studyWithSeriesMap = new HashMap<>(studyFromDB.size());
-
-        // retrieve all ct series belongs to studies from database
-        List<CTSerie> ctSeriesFromDB = ctSerieRepository.findByLocalStudyKeyIn(studyIds);
-        for(CTSerie ctse : ctSeriesFromDB) {
-            TreeSet<CTSerie> ctSeries = studyWithSeriesMap.get(ctse.getLocalStudyKey());
-            if(ctSeries == null) {
-                ctSeries = new TreeSet<>();
-            }
-            ctSeries.add(ctse);
-            studyWithSeriesMap.put(ctse.getLocalStudyKey(), ctSeries);
-        }
-
-        List<Study> study2Update = new ArrayList<>(studyList.size());
         for(Study study : studyList) {
             TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             if(serieSet != null && serieSet.size() > 0) {
@@ -99,6 +72,7 @@ public class CTStudyDurationProcess implements StudyPostProcess {
                 study.setStudyEndTime(DataUtil.getLastSerieDate(lastCTSerie));
             }
         }
+        log.info("end of process studies for study duration");
     }
 
     @Override
