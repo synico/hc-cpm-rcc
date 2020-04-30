@@ -112,98 +112,14 @@ public class CTSeriePullJob extends TimerDBReadJob {
         studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
         targetRegionCountProcess.process(mergedStudies, studyWithSeriesMap);
 
-
-        List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
-        //combine studies from job(hasn't been persisted) with studies from database
-        List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyIds);
-        for(Study st : studiesFromJob) {
-            if(!studyList.contains(st)) {
-                studyList.add(st);
-            }
-        }
-        //retrieve ct serie from database
-        List<CTSerie> ctSeriesFromDB = ctSerieRepository.findByLocalStudyKeyIn(studyIds);
-        for(CTSerie ctse : ctSeriesFromDB) {
-            TreeSet<CTSerie> ctSeries = studyWithSeriesMap.get(ctse.getLocalStudyKey());
-            if(ctSeries == null) {
-                ctSeries = new TreeSet<>();
-            }
-            ctSeries.add(ctse);
-            studyWithSeriesMap.put(ctse.getLocalStudyKey(), ctSeries);
-        }
-
-        List<Study> study2Update = new ArrayList<>(studyList.size());
-        for(Study tmpStudy : studyList) {
-            TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(tmpStudy.getLocalStudyId());
-            if(serieSet != null && serieSet.size() > 0) {
-                CTSerie firstCTSerie = null, lastCTSerie = null;
-                Iterator<CTSerie> ascItr = serieSet.iterator();
-                while(ascItr.hasNext()) {
-                    CTSerie tmpSerie = ascItr.next();
-                    if(tmpSerie != null && tmpSerie.getSeriesDate() != null) {
-                        firstCTSerie = tmpSerie;
-                        break;
-                    }
-                }
-                Iterator<CTSerie> descItr = serieSet.descendingIterator();
-                while (descItr.hasNext()) {
-                    CTSerie tmpSerie = descItr.next();
-                    if(tmpSerie != null
-                        && tmpSerie.getSeriesDate() != null
-                        && tmpSerie.getExposureTime() != null) {
-                        lastCTSerie = tmpSerie;
-                        break;
-                    }
-                }
-
-                if(firstCTSerie == null || lastCTSerie == null) {
-                    // As can't calculate the duration of study, ignore this study
-                    continue;
-                }
-
-                //update study start time
-                tmpStudy.setStudyStartTime(firstCTSerie.getSeriesDate());
-                //update study end time
-                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastCTSerie));
-
-                //to calculate target region count by serie
-                Long targetRegionCount = serieSet.stream()
-                        .filter(serie -> StringUtils.isNotBlank(serie.getTargetRegion()))
-                        .filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
-                        .map(serie -> serie.getTargetRegion())
-                        .distinct()
-                        .count();
-                if(targetRegionCount > 1) {
-                    log.debug("***************************************************************");
-                    log.debug("study: {}, target_region: {}, target region count: {}",
-                            tmpStudy.getLocalStudyId(),
-                            serieSet.stream().map(se -> se.getTargetRegion()).distinct().reduce((x, y) -> x + "," + y).get(),
-                            targetRegionCount);
-                    log.debug("***************************************************************");
-                }
-                tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
-                log.debug("study: {}, target region count: {}", tmpStudy.getLocalStudyId(), tmpStudy.getTargetRegionCount());
-
-                //mark repeated series
-                Set<CTSerie> filteredSeries = serieSet.stream()
-                    .filter(serie -> serie.getStartSliceLocation() !=null)
-                    .filter(serie -> serie.getEndSliceLocation() != null)
-                    .collect(Collectors.toSet());
-                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
-                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
-
-                study2Update.add(tmpStudy);
-            }
-        }
-
-        if(study2Update.size() > 0) {
-            studyRepository.saveAll(study2Update);
+        if(mergedStudies.size() > 0) {
+            studyRepository.saveAll(mergedStudies);
         }
 
         log.info("[ {} ] studies have been saved, [ {} ] ct studies have been saved, [ {} ] ct series have been saved",
-                study2Update.size(), ctStudySet.size(), ctSerieSet.size());
+                mergedStudies.size(), ctStudySet.size(), ctSerieSet.size());
 
-        linkStudies(study2Update);
+        linkStudies(mergedStudies);
 
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());

@@ -77,6 +77,6 @@ public class StudyDurationProcess implements StudyPostProcess<CTSerie> {
 
     @Override
     public Integer getPriority() {
-        return priority;
+        return this.priority;
     }
 }
