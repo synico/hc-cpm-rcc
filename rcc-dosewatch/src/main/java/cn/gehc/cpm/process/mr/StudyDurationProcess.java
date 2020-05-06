@@ -1,6 +1,6 @@
-package cn.gehc.cpm.process.ct;
+package cn.gehc.cpm.process.mr;
 
-import cn.gehc.cpm.domain.CTSerie;
+import cn.gehc.cpm.domain.MRSerie;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.process.StudyPostProcess;
 import cn.gehc.cpm.util.DataUtil;
@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * This process is used for updating fields:
@@ -17,8 +20,8 @@ import java.util.*;
  * @author 212706300
  */
 
-@Component("ctStudyDurationProcess")
-public class StudyDurationProcess implements StudyPostProcess<CTSerie> {
+@Component("mrStudyDurationProcess")
+public class StudyDurationProcess implements StudyPostProcess<MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(StudyDurationProcess.class);
 
@@ -34,44 +37,44 @@ public class StudyDurationProcess implements StudyPostProcess<CTSerie> {
      * @param studyWithSeriesMap
      */
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<CTSerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, TreeSet<MRSerie>> studyWithSeriesMap) {
         log.info("start to process studies for study duration, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for(Study study : studyList) {
-            TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             if(serieSet != null && !serieSet.isEmpty()) {
-                CTSerie firstCTSerie = null, lastCTSerie = null;
+                MRSerie firstMRSerie = null, lastMRSerie = null;
                 // select first serie of study
-                Iterator<CTSerie> ascItr = serieSet.iterator();
+                Iterator<MRSerie> ascItr = serieSet.iterator();
                 while(ascItr.hasNext()) {
-                    CTSerie tmpSerie = ascItr.next();
-                    if(tmpSerie != null && tmpSerie.getSeriesDate() != null) {
-                        firstCTSerie = tmpSerie;
+                    MRSerie tmpSerie = ascItr.next();
+                    if(tmpSerie != null && tmpSerie.getAcquisitionDatetime() != null) {
+                        firstMRSerie = tmpSerie;
                         break;
                     }
                 }
                 // select last serie of study
-                Iterator<CTSerie> descItr = serieSet.descendingIterator();
+                Iterator<MRSerie> descItr = serieSet.descendingIterator();
                 while(descItr.hasNext()) {
-                    CTSerie tmpSerie = descItr.next();
+                    MRSerie tmpSerie = descItr.next();
                     if(tmpSerie != null
-                        && tmpSerie.getSeriesDate() != null
-                        && tmpSerie.getExposureTime() != null) {
-                        lastCTSerie = tmpSerie;
+                        && tmpSerie.getAcquisitionDatetime() != null
+                        && tmpSerie.getAcquisitionDuration() != null) {
+                        lastMRSerie = tmpSerie;
                         break;
                     }
                 }
                 // check if first and last serie have been selected
-                if(firstCTSerie == null || lastCTSerie == null) {
-                    // can't calculate duration of this study, mark this study to be deleted
+                if(firstMRSerie == null || lastMRSerie == null) {
+                    // duration of this study can't be calculated, mark this study to be deleted
                     study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
                     continue;
                 }
                 // update start time of study
-                study.setStudyStartTime(firstCTSerie.getSeriesDate());
+                study.setStudyStartTime(firstMRSerie.getAcquisitionDatetime());
                 // update end time of study
-                study.setStudyEndTime(DataUtil.getLastSerieDate(lastCTSerie));
+                study.setStudyEndTime(DataUtil.getLastSerieDate(lastMRSerie));
             }
         }
 

@@ -97,6 +97,7 @@ public class CTSerie implements Comparable<CTSerie> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
+    @Override
     public int compareTo(CTSerie anotherSerie) {
         int result = this.getSeriesDate().compareTo(anotherSerie.getSeriesDate());
         if(result == 0) {

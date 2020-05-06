@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -83,6 +84,20 @@ public abstract class TimerDBReadJob {
         job.setLastPolledValue(value);
         job.setLastUpdatedTime(new Date());
         jobDao.save(job);
+    }
+
+    /**
+     * As some studies have been persisted to database in previous job, to avoid values of study to be
+     * overwritten, need to merge studies from job and database.
+     * @param studiesFromJob
+     * @return merged studies
+     * @since v1.1
+     */
+    protected Set<Study> mergeStudies(Set<Study> studiesFromJob) {
+        List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
+        List<Study> studyFromDb = studyRepository.findByLocalStudyIdIn(studyIds);
+        studiesFromJob.stream().filter(s -> !studyFromDb.contains(s)).forEach(studyFromDb::add);
+        return new HashSet<>(studyFromDb);
     }
 
     public void linkStudies(Collection<Study> study2Update) {

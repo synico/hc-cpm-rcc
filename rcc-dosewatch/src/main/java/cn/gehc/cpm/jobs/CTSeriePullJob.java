@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 /**
  * @author 212706300
  */
+
 @Service(value = "ctSeriePullJob")
 public class CTSeriePullJob extends TimerDBReadJob {
 
@@ -67,13 +68,13 @@ public class CTSeriePullJob extends TimerDBReadJob {
             String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
             if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if(orgEntityList.size() > 0) {
-                    orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility < {} > has been retrieved", orgId);
-                } else {
+                if(orgEntityList.isEmpty()) {
                     // !!! IMPORTANT !!! job will not save data to database since org_entity has not been properly configured
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
+                } else {
+                    orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility < {} > has been retrieved", orgId);
                 }
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
@@ -100,22 +101,22 @@ public class CTSeriePullJob extends TimerDBReadJob {
             }
         }
 
-        if(ctStudySet.size() > 0) {
+        if(!ctStudySet.isEmpty()) {
             ctStudyRepository.saveAll(ctStudySet);
         }
 
-        if(ctSerieSet.size() > 0) {
+        if(!ctSerieSet.isEmpty()) {
             ctSerieRepository.saveAll(ctSerieSet);
         }
 
         // since v1.1
-        Set<Study> mergedStudies = this.mergeStudies(studiesFromJob);
+        Set<Study> mergedStudies = super.mergeStudies(studiesFromJob);
         studyWithSeriesMap = this.buildSeriesMap(mergedStudies);
         studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
         targetRegionCountProcess.process(mergedStudies, studyWithSeriesMap);
         repeatSeriesCheckProcess.process(mergedStudies, studyWithSeriesMap);
 
-        if(mergedStudies.size() > 0) {
+        if(!mergedStudies.isEmpty()) {
             studyRepository.saveAll(mergedStudies);
         }
 
@@ -127,20 +128,6 @@ public class CTSeriePullJob extends TimerDBReadJob {
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
         }
-    }
-
-    /**
-     * As some studies have been persisted to database in previous job, to avoid values of study been
-     * overwritten, need to merge studies from job and database.
-     * @param studiesFromJob
-     * @return merged studies
-     * @since v1.1
-     */
-    private Set<Study> mergeStudies(Set<Study> studiesFromJob) {
-        List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
-        List<Study> studyFromDb = studyRepository.findByLocalStudyIdIn(studyIds);
-        studiesFromJob.stream().filter(s -> !studyFromDb.contains(s)).forEach(studyFromDb::add);
-        return new HashSet<>(studyFromDb);
     }
 
     /**

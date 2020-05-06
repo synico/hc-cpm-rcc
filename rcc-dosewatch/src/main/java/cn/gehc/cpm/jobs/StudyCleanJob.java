@@ -24,7 +24,8 @@ public class StudyCleanJob extends TimerDBReadJob {
         log.info("start to clean studies, [ {} ] records will be processed", body.size());
 
         //Do nothing, if there isn't data retrieved from database
-        if(body.size() == 0) {
+        if(body.isEmpty()) {
+            log.info("study clean job: nothing has been fetched from database");
             return;
         }
 
@@ -84,7 +85,7 @@ public class StudyCleanJob extends TimerDBReadJob {
             }
         }
 
-        if(studies2Delete.size() > 0) {
+        if(!studies2Delete.isEmpty()) {
             studyRepository.saveAll(studies2Delete);
         }
     }

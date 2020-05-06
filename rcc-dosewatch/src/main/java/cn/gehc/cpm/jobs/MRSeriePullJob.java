@@ -4,6 +4,10 @@ import cn.gehc.cpm.domain.MRSerie;
 import cn.gehc.cpm.domain.MRStudy;
 import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
+import cn.gehc.cpm.process.mr.MRStudyProtocolProcess;
+import cn.gehc.cpm.process.mr.RepeatSeriesCheckProcess;
+import cn.gehc.cpm.process.mr.StudyDurationProcess;
+import cn.gehc.cpm.process.mr.TargetRegionCountProcess;
 import cn.gehc.cpm.repository.MRSerieRepository;
 import cn.gehc.cpm.repository.MRStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
@@ -16,9 +20,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+/**
+ * @author 212706300
+ */
 
 @Service(value = "mrSeriePullJob")
 public class MRSeriePullJob extends TimerDBReadJob {
@@ -31,6 +38,18 @@ public class MRSeriePullJob extends TimerDBReadJob {
     @Autowired
     private MRSerieRepository mrSerieRepository;
 
+    @Autowired
+    private StudyDurationProcess studyDurationProcess;
+
+    @Autowired
+    private TargetRegionCountProcess targetRegionCountProcess;
+
+    @Autowired
+    private RepeatSeriesCheckProcess repeatSeriesCheckProcess;
+
+    @Autowired
+    private MRStudyProtocolProcess mrStudyProtocolProcess;
+
     @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to mr_serie, [ {} ] records will be processed", body.size());
@@ -39,14 +58,14 @@ public class MRSeriePullJob extends TimerDBReadJob {
         Set<MRStudy> mrStudySet = new HashSet<>();
         Set<MRSerie> mrSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<MRSerie>> studyWithSeriesMap = new HashMap<>();
+        Map<String, TreeSet<MRSerie>> studyWithSeriesMap;
 
         Long lastPolledValue = null;
         Study study;
         MRStudy mrStudy;
         MRSerie mrSerie;
         Long orgId = 0L;
-        // save study, mr_serie
+        // save study, mr_study, mr_serie
         for(Map<String, Object> serieProps : body) {
             log.debug(serieProps.toString());
 
@@ -54,13 +73,13 @@ public class MRSeriePullJob extends TimerDBReadJob {
             String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
             if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if(orgEntityList.size() > 0) {
-                    orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility [ {} ] is retrieved", orgId);
-                } else {
+                if(orgEntityList.isEmpty()) {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
+                } else {
+                    orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility [ {} ] is retrieved", orgId);
                 }
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
@@ -87,112 +106,31 @@ public class MRSeriePullJob extends TimerDBReadJob {
             }
         }
 
-        if(mrStudySet.size() > 0) {
-            mrStudyRepository.saveAll(mrStudySet);
-        }
-
-        if(mrSerieSet.size() > 0) {
+        if(!mrSerieSet.isEmpty()) {
             mrSerieRepository.saveAll(mrSerieSet);
         }
 
-        List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
-        //combine studies from job(hasn't been persisted) with studies from database
-        List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyIds);
-        for(Study st : studiesFromJob) {
-            if(!studyList.contains(st)) {
-                studyList.add(st);
-            }
-        }
-        //retrieve ct serie from database
-        List<MRSerie> mrSeriesFromDB = mrSerieRepository.findByLocalStudyKeyIn(studyIds);
-        for(MRSerie mrse : mrSeriesFromDB) {
-            TreeSet<MRSerie> mrSeries = studyWithSeriesMap.get(mrse.getLocalStudyKey());
-            if(mrSeries == null) {
-                mrSeries = new TreeSet<>();
-            }
-            mrSeries.add(mrse);
-            studyWithSeriesMap.put(mrse.getLocalStudyKey(), mrSeries);
+        // since v1.1
+        Set<Study> mergedStudies = super.mergeStudies(studiesFromJob);
+        studyWithSeriesMap = this.buildSeriesMap(mergedStudies);
+        studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
+        targetRegionCountProcess.process(mergedStudies, studyWithSeriesMap);
+        repeatSeriesCheckProcess.process(mergedStudies, studyWithSeriesMap);
+
+        mrStudyProtocolProcess.process(mrStudySet, studyWithSeriesMap);
+
+        if(!mrStudySet.isEmpty()) {
+            mrStudyRepository.saveAll(mrStudySet);
         }
 
-        List<Study> study2Update = new ArrayList<>(studyList.size());
-        // MR study and Study is One-To-One relationship
-        List<MRStudy> mrStudy2Update = new ArrayList<>(studyList.size());
-        for(Study tmpStudy : studyList) {
-            TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(tmpStudy.getLocalStudyId());
-            if(serieSet != null && serieSet.size() > 0) {
-                MRSerie firstMRSerie = null, lastMRSerie = null;
-                Iterator<MRSerie> ascItr = serieSet.iterator();
-                while (ascItr.hasNext()) {
-                    MRSerie tmpSerie = ascItr.next();
-                    if(tmpSerie != null && tmpSerie.getAcquisitionDatetime() != null) {
-                        firstMRSerie = tmpSerie;
-                        break;
-                    }
-                }
-                Iterator<MRSerie> descItr = serieSet.descendingIterator();
-                while(descItr.hasNext()) {
-                    MRSerie tmpSerie = descItr.next();
-                    if(tmpSerie != null
-                        && tmpSerie.getAcquisitionDatetime() != null
-                        && tmpSerie.getAcquisitionDuration() != null) {
-                        lastMRSerie = tmpSerie;
-                        break;
-                    }
-                }
-
-                //update study start time
-                tmpStudy.setStudyStartTime(firstMRSerie.getAcquisitionDatetime());
-                //update study end time
-                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastMRSerie));
-                study2Update.add(tmpStudy);
-
-                //update protocol_key and protocol_name by first serie of MR study
-                MRStudy tmpMRStudy = mrStudySet.stream()
-                        .filter(mr -> tmpStudy.getLocalStudyId().equals(mr.getLocalStudyId()))
-                        .findFirst().get();
-                tmpMRStudy.setProtocolKey(firstMRSerie.getProtocolKey());
-                tmpMRStudy.setProtocolName(firstMRSerie.getProtocolName());
-                mrStudy2Update.add(tmpMRStudy);
-
-                //to calculate protocol by serie
-                Long targetRegionCount = serieSet.stream().map(mrse -> mrse.getProtocolName())
-                        .filter(protocolName -> StringUtils.isNotBlank(protocolName))
-                        .distinct()
-                        .count();
-                if(targetRegionCount > 1) {
-                    log.debug("***************************************************************");
-                    log.debug("study: {}, target_region: {}, target region count: {}",
-                            tmpStudy.getLocalStudyId(),
-                            serieSet.stream().map(mrse -> mrse.getProtocolName()).distinct().reduce((x, y) -> x + "," + y).get(),
-                            targetRegionCount);
-                    log.debug("***************************************************************");
-                }
-                tmpStudy.setTargetRegionCount(targetRegionCount.intValue());
-
-                //mark repeated series
-                Set<MRSerie> filteredSeries = serieSet.stream()
-                    .filter(serie -> serie.getStartSliceLocation() !=null)
-                    .filter(serie -> serie.getEndSliceLocation() != null)
-                    .collect(Collectors.toSet());
-                Boolean hasRepeatedSeries = this.hasRepeatedSeries(filteredSeries);
-                tmpStudy.setHasRepeatedSeries(hasRepeatedSeries);
-
-                study2Update.add(tmpStudy);
-            }
-        }
-
-        if(mrStudy2Update.size() > 0) {
-            mrStudyRepository.saveAll(mrStudy2Update);
-        }
-
-        if(study2Update.size() > 0) {
-            studyRepository.saveAll(study2Update);
+        if(!mergedStudies.isEmpty()) {
+            studyRepository.saveAll(mergedStudies);
         }
 
         log.info("[ {} ] studies have been saved, [ {} ] mr studies have been saved, [ {} ] mr series have been saved",
-                study2Update.size(), mrStudySet.size(), mrSerieSet.size());
+                mergedStudies.size(), mrStudySet.size(), mrSerieSet.size());
 
-        linkStudies(study2Update);
+        linkStudies(mergedStudies);
 
         if(lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
@@ -200,77 +138,24 @@ public class MRSeriePullJob extends TimerDBReadJob {
     }
 
     /**
-     * For MR series, we need to group series by series description, then check series
-     * have same series description and scan range is overlapping.
-     * @param mrSeries
-     * @return Boolean
+     * retrieve all ct series belongs to studies from database
+     * @param studySet
+     * @return a Map, local study id as key, and series belong to the study
+     * @since v1.1
      */
-    private Boolean hasRepeatedSeries(Set<MRSerie> mrSeries) {
-        Boolean hasRepeatedSeries = Boolean.FALSE;
-        Map<String, List<MRSerie>> seriesByType = new HashMap<>();
-        mrSeries.stream().forEach(serie -> {
-            List<MRSerie> serieList = seriesByType.get(serie.getSeriesDescription());
-            if(serieList == null) {
-                serieList = new ArrayList<>();
+    private Map<String, TreeSet<MRSerie>> buildSeriesMap(Set<Study> studySet) {
+        Map<String, TreeSet<MRSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
+        List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
+        List<MRSerie> ctSeriesFromDb = mrSerieRepository.findByLocalStudyKeyIn(studyIds);
+        for(MRSerie mrse : ctSeriesFromDb) {
+            TreeSet<MRSerie> mrSeries = studyWithSeriesMap.get(mrse.getLocalStudyKey());
+            if(mrSeries == null) {
+                mrSeries = new TreeSet<>();
             }
-            serieList.add(serie);
-            seriesByType.put(serie.getSeriesDescription(), serieList);
-        });
-
-        for(Map.Entry<String, List<MRSerie>> seriesEntry : seriesByType.entrySet()) {
-            List<MRSerie> mrSerieList = seriesEntry.getValue();
-            List<MRSerie> series2Compare;
-            Set<MRSerie> series2Update = new HashSet<>();
-            if(mrSerieList.size() > 1) {
-                for(MRSerie baseSerie : mrSerieList) {
-                    series2Compare = mrSerieList.stream()
-                        .filter(serie -> baseSerie.getLocalSerieId() != serie.getLocalSerieId())
-                        .collect(Collectors.toList());
-                    for(MRSerie mrSerie : series2Compare) {
-                        //start slice location
-                        if(mrSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
-                            && mrSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
-                            log.info("study {} has repeated series", mrSerie.getLocalStudyKey());
-                            if(log.isDebugEnabled()) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                try {
-                                    log.debug("base serie: {}", objectMapper.writeValueAsString(baseSerie));
-                                    log.debug("current serie: {}", objectMapper.writeValueAsString(mrSerie));
-                                } catch(Exception ex) {
-                                }
-                            }
-                            baseSerie.setIsRepeated(Boolean.TRUE);
-                            mrSerie.setIsRepeated(Boolean.TRUE);
-                            series2Update.add(baseSerie);
-                            series2Update.add(mrSerie);
-                            hasRepeatedSeries = Boolean.TRUE;
-                        }
-                        //end slice location
-                        if(mrSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
-                            && mrSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
-                            log.info("study {} has repeated series", mrSerie.getLocalStudyKey());
-                            if(log.isDebugEnabled()) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                try {
-                                    log.debug("base serie: {}", objectMapper.writeValueAsString(baseSerie));
-                                    log.debug("current serie: {}", objectMapper.writeValueAsString(mrSerie));
-                                } catch(Exception ex) {
-                                }
-                            }
-                            baseSerie.setIsRepeated(Boolean.TRUE);
-                            mrSerie.setIsRepeated(Boolean.TRUE);
-                            series2Update.add(baseSerie);
-                            series2Update.add(mrSerie);
-                            hasRepeatedSeries = Boolean.TRUE;
-                        }
-                    }
-                }
-            }
-            if(series2Update.size() > 1) {
-                mrSerieRepository.saveAll(series2Update);
-            }
+            mrSeries.add(mrse);
+            studyWithSeriesMap.put(mrse.getLocalStudyKey(), mrSeries);
         }
-        return hasRepeatedSeries;
+        return studyWithSeriesMap;
     }
 
 }

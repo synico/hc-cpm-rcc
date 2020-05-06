@@ -97,7 +97,7 @@ public class DevicePullJob extends TimerDBReadJob {
             }
         }
 
-        if(deviceList.size() > 0) {
+        if(!deviceList.isEmpty()) {
             deviceRepository.saveAll(deviceList);
         }
 

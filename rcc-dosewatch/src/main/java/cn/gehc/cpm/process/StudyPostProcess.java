@@ -11,6 +11,7 @@ import java.util.TreeSet;
  * @author 212706300
  * @since v1.1
  */
+
 public interface StudyPostProcess<E> {
 
     /**

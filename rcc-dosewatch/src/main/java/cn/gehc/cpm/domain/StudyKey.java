@@ -20,11 +20,15 @@ public class StudyKey implements Serializable {
     @Column(name = "MODALITY")
     private String modality;
 
-    //org_id|aet|modality
+    /**
+     * org_id|aet|modality
+     */
     @Column(name = "device_key")
     private String deviceKey;
 
-    //id in dw study table
+    /**
+     * id in dw study table
+     */
     @Column(name = "ID")
     private Long id;
 

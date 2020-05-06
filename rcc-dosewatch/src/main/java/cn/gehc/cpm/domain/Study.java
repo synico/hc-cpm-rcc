@@ -9,6 +9,7 @@ import java.util.Objects;
 /**
  * @author 212706300
  */
+
 @Data
 @Entity
 @Table(name = "study")

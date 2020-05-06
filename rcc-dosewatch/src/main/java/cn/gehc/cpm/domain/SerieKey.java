@@ -20,23 +20,33 @@ public class SerieKey implements Serializable {
     @Column(name = "MODALITY")
     private String modality;
 
-    //id in dw serie table
+    /**
+     * id in dw serie table
+     */
     @Column(name = "ID")
     private Long id;
 
-    //org_id|aet|modality
+    /**
+     * org_id|aet|modality
+     */
     @Column(name = "device_key")
     private String deviceKey;
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(obj == null || this.getClass() != obj.getClass()) return false;
-        SerieKey key = (SerieKey) obj;
-        return this.orgId.equals(key.orgId)
-                && this.aet.equals(key.aet)
-                && this.modality.equals(key.modality)
-                && this.id.equals(key.id);
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof SerieKey) {
+            SerieKey anotherSeriekey = (SerieKey)obj;
+            if (this.orgId.equals(anotherSeriekey.orgId)
+                && this.aet.equals(anotherSeriekey.aet)
+                && this.modality.equals(anotherSeriekey.modality)
+                && this.id.equals(anotherSeriekey.id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

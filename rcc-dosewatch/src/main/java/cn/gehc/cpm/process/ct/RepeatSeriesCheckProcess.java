@@ -14,19 +14,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * This process is used for updating fields
+ * This process is used for updating fields:
  * study.has_repeated_series, ct_serie.is_repeated
+ *
  * @author 212706300
  */
-@Component
+
+@Component("ctRepeatSeriesCheckProcess")
 public class RepeatSeriesCheckProcess implements StudyPostProcess<CTSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(RepeatSeriesCheckProcess.class);
 
+    private Integer priority;
+
     @Autowired
     private CTSerieRepository ctSerieRepository;
-
-    private Integer priority;
 
     @Override
     public void setPriority(Integer priority) {
@@ -34,8 +36,9 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<CTSerie> {
     }
 
     /**
-    * For CT series, we need to group series by type(dtype), then check the scan range * to define if
+    * For CT series, we need to group series by type(dtype), then check the scan range to count if
     * there are repeated series in the study
+    *
     * @param studyList
     * @param studyWithSeriesMap
     */
@@ -52,7 +55,7 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<CTSerie> {
                   .filter(serie -> serie.getEndSliceLocation() != null)
                   .collect(Collectors.toSet());
             Boolean hasRepeatedSeries = Boolean.FALSE;
-            if(filteredSeries.size() > 1) {
+            if(!filteredSeries.isEmpty()) {
                 Map<String, List<CTSerie>> seriesByType = new HashMap<>(filteredSeries.size());
                 filteredSeries.stream().filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
                     .forEach(serie -> {
@@ -68,7 +71,7 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<CTSerie> {
                     List<CTSerie> ctSerieList = seriesEntry.getValue();
                     List<CTSerie> series2Compare;
                     Set<CTSerie> series2Update = new HashSet<>();
-                    if(ctSerieList.size() > 1) {
+                    if(!ctSerieList.isEmpty()) {
                         for(CTSerie baseSerie : ctSerieList) {
                             series2Compare = ctSerieList.stream()
                                     .filter(serie -> baseSerie.getLocalSerieId() != serie.getLocalSerieId())
@@ -97,13 +100,14 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<CTSerie> {
                             }
                         }
                     }
-                    if(series2Update.size() > 1) {
+                    if(!series2Update.isEmpty()) {
                         ctSerieRepository.saveAll(series2Update);
                     }
                 }
             }
             study.setHasRepeatedSeries(hasRepeatedSeries);
         }
+
         log.info("end of process to check if study has repeated series");
     }
 

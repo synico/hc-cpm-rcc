@@ -1,9 +1,8 @@
-package cn.gehc.cpm.process.ct;
+package cn.gehc.cpm.process.mr;
 
-import cn.gehc.cpm.domain.CTSerie;
+import cn.gehc.cpm.domain.MRSerie;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.process.StudyPostProcess;
-import cn.gehc.cpm.util.SerieType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +19,8 @@ import java.util.TreeSet;
  * @author 212706300
  */
 
-@Component("ctTargetRegionCountProcess")
-public class TargetRegionCountProcess implements StudyPostProcess<CTSerie> {
+@Component("mrTargetRegionCountProcess")
+public class TargetRegionCountProcess implements StudyPostProcess<MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(TargetRegionCountProcess.class);
 
@@ -37,24 +36,22 @@ public class TargetRegionCountProcess implements StudyPostProcess<CTSerie> {
      * @param studyWithSeriesMap
      */
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<CTSerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, TreeSet<MRSerie>> studyWithSeriesMap) {
         log.info("start to process studies for target region count, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for(Study study : studyList) {
-            TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             // to calculate target region count by serie
-            Long targetRegionCount = serieSet.stream()
-                    .filter(serie -> StringUtils.isNotBlank(serie.getTargetRegion()))
-                    .filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
-                    .map(serie -> serie.getTargetRegion())
+            Long targetRegionCount = serieSet.stream().map(mrse -> mrse.getProtocolName())
+                    .filter(protocolName -> StringUtils.isNotBlank(protocolName))
                     .distinct()
                     .count();
             if(targetRegionCount > 1 && log.isDebugEnabled()) {
                 log.debug("***************************************************************");
                 log.debug("study: {}, target_region: {}, target region count: {}",
                         study.getLocalStudyId(),
-                        serieSet.stream().map(se -> se.getTargetRegion()).distinct().reduce((x, y) -> x + "," + y).get(),
+                        serieSet.stream().map(mrse -> mrse.getProtocolName()).distinct().reduce((x, y) -> x + "," + y).get(),
                         targetRegionCount);
                 log.debug("***************************************************************");
             }
@@ -67,6 +64,6 @@ public class TargetRegionCountProcess implements StudyPostProcess<CTSerie> {
 
     @Override
     public Integer getPriority() {
-        return priority;
+        return this.priority;
     }
 }
