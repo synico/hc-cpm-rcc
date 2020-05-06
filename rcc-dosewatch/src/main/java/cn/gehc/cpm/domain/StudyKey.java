@@ -30,13 +30,19 @@ public class StudyKey implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(obj == null || this.getClass() != obj.getClass()) return false;
-        StudyKey key = (StudyKey) obj;
-        return this.orgId.equals(key.orgId)
-                && this.aet.equals(key.aet)
-                && this.modality.equals(key.modality)
-                && this.id.equals(key.id);
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof StudyKey) {
+            StudyKey anotherStudyKey = (StudyKey)obj;
+            if (this.orgId.equals(anotherStudyKey.orgId)
+                && this.aet.equals(anotherStudyKey.aet)
+                && this.modality.equals(anotherStudyKey.modality)
+                && this.id.equals(anotherStudyKey.id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

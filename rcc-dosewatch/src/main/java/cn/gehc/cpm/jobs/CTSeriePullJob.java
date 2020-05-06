@@ -4,13 +4,12 @@ import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.CTStudy;
 import cn.gehc.cpm.domain.OrgEntity;
 import cn.gehc.cpm.domain.Study;
+import cn.gehc.cpm.process.ct.RepeatSeriesCheckProcess;
 import cn.gehc.cpm.process.ct.StudyDurationProcess;
 import cn.gehc.cpm.process.ct.TargetRegionCountProcess;
 import cn.gehc.cpm.repository.CTSerieRepository;
 import cn.gehc.cpm.repository.CTStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
-import cn.gehc.cpm.util.SerieType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +41,9 @@ public class CTSeriePullJob extends TimerDBReadJob {
     @Autowired
     private TargetRegionCountProcess targetRegionCountProcess;
 
+    @Autowired
+    private RepeatSeriesCheckProcess repeatSeriesCheckProcess;
+
     @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert/update data to ct_serie, [ {} ] records will be processed", body.size());
@@ -50,7 +52,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
         Set<CTStudy> ctStudySet = new HashSet<>();
         Set<CTSerie> ctSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<CTSerie>> studyWithSeriesMap = new HashMap<>();
+        Map<String, TreeSet<CTSerie>> studyWithSeriesMap;
 
         Long lastPolledValue = null;
         Study study;
@@ -111,6 +113,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
         studyWithSeriesMap = this.buildSeriesMap(mergedStudies);
         studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
         targetRegionCountProcess.process(mergedStudies, studyWithSeriesMap);
+        repeatSeriesCheckProcess.process(mergedStudies, studyWithSeriesMap);
 
         if(mergedStudies.size() > 0) {
             studyRepository.saveAll(mergedStudies);
@@ -127,81 +130,6 @@ public class CTSeriePullJob extends TimerDBReadJob {
     }
 
     /**
-     * For CT series, we need to group series by type(dtype), then check the scan range
-     * to define if there are repeated series in the study
-     * @param ctSeries
-     * @return Boolean
-     */
-    private Boolean hasRepeatedSeries(Set<CTSerie> ctSeries) {
-        Boolean hasRepeatedSeries = Boolean.FALSE;
-        Map<String, List<CTSerie>> seriesByType = new HashMap<>();
-        ctSeries.stream().filter(serie -> !SerieType.CONSTANT_ANGLE.getType().equals(serie.getDType()))
-            .forEach(serie -> {
-                List<CTSerie> serieList = seriesByType.get(serie.getDType());
-                if(serieList == null) {
-                    serieList = new ArrayList<>();
-                }
-                serieList.add(serie);
-                seriesByType.put(serie.getDType(), serieList);
-            });
-
-        for(Map.Entry<String, List<CTSerie>> seriesEntry : seriesByType.entrySet()) {
-            List<CTSerie> ctSerieList = seriesEntry.getValue();
-            List<CTSerie> series2Compare;
-            Set<CTSerie> series2Update = new HashSet<>();
-            if(ctSerieList.size() > 1) {
-                for(CTSerie baseSerie : ctSerieList) {
-                    series2Compare = ctSerieList.stream()
-                        .filter(serie -> baseSerie.getLocalSerieId() != serie.getLocalSerieId())
-                        .collect(Collectors.toList());
-                    for(CTSerie ctSerie : series2Compare) {
-                        //start slice location
-                        if(ctSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
-                            && ctSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
-                            log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
-                            if(log.isDebugEnabled()) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                try {
-                                    log.debug("base serie: {}", objectMapper.writeValueAsString(baseSerie));
-                                    log.debug("current serie: {}", objectMapper.writeValueAsString(ctSerie));
-                                } catch(Exception ex) {
-                                }
-                            }
-                            baseSerie.setIsRepeated(Boolean.TRUE);
-                            ctSerie.setIsRepeated(Boolean.TRUE);
-                            series2Update.add(baseSerie);
-                            series2Update.add(ctSerie);
-                            hasRepeatedSeries = Boolean.TRUE;
-                        }
-                        //end slice location
-                        if(ctSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
-                            && ctSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
-                            log.info("study {} has repeated series", ctSerie.getLocalStudyKey());
-                            if(log.isDebugEnabled()) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                try {
-                                    log.debug("base serie: {}", objectMapper.writeValueAsString(baseSerie));
-                                    log.debug("current serie: {}", objectMapper.writeValueAsString(ctSerie));
-                                } catch(Exception ex) {
-                                }
-                            }
-                            baseSerie.setIsRepeated(Boolean.TRUE);
-                            ctSerie.setIsRepeated(Boolean.TRUE);
-                            series2Update.add(baseSerie);
-                            series2Update.add(ctSerie);
-                            hasRepeatedSeries = Boolean.TRUE;
-                        }
-                    }
-                }
-            }
-            if(series2Update.size() > 1) {
-                ctSerieRepository.saveAll(series2Update);
-            }
-        }
-        return hasRepeatedSeries;
-    }
-
-    /**
      * As some studies have been persisted to database in previous job, to avoid values of study been
      * overwritten, need to merge studies from job and database.
      * @param studiesFromJob
@@ -210,9 +138,9 @@ public class CTSeriePullJob extends TimerDBReadJob {
      */
     private Set<Study> mergeStudies(Set<Study> studiesFromJob) {
         List<String> studyIds = studiesFromJob.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
-        List<Study> studyFromDB = studyRepository.findByLocalStudyIdIn(studyIds);
-        studiesFromJob.stream().filter(s -> !studyFromDB.contains(s)).forEach(studyFromDB::add);
-        return new HashSet<>(studyFromDB);
+        List<Study> studyFromDb = studyRepository.findByLocalStudyIdIn(studyIds);
+        studiesFromJob.stream().filter(s -> !studyFromDb.contains(s)).forEach(studyFromDb::add);
+        return new HashSet<>(studyFromDb);
     }
 
     /**
@@ -224,8 +152,8 @@ public class CTSeriePullJob extends TimerDBReadJob {
     private Map<String, TreeSet<CTSerie>> buildSeriesMap(Set<Study> studySet) {
         Map<String, TreeSet<CTSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
         List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
-        List<CTSerie> ctSeriesFromDB = ctSerieRepository.findByLocalStudyKeyIn(studyIds);
-        for(CTSerie ctse : ctSeriesFromDB) {
+        List<CTSerie> ctSeriesFromDb = ctSerieRepository.findByLocalStudyKeyIn(studyIds);
+        for(CTSerie ctse : ctSeriesFromDb) {
             TreeSet<CTSerie> ctSeries = studyWithSeriesMap.get(ctse.getLocalStudyKey());
             if(ctSeries == null) {
                 ctSeries = new TreeSet<>();

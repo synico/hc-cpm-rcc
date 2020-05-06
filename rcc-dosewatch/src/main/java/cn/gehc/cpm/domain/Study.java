@@ -95,17 +95,6 @@ public class Study implements Comparable<Study> {
     private Date createTime;
 
     @Override
-    public boolean equals(Object study) {
-        boolean isEqual = Boolean.FALSE;
-        if(study instanceof Study) {
-            if(this.getLocalStudyId().equals(((Study) study).getLocalStudyId())) {
-                isEqual = Boolean.TRUE;
-            }
-        }
-        return isEqual;
-    }
-
-    @Override
     public int compareTo(Study anotherStudy) {
         int result = 0;
         if(this.getStudyDate() == null || anotherStudy.getStudyDate() == null) {
@@ -114,6 +103,25 @@ public class Study implements Comparable<Study> {
             result = this.getStudyDate().compareTo(anotherStudy.getStudyDate());
         }
         return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getStudyKey().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if(this == anObject) {
+            return true;
+        }
+        if(anObject instanceof Study) {
+            Study anotherStudy = (Study)anObject;
+            if(this.studyKey.equals(anotherStudy.studyKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public enum StudyStatus {
