@@ -46,7 +46,7 @@ public class MRStudyProtocolProcess implements StudyPostProcess<MRStudy, MRSerie
         log.info("start to process mr studies and retrieve protocol , priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
-        for(MRStudy mrStudy : studyList) {
+        for (MRStudy mrStudy : studyList) {
             TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(mrStudy.getLocalStudyId());
             MRSerie firstMRSerie = null;
             // select first serie of mr study
@@ -61,7 +61,7 @@ public class MRStudyProtocolProcess implements StudyPostProcess<MRStudy, MRSerie
                 }
             }
 
-            if(firstMRSerie == null) {
+            if (firstMRSerie == null) {
                 log.info("Since there isn't valid serie(first serie with protocol name/key), {} will not be updated",
                         mrStudy.getLocalStudyId());
             } else {

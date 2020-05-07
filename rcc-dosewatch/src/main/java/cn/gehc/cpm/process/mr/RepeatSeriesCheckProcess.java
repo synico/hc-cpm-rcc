@@ -54,29 +54,29 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, MRSerie
                     .filter(serie -> serie.getEndSliceLocation() != null)
                     .collect(Collectors.toSet());
             Boolean hasRepeatedSeries = Boolean.FALSE;
-            if(!filteredSeries.isEmpty()) {
+            if (!filteredSeries.isEmpty()) {
                 Map<String, List<MRSerie>> seriesByType = new HashMap<>(filteredSeries.size());
                 filteredSeries.stream().forEach(serie -> {
                     List<MRSerie> serieList = seriesByType.get(serie.getSeriesDescription());
-                    if(serieList == null) {
+                    if (serieList == null) {
                         serieList = new ArrayList<>();
                     }
                     serieList.add(serie);
                     seriesByType.put(serie.getSeriesDescription(), serieList);
                 });
 
-                for(Map.Entry<String, List<MRSerie>> seriesEntry : seriesByType.entrySet()) {
+                for (Map.Entry<String, List<MRSerie>> seriesEntry : seriesByType.entrySet()) {
                     List<MRSerie> mrSerieList = seriesEntry.getValue();
                     List<MRSerie> series2Compare;
                     Set<MRSerie> series2Update = new HashSet<>();
-                    if(!mrSerieList.isEmpty()) {
-                        for(MRSerie baseSerie : mrSerieList) {
+                    if (!mrSerieList.isEmpty()) {
+                        for (MRSerie baseSerie : mrSerieList) {
                             series2Compare = mrSerieList.stream()
                                     .filter(serie -> baseSerie.getLocalSerieId() != serie.getLocalSerieId())
                                     .collect(Collectors.toList());
-                            for(MRSerie mrSerie : series2Compare) {
+                            for (MRSerie mrSerie : series2Compare) {
                                 //start slice location
-                                if(mrSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
+                                if (mrSerie.getStartSliceLocation() > baseSerie.getStartSliceLocation()
                                         && mrSerie.getStartSliceLocation() < baseSerie.getEndSliceLocation()) {
                                     log.info("study {} has repeated series", mrSerie.getLocalStudyKey());
                                     baseSerie.setIsRepeated(Boolean.TRUE);
@@ -86,7 +86,7 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, MRSerie
                                     hasRepeatedSeries = Boolean.TRUE;
                                 }
                                 //end slice location
-                                if(mrSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
+                                if (mrSerie.getEndSliceLocation() > baseSerie.getStartSliceLocation()
                                         && mrSerie.getEndSliceLocation() < baseSerie.getEndSliceLocation()) {
                                     log.info("study {} has repeated series", mrSerie.getLocalStudyKey());
                                     baseSerie.setIsRepeated(Boolean.TRUE);
@@ -98,7 +98,7 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, MRSerie
                             }
                         }
                     }
-                    if(!series2Update.isEmpty()) {
+                    if (!series2Update.isEmpty()) {
                         mrSerieRepository.saveAll(series2Update);
                     }
                 }

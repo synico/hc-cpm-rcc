@@ -707,6 +707,8 @@
                     s.sd_key,
                     sdesc.name as study_description,
                     nms.radioisotope_mapping_key,
+                    nrm.original_name as radioisotope_name,
+                    nms.total_administ_activ_in_megabq as administered_activity,
                     nms.injection_time,
                     se.id as dw_serie_id,
                     ae.aet,
@@ -724,6 +726,7 @@
                     from nm_serie nmse join serie se on nmse.id=se.id
                         join study s on s.id=se.study_key
                         join nm_study nms on s.id=nms.id
+                        join nm_radioisotope_mapping nrm on nms.radioisotope_mapping_key = nrm.id
                         join study_description sdesc on s.sd_key=sdesc.id
                         join series_description sedesc on se.series_description_key=sedesc.id
                         join ae on ae.id=s.ae_key

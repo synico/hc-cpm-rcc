@@ -64,7 +64,7 @@ public abstract class TimerDBReadJob {
         TimerJob job = new TimerJob();
         job.setJobName(headers.get("JobName").toString());
         Object jobType = headers.get("JobType");
-        if(jobType != null) {
+        if (jobType != null) {
             job.setJobType(jobType.toString());
         }
         job.setStatus(TimerJob.JobStatus.End.toString());

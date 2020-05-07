@@ -205,8 +205,10 @@ public class DataUtil {
         nmStudy.setStudyKey(studyKey);
 
         nmStudy.setLocalStudyId(studyKey.toString());
+        nmStudy.setRadioisotopeName(getStringFromProperties(studyProps, "radioisotope_name"));
         nmStudy.setInjectionTime(getDateFromProperties(studyProps, "injection_time"));
         nmStudy.setRadioisotopeMappingKey(getIntegerFromProperties(studyProps, "radioisotope_mapping_key"));
+        nmStudy.setAdministeredActivity(getDoubleFromProperties(studyProps, "administered_activity"));
         nmStudy.setCreateTime(Date.from(Instant.now()));
 
         return nmStudy;

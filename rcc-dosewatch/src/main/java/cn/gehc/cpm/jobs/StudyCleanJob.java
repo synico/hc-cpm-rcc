@@ -24,7 +24,7 @@ public class StudyCleanJob extends TimerDBReadJob {
         log.info("start to clean studies, [ {} ] records will be processed", body.size());
 
         //Do nothing, if there isn't data retrieved from database
-        if(body.isEmpty()) {
+        if (body.isEmpty()) {
             log.info("study clean job: nothing has been fetched from database");
             return;
         }
@@ -39,19 +39,19 @@ public class StudyCleanJob extends TimerDBReadJob {
         String localStudyId;
         Long orgId = 0L;
         DeviceKey deviceKey;
-        for(Map<String, Object> studiesInDW : body) {
+        for (Map<String, Object> studiesInDW : body) {
             log.debug(studiesInDW.toString());
 
             // retrieve org entity id by facility code
             String facilityCode = DataUtil.getStringFromProperties(studiesInDW, "facility_code");
-            if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+            if (orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if(orgEntityList.size() > 0) {
+                if (orgEntityList.size() > 0) {
                     orgId = orgEntityList.get(0).getOrgId();
                 }
                 log.info("facility {} is retrieved", orgId);
             }
-            if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+            if (orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
                 log.error("facility hasn't been configured for aet: [ {} ]", DataUtil.getStringFromProperties(studiesInDW, "aet"));
                 continue;
             }
@@ -68,14 +68,14 @@ public class StudyCleanJob extends TimerDBReadJob {
 
         List<Study> localStudies;
         List<Study> studies2Delete = new ArrayList<>();
-        for(DeviceKey aeKey : aeKeys) {
+        for (DeviceKey aeKey : aeKeys) {
             localStudies = studyRepository.findByAEAndStudyDateChar(aeKey.getOrgId(),
                     aeKey.getAet(),
                     aeKey.getDeviceType(),
                     todayStr);
-            for(Study study : localStudies) {
+            for (Study study : localStudies) {
                 log.debug("study: [ {} ] and published: [ {} ]", study.getLocalStudyId(), study.getPublished());
-                if(localStudyIdsInDW.contains(study.getLocalStudyId())) {
+                if (localStudyIdsInDW.contains(study.getLocalStudyId())) {
                     //do nothing
                 } else {
                     log.info("study will be marked to deletion: [ {} ]", study.getLocalStudyId());
@@ -85,7 +85,7 @@ public class StudyCleanJob extends TimerDBReadJob {
             }
         }
 
-        if(!studies2Delete.isEmpty()) {
+        if (!studies2Delete.isEmpty()) {
             studyRepository.saveAll(studies2Delete);
         }
     }

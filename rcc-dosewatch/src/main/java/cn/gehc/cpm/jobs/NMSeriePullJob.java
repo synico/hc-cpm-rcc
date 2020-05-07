@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author 212706300
+ */
+
 @Service(value = "nmSeriePullJob")
 public class NMSeriePullJob extends TimerDBReadJob {
 
@@ -49,14 +53,14 @@ public class NMSeriePullJob extends TimerDBReadJob {
         NMSerie nmSerie;
         Long orgId = 0L;
         DeviceKey deviceKey = null;
-        for(Map<String, Object> serieProps : body) {
+        for (Map<String, Object> serieProps : body) {
             log.debug("series prop: {}", serieProps.toString());
 
             //retrieve org entity id by facility code
             String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
-            if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+            if (orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if(orgEntityList.isEmpty()) {
+                if (orgEntityList.isEmpty()) {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
@@ -65,7 +69,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
                     log.info("facility [ {} ] is retrieved", orgId);
                 }
             }
-            if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+            if (orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
                 log.error("facility hasn't been configured for aet: [ {} ]", DataUtil.getStringFromProperties(serieProps, "aet"));
                 continue;
             }
@@ -76,15 +80,15 @@ public class NMSeriePullJob extends TimerDBReadJob {
 
             // FOR some ECT/PET we need to create device there is only one aet in dw
             log.info("device key is: [ {} ]", deviceKey);
-            if(deviceKey == null) {
+            if (deviceKey == null) {
                 StudyKey studyKey = study.getStudyKey();
                 List<Device> deviceList = deviceRepository.findByOrgIdAndAet(orgId, studyKey.getAet());
                 Device ectDevice = null;
-                for(Device device : deviceList) {
-                    if(study.getStudyKey().getOrgId().equals(device.getDeviceKey().getOrgId()) &&
+                for (Device device : deviceList) {
+                    if (study.getStudyKey().getOrgId().equals(device.getDeviceKey().getOrgId()) &&
                         studyKey.getAet().equals(device.getDeviceKey().getAet())) {
                         log.info("retrieved device: [ {} ], studyKey in study: [ {} ]", device.getDeviceKey(), study.getStudyKey());
-                        if(studyKey.getModality().equals(device.getDeviceKey().getDeviceType())) {
+                        if (studyKey.getModality().equals(device.getDeviceKey().getDeviceType())) {
                             // device(CT and NM) has been saved
                             deviceKey = device.getDeviceKey();
                             log.info("device key has been found: [ {} ]", deviceKey.toString());
@@ -97,7 +101,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
                 }
                 // device has not been saved
                 log.info("deviceKey: {}, ectDevice: {}", deviceKey, ectDevice);
-                if(deviceKey == null && ectDevice != null) {
+                if (deviceKey == null && ectDevice != null) {
                     DeviceKey nmDeviceKey = new DeviceKey();
                     BeanUtils.copyProperties(ectDevice.getDeviceKey(), nmDeviceKey);
                     nmDeviceKey.setDeviceType(studyKey.getModality());
@@ -119,7 +123,7 @@ public class NMSeriePullJob extends TimerDBReadJob {
 
             Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
 
-            if(lastPolledValue == null) {
+            if (lastPolledValue == null) {
                 lastPolledValue = jointKey;
             } else {
                 lastPolledValue = lastPolledValue > jointKey ? lastPolledValue : jointKey;
@@ -127,15 +131,15 @@ public class NMSeriePullJob extends TimerDBReadJob {
 
         }
 
-        if(studySet.size() > 0) {
+        if (studySet.size() > 0) {
             studyRepository.saveAll(studySet);
         }
 
-        if(nmStudySet.size() > 0) {
+        if (nmStudySet.size() > 0) {
             nmStudyRepository.saveAll(nmStudySet);
         }
 
-        if(nmSerieSet.size() > 0) {
+        if (nmSerieSet.size() > 0) {
             nmSerieRepository.saveAll(nmSerieSet);
         }
 

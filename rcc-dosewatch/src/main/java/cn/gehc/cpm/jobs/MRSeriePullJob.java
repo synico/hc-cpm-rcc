@@ -66,14 +66,14 @@ public class MRSeriePullJob extends TimerDBReadJob {
         MRSerie mrSerie;
         Long orgId = 0L;
         // save study, mr_study, mr_serie
-        for(Map<String, Object> serieProps : body) {
+        for (Map<String, Object> serieProps : body) {
             log.debug(serieProps.toString());
 
             // retrieve org entity id by facility code
             String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
-            if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
+            if (orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if(orgEntityList.isEmpty()) {
+                if (orgEntityList.isEmpty()) {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
@@ -82,7 +82,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
                     log.info("facility [ {} ] is retrieved", orgId);
                 }
             }
-            if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
+            if (orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
                 log.error("facility hasn't been configured for aet: [ {} ]", DataUtil.getStringFromProperties(serieProps, "aet"));
                 continue;
             }
@@ -99,14 +99,14 @@ public class MRSeriePullJob extends TimerDBReadJob {
 
             Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
 
-            if(lastPolledValue == null) {
+            if (lastPolledValue == null) {
                 lastPolledValue = jointKey;
             } else {
                 lastPolledValue = lastPolledValue > jointKey ? lastPolledValue : jointKey;
             }
         }
 
-        if(!mrSerieSet.isEmpty()) {
+        if (!mrSerieSet.isEmpty()) {
             mrSerieRepository.saveAll(mrSerieSet);
         }
 
@@ -119,11 +119,11 @@ public class MRSeriePullJob extends TimerDBReadJob {
 
         mrStudyProtocolProcess.process(mrStudySet, studyWithSeriesMap);
 
-        if(!mrStudySet.isEmpty()) {
+        if (!mrStudySet.isEmpty()) {
             mrStudyRepository.saveAll(mrStudySet);
         }
 
-        if(!mergedStudies.isEmpty()) {
+        if (!mergedStudies.isEmpty()) {
             studyRepository.saveAll(mergedStudies);
         }
 
@@ -132,7 +132,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
 
         linkStudies(mergedStudies);
 
-        if(lastPolledValue != null) {
+        if (lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
         }
     }
@@ -147,9 +147,9 @@ public class MRSeriePullJob extends TimerDBReadJob {
         Map<String, TreeSet<MRSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
         List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
         List<MRSerie> ctSeriesFromDb = mrSerieRepository.findByLocalStudyKeyIn(studyIds);
-        for(MRSerie mrse : ctSeriesFromDb) {
+        for (MRSerie mrse : ctSeriesFromDb) {
             TreeSet<MRSerie> mrSeries = studyWithSeriesMap.get(mrse.getLocalStudyKey());
-            if(mrSeries == null) {
+            if (mrSeries == null) {
                 mrSeries = new TreeSet<>();
             }
             mrSeries.add(mrse);

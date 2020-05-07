@@ -8,6 +8,7 @@ import java.util.Date;
 /**
  * @author 212706300
  */
+
 @Data
 @Entity
 @Table(name = "ct_study")
@@ -47,5 +48,24 @@ public class CTStudy {
     @Column(name = "CREATE_TIME")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
+
+    @Override
+    public int hashCode() {
+        return this.studyKey.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (this == anObject) {
+            return true;
+        }
+        if (anObject instanceof CTStudy) {
+            CTStudy anotherCTStudy = (CTStudy) anObject;
+            if (this.studyKey.equals(anotherCTStudy.studyKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

@@ -137,9 +137,9 @@ public class XASeriePullJob extends TimerDBReadJob {
         Map<String, TreeSet<XASerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
         List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
         List<XASerie> xaSeriesFromDb = xaSerieRepository.findByLocalStudyKeyIn(studyIds);
-        for(XASerie xase : xaSeriesFromDb) {
+        for (XASerie xase : xaSeriesFromDb) {
             TreeSet<XASerie> xaSeries = studyWithSeriesMap.get(xase.getLocalStudyKey());
-            if(xaSeries == null) {
+            if (xaSeries == null) {
                 xaSeries = new TreeSet<>();
             }
             xaSeries.add(xase);

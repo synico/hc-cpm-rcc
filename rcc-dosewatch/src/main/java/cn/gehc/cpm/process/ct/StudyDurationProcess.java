@@ -38,24 +38,24 @@ public class StudyDurationProcess implements StudyPostProcess<Study, CTSerie> {
         log.info("start to process studies for study duration, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
-        for(Study study : studyList) {
+        for (Study study : studyList) {
             TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
-            if(serieSet != null && !serieSet.isEmpty()) {
+            if (serieSet != null && !serieSet.isEmpty()) {
                 CTSerie firstCTSerie = null, lastCTSerie = null;
                 // select first serie of study
                 Iterator<CTSerie> ascItr = serieSet.iterator();
-                while(ascItr.hasNext()) {
+                while (ascItr.hasNext()) {
                     CTSerie tmpSerie = ascItr.next();
-                    if(tmpSerie != null && tmpSerie.getSeriesDate() != null) {
+                    if (tmpSerie != null && tmpSerie.getSeriesDate() != null) {
                         firstCTSerie = tmpSerie;
                         break;
                     }
                 }
                 // select last serie of study
                 Iterator<CTSerie> descItr = serieSet.descendingIterator();
-                while(descItr.hasNext()) {
+                while (descItr.hasNext()) {
                     CTSerie tmpSerie = descItr.next();
-                    if(tmpSerie != null
+                    if (tmpSerie != null
                         && tmpSerie.getSeriesDate() != null
                         && tmpSerie.getExposureTime() != null) {
                         lastCTSerie = tmpSerie;
@@ -63,7 +63,7 @@ public class StudyDurationProcess implements StudyPostProcess<Study, CTSerie> {
                     }
                 }
                 // check if first and last serie have been selected
-                if(firstCTSerie == null || lastCTSerie == null) {
+                if (firstCTSerie == null || lastCTSerie == null) {
                     // can't calculate duration of this study, mark this study to be deleted
                     study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
                     continue;

@@ -37,7 +37,7 @@ public class XAStudyProtocolProcess implements StudyPostProcess<XAStudy, XASerie
         log.info("start to process xa studies and retrieve protocol , priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
-        for(XAStudy xaStudy : studyList) {
+        for (XAStudy xaStudy : studyList) {
             TreeSet<XASerie> serieSet = studyWithSeriesMap.get(xaStudy.getLocalStudyId());
             XASerie firstXASerie = null;
             // select first serie of xa study
@@ -52,7 +52,7 @@ public class XAStudyProtocolProcess implements StudyPostProcess<XAStudy, XASerie
                 }
             }
 
-            if(firstXASerie == null) {
+            if (firstXASerie == null) {
                 log.info("Since there isn't valid serie(first serie with protocol name/key), {} will not be updated",
                         xaStudy.getLocalStudyId());
             } else {

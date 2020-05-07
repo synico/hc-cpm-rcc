@@ -41,24 +41,24 @@ public class StudyDurationProcess implements StudyPostProcess<Study, MRSerie> {
         log.info("start to process studies for study duration, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
-        for(Study study : studyList) {
+        for (Study study : studyList) {
             TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
-            if(serieSet != null && !serieSet.isEmpty()) {
+            if (serieSet != null && !serieSet.isEmpty()) {
                 MRSerie firstMRSerie = null, lastMRSerie = null;
                 // select first serie of study
                 Iterator<MRSerie> ascItr = serieSet.iterator();
-                while(ascItr.hasNext()) {
+                while (ascItr.hasNext()) {
                     MRSerie tmpSerie = ascItr.next();
-                    if(tmpSerie != null && tmpSerie.getAcquisitionDatetime() != null) {
+                    if (tmpSerie != null && tmpSerie.getAcquisitionDatetime() != null) {
                         firstMRSerie = tmpSerie;
                         break;
                     }
                 }
                 // select last serie of study
                 Iterator<MRSerie> descItr = serieSet.descendingIterator();
-                while(descItr.hasNext()) {
+                while (descItr.hasNext()) {
                     MRSerie tmpSerie = descItr.next();
-                    if(tmpSerie != null
+                    if (tmpSerie != null
                         && tmpSerie.getAcquisitionDatetime() != null
                         && tmpSerie.getAcquisitionDuration() != null) {
                         lastMRSerie = tmpSerie;
@@ -66,7 +66,7 @@ public class StudyDurationProcess implements StudyPostProcess<Study, MRSerie> {
                     }
                 }
                 // check if first and last serie have been selected
-                if(firstMRSerie == null || lastMRSerie == null) {
+                if (firstMRSerie == null || lastMRSerie == null) {
                     // duration of this study can't be calculated, mark this study to be deleted
                     study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
                     continue;

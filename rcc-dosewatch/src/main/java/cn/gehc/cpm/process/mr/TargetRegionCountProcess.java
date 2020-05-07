@@ -40,14 +40,14 @@ public class TargetRegionCountProcess implements StudyPostProcess<Study, MRSerie
         log.info("start to process studies for target region count, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
-        for(Study study : studyList) {
+        for (Study study : studyList) {
             TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             // to calculate target region count by serie
             Long targetRegionCount = serieSet.stream().map(mrse -> mrse.getProtocolName())
                     .filter(protocolName -> StringUtils.isNotBlank(protocolName))
                     .distinct()
                     .count();
-            if(targetRegionCount > 1 && log.isDebugEnabled()) {
+            if (targetRegionCount > 1 && log.isDebugEnabled()) {
                 log.debug("***************************************************************");
                 log.debug("study: {}, target_region: {}, target region count: {}",
                         study.getLocalStudyId(),

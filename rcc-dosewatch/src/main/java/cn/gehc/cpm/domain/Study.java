@@ -98,7 +98,7 @@ public class Study implements Comparable<Study> {
     @Override
     public int compareTo(Study anotherStudy) {
         int result = 0;
-        if(this.getStudyDate() == null || anotherStudy.getStudyDate() == null) {
+        if (this.getStudyDate() == null || anotherStudy.getStudyDate() == null) {
             //do nothing
         } else {
             result = this.getStudyDate().compareTo(anotherStudy.getStudyDate());
@@ -113,12 +113,12 @@ public class Study implements Comparable<Study> {
 
     @Override
     public boolean equals(Object anObject) {
-        if(this == anObject) {
+        if (this == anObject) {
             return true;
         }
-        if(anObject instanceof Study) {
+        if (anObject instanceof Study) {
             Study anotherStudy = (Study)anObject;
-            if(this.studyKey.equals(anotherStudy.studyKey)) {
+            if (this.studyKey.equals(anotherStudy.studyKey)) {
                 return true;
             }
         }
