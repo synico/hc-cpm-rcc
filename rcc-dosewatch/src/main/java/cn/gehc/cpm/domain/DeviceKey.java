@@ -34,10 +34,18 @@ public class DeviceKey implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(obj == null || this.getClass() != obj.getClass()) return false;
-        DeviceKey key = (DeviceKey) obj;
-        return this.orgId.equals(key.orgId) && this.aet.equals(key.aet) && this.deviceType.equals(key.deviceType);
+        if (this == obj) {
+            return true;
+        }
+        if(obj instanceof DeviceKey) {
+            DeviceKey anotherDeviceKey = (DeviceKey)obj;
+            if(this.orgId.equals(anotherDeviceKey.orgId)
+                && this.aet.equals(anotherDeviceKey.aet)
+                && this.deviceType.equals(anotherDeviceKey.deviceType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

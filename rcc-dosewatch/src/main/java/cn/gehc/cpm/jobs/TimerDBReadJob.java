@@ -102,7 +102,7 @@ public abstract class TimerDBReadJob {
 
     public void linkStudies(Collection<Study> study2Update) {
         // update prev_local_study_id and next_local_study_id
-        Map<DeviceKey, Set<String>> aetStudyDateMap = new HashMap<>();
+        Map<DeviceKey, Set<String>> aetStudyDateMap = new HashMap<>(study2Update.size());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         DeviceKey deviceKey = null;
         for (Study s : study2Update) {

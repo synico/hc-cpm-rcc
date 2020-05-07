@@ -346,7 +346,7 @@ public class DataUtil {
         BigDecimal acquisitionDuration = BigDecimal.ZERO;
         String dStr = duration;
         if(StringUtils.isNotBlank(duration) && duration.contains("*")) {
-            String durationList [] = duration.split("\\*");
+            String[] durationList = duration.split("\\*");
             if(durationList.length == 2) {
                 dStr = durationList[0];
                 times = Integer.parseInt(durationList[1]);
@@ -359,7 +359,7 @@ public class DataUtil {
             }
             if(dStr.contains(":")) {
                 //min:sec
-                String dStrList[] = dStr.split(":");
+                String[] dStrList = dStr.split(":");
                 int min = Integer.parseInt(dStrList[0]);
                 int sec = Integer.parseInt(dStrList[1]);
                 acquisitionDuration = BigDecimal.valueOf(sec + min * 60);

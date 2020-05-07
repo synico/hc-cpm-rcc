@@ -56,13 +56,13 @@ public class NMSeriePullJob extends TimerDBReadJob {
             String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
             if(orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if(orgEntityList.size() > 0) {
-                    orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility [ {} ] is retrieved", orgId);
-                } else {
+                if(orgEntityList.isEmpty()) {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
+                } else {
+                    orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility [ {} ] is retrieved", orgId);
                 }
             }
             if(orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {

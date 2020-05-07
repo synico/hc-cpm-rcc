@@ -5,6 +5,10 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * @author 212706300
+ */
+
 @Data
 @Entity
 @Table(name = "nm_serie")
@@ -13,7 +17,9 @@ public class NMSerie {
     @EmbeddedId
     private SerieKey serieKey;
 
-    //org_id|aet|device_type|study_key作为全局逻辑主键
+    /**
+     * org_id|aet|device_type|study_key作为全局逻辑主键
+     */
     @Column(name = "local_study_key")
     private String localStudyKey;
 
