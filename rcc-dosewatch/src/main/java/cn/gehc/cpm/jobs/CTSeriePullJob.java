@@ -150,4 +150,5 @@ public class CTSeriePullJob extends TimerDBReadJob {
         }
         return studyWithSeriesMap;
     }
+
 }

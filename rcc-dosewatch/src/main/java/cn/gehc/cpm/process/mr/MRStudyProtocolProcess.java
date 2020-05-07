@@ -20,7 +20,7 @@ import java.util.TreeSet;
  * @author 212706300
  */
 
-@Component
+@Component("mrStudyProtocolProcess")
 public class MRStudyProtocolProcess implements StudyPostProcess<MRStudy, MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(MRStudyProtocolProcess.class);
@@ -38,7 +38,7 @@ public class MRStudyProtocolProcess implements StudyPostProcess<MRStudy, MRSerie
     /**
      * Retrieve first serie of each mr study, then choose protocol key and protocol name and
      * assign values to mr study
-     *  @param studyList
+     * @param studyList
      * @param studyWithSeriesMap
      */
     @Override

@@ -138,7 +138,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
     }
 
     /**
-     * retrieve all ct series belongs to studies from database
+     * retrieve all mr series belongs to studies from database
      * @param studySet
      * @return a Map, local study id as key, and series belong to the study
      * @since v1.1

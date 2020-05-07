@@ -1,6 +1,8 @@
 package cn.gehc.cpm.jobs;
 
 import cn.gehc.cpm.domain.*;
+import cn.gehc.cpm.process.xa.StudyDurationProcess;
+import cn.gehc.cpm.process.xa.XAStudyProtocolProcess;
 import cn.gehc.cpm.repository.XASerieRepository;
 import cn.gehc.cpm.repository.XAStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
@@ -12,8 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * @author 212706300
+ */
 
 @Service(value = "xaSeriePullJob")
 public class XASeriePullJob extends TimerDBReadJob {
@@ -26,22 +32,28 @@ public class XASeriePullJob extends TimerDBReadJob {
     @Autowired
     private XASerieRepository xaSerieRepository;
 
+    @Autowired
+    private StudyDurationProcess studyDurationProcess;
+
+    @Autowired
+    private XAStudyProtocolProcess xaStudyProtocolProcess;
+
     @Override
     public void insertData(@Headers Map<String, Object> headers, @Body List<Map<String, Object>> body) {
         log.info("start to insert data to xa_serie, [ {} ] records will be processed", body.size());
 
-        Set<Study> studySet = new HashSet<>();
+        Set<Study> studiesFromJob = new HashSet<>();
         Set<XAStudy> xaStudySet = new HashSet<>();
         Set<XASerie> xaSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<XASerie>> studyWithSerieMap = new HashMap<>();
+        Map<String, TreeSet<XASerie>> studyWithSerieMap;
 
         Long lastPolledValue = null;
         Study study;
         XAStudy xaStudy;
         XASerie xaSerie;
         Long orgId = 0L;
-        // save study, mr_serie
+        // save study, xa_study, xa_serie
         for (Map<String, Object> serieProps : body) {
             log.debug(serieProps.toString());
 
@@ -49,13 +61,13 @@ public class XASeriePullJob extends TimerDBReadJob {
             String facilityCode = DataUtil.getStringFromProperties(serieProps, "facility_code");
             if (orgId.longValue() == 0 && StringUtils.isNotBlank(facilityCode)) {
                 List<OrgEntity> orgEntityList = orgEntityRepository.findByOrgName(facilityCode);
-                if (orgEntityList.size() > 0) {
-                    orgId = orgEntityList.get(0).getOrgId();
-                    log.info("facility [ {} ] is retrieved", orgId);
-                } else {
+                if (orgEntityList.isEmpty()) {
                     // !!! IMPORTANT !!! job will not save data to database while org_entity has not been set
                     log.warn("The org/device has not been synchronized, job will not save data");
                     return;
+                } else {
+                    orgId = orgEntityList.get(0).getOrgId();
+                    log.info("facility [ {} ] is retrieved", orgId);
                 }
             }
             if (orgId.longValue() == 0 && StringUtils.isBlank(facilityCode)) {
@@ -65,7 +77,7 @@ public class XASeriePullJob extends TimerDBReadJob {
             serieProps.put("org_id", orgId);
 
             study = DataUtil.convertProps2Study(serieProps);
-            studySet.add(study);
+            studiesFromJob.add(study);
 
             xaStudy = DataUtil.convertProps2XAStudy(serieProps);
             xaStudySet.add(xaStudy);
@@ -75,15 +87,6 @@ public class XASeriePullJob extends TimerDBReadJob {
 
             Long jointKey = DataUtil.getLongFromProperties(serieProps, "joint_key");
 
-            TreeSet<XASerie> xaSerieList;
-            if (studyWithSerieMap.get(study.getLocalStudyId()) == null) {
-                xaSerieList = new TreeSet<>();
-            } else {
-                xaSerieList = studyWithSerieMap.get(study.getLocalStudyId());
-            }
-            xaSerieList.add(xaSerie);
-            studyWithSerieMap.put(study.getLocalStudyId(), xaSerieList);
-
             if (lastPolledValue == null) {
                 lastPolledValue = jointKey;
             } else {
@@ -91,78 +94,58 @@ public class XASeriePullJob extends TimerDBReadJob {
             }
         }
 
-        if (xaStudySet.size() > 0) {
+        if (!xaStudySet.isEmpty()) {
             xaStudyRepository.saveAll(xaStudySet);
         }
 
-        if (xaSerieSet.size() > 0) {
+        if (!xaSerieSet.isEmpty()) {
             xaSerieRepository.saveAll(xaSerieSet);
         }
 
-        //update study
-        List<Study> studyList = studyRepository.findByLocalStudyIdIn(studyWithSerieMap.keySet());
-        for (Study st : studySet) {
-            if (!studyList.contains(st)) {
-                studyList.add(st);
-            }
-        }
-        List<Study> study2Update = new ArrayList<>(studyList.size());
-        List<XAStudy> xaStudy2Update = new ArrayList<>(studyList.size());
-        for (Study tmpStudy : studyList) {
-            TreeSet<XASerie> serieSet = studyWithSerieMap.get(tmpStudy.getLocalStudyId());
-            if (serieSet != null && serieSet.size() > 0) {
-                XASerie firstXASerie = null, lastXASerie = null;
-                Iterator<XASerie> ascItr = serieSet.iterator();
-                while (ascItr.hasNext()) {
-                    XASerie tmpSerie = ascItr.next();
-                    if (tmpSerie != null && tmpSerie.getSeriesDate() != null) {
-                        firstXASerie = tmpSerie;
-                        break;
-                    }
-                }
-                Iterator<XASerie> descItr = serieSet.descendingIterator();
-                while (descItr.hasNext()) {
-                    XASerie tmpSerie = descItr.next();
-                    if (tmpSerie != null
-                            && tmpSerie.getSeriesDate() != null
-                            && tmpSerie.getExposureTime() != null) {
-                        lastXASerie = tmpSerie;
-                        break;
-                    }
-                }
+        // since v1.1
+        Set<Study> mergedStudies = super.mergeStudies(studiesFromJob);
+        studyWithSerieMap = this.buildSeriesMap(mergedStudies);
+        studyDurationProcess.process(mergedStudies, studyWithSerieMap);
 
-                //update study start time
-                tmpStudy.setStudyStartTime(firstXASerie.getSeriesDate());
-                //update study end time
-                tmpStudy.setStudyEndTime(DataUtil.getLastSerieDate(lastXASerie));
-                study2Update.add(tmpStudy);
+        xaStudyProtocolProcess.process(xaStudySet, studyWithSerieMap);
 
-                //update protocol_key and protocol_name by first serie of XA study
-                XAStudy tmpXAStudy = xaStudySet.stream()
-                        .filter(xa -> tmpStudy.getLocalStudyId().equals(xa.getLocalStudyId()))
-                        .findFirst().get();
-                tmpXAStudy.setProtocolKey(firstXASerie.getProtocolKey());
-                tmpXAStudy.setProtocolName(firstXASerie.getProtocolName());
-                xaStudy2Update.add(tmpXAStudy);
-            }
+        if (!xaStudySet.isEmpty()) {
+            xaStudyRepository.saveAll(xaStudySet);
         }
 
-        if (xaStudy2Update.size() > 0) {
-            xaStudyRepository.saveAll(xaStudy2Update);
-        }
-
-        if (study2Update.size() > 0) {
-            studyRepository.saveAll(study2Update);
+        if (!mergedStudies.isEmpty()) {
+            studyRepository.saveAll(mergedStudies);
         }
 
         log.info("[ {} ] studies have been saved, [ {} ] xa studies have been saved, [ {} ] xa series have been saved",
-                study2Update.size(), xaStudySet.size(), xaSerieSet.size());
+                mergedStudies.size(), xaStudySet.size(), xaSerieSet.size());
 
-        linkStudies(study2Update);
+        linkStudies(mergedStudies);
 
         if (lastPolledValue != null) {
             super.updateLastPullValue(headers, lastPolledValue.toString());
         }
+    }
+
+    /**
+     * retrieve all xa series belongs to studies from database
+     * @param studySet
+     * @return a Map, local study id as key, and series belong to the study
+     * @since v1.1
+     */
+    private Map<String, TreeSet<XASerie>> buildSeriesMap(Set<Study> studySet) {
+        Map<String, TreeSet<XASerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
+        List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
+        List<XASerie> xaSeriesFromDb = xaSerieRepository.findByLocalStudyKeyIn(studyIds);
+        for(XASerie xase : xaSeriesFromDb) {
+            TreeSet<XASerie> xaSeries = studyWithSeriesMap.get(xase.getLocalStudyKey());
+            if(xaSeries == null) {
+                xaSeries = new TreeSet<>();
+            }
+            xaSeries.add(xase);
+            studyWithSeriesMap.put(xase.getLocalStudyKey(), xaSeries);
+        }
+        return studyWithSeriesMap;
     }
 
 }
