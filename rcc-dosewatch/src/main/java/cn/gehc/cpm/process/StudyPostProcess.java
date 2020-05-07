@@ -1,10 +1,7 @@
 package cn.gehc.cpm.process;
 
-import cn.gehc.cpm.domain.Study;
-
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -12,7 +9,7 @@ import java.util.TreeSet;
  * @since v1.1
  */
 
-public interface StudyPostProcess<E> {
+public interface StudyPostProcess<T1, T2> {
 
     /**
      * Manually set priority of process, the lower value means higher priority.
@@ -26,7 +23,7 @@ public interface StudyPostProcess<E> {
      * @param studyList
      * @param studyWithSeriesMap
      */
-    void process(Collection<Study> studyList, Map<String, TreeSet<E>> studyWithSeriesMap);
+    void process(Collection<T1> studyList, Map<String, TreeSet<T2>> studyWithSeriesMap);
 
     /**
      * return priority of process

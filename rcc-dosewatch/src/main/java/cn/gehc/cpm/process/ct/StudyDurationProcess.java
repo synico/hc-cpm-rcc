@@ -18,7 +18,7 @@ import java.util.*;
  */
 
 @Component("ctStudyDurationProcess")
-public class StudyDurationProcess implements StudyPostProcess<CTSerie> {
+public class StudyDurationProcess implements StudyPostProcess<Study, CTSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(StudyDurationProcess.class);
 

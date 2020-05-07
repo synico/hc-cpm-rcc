@@ -2,6 +2,7 @@ package cn.gehc.cpm.process.mr;
 
 import cn.gehc.cpm.domain.MRSerie;
 import cn.gehc.cpm.domain.MRStudy;
+import cn.gehc.cpm.process.StudyPostProcess;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,19 +21,27 @@ import java.util.TreeSet;
  */
 
 @Component
-public class MRStudyProtocolProcess {
+public class MRStudyProtocolProcess implements StudyPostProcess<MRStudy, MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(MRStudyProtocolProcess.class);
 
     private Integer priority;
 
     /**
+     * @param priority
+     */
+    @Override
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    /**
      * Retrieve first serie of each mr study, then choose protocol key and protocol name and
      * assign values to mr study
-     *
-     * @param studyList
+     *  @param studyList
      * @param studyWithSeriesMap
      */
+    @Override
     public void process(Collection<MRStudy> studyList, Map<String, TreeSet<MRSerie>> studyWithSeriesMap) {
         log.info("start to process mr studies and retrieve protocol , priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
@@ -64,5 +73,12 @@ public class MRStudyProtocolProcess {
         log.info("end of process studies for mr study protocol");
     }
 
+    /**
+     * @return priority
+     */
+    @Override
+    public Integer getPriority() {
+        return this.priority;
+    }
 
 }

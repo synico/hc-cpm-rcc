@@ -20,7 +20,7 @@ import java.util.TreeSet;
  */
 
 @Component("mrTargetRegionCountProcess")
-public class TargetRegionCountProcess implements StudyPostProcess<MRSerie> {
+public class TargetRegionCountProcess implements StudyPostProcess<Study, MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(TargetRegionCountProcess.class);
 

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 
 @Component("ctRepeatSeriesCheckProcess")
-public class RepeatSeriesCheckProcess implements StudyPostProcess<CTSerie> {
+public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, CTSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(RepeatSeriesCheckProcess.class);
 

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 
 @Component("mrRepeatSeriesCheckProcess")
-public class RepeatSeriesCheckProcess implements StudyPostProcess<MRSerie> {
+public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(RepeatSeriesCheckProcess.class);
 

@@ -21,7 +21,7 @@ import java.util.TreeSet;
  */
 
 @Component("mrStudyDurationProcess")
-public class StudyDurationProcess implements StudyPostProcess<MRSerie> {
+public class StudyDurationProcess implements StudyPostProcess<Study, MRSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(StudyDurationProcess.class);
 

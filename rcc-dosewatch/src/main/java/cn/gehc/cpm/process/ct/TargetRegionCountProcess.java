@@ -21,7 +21,7 @@ import java.util.TreeSet;
  */
 
 @Component("ctTargetRegionCountProcess")
-public class TargetRegionCountProcess implements StudyPostProcess<CTSerie> {
+public class TargetRegionCountProcess implements StudyPostProcess<Study, CTSerie> {
 
     private static final Logger log = LoggerFactory.getLogger(TargetRegionCountProcess.class);
 
