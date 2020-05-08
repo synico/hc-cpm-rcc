@@ -81,12 +81,12 @@ public class MRSerie implements Comparable<MRSerie> {
 
     @Override
     public boolean equals(Object anObject) {
-        if(this == anObject) {
+        if (this == anObject) {
             return true;
         }
-        if(anObject instanceof MRSerie) {
+        if (anObject instanceof MRSerie) {
             MRSerie anotherSerie = (MRSerie)anObject;
-            if(this.serieKey.equals(anotherSerie.serieKey)) {
+            if (this.serieKey.equals(anotherSerie.serieKey)) {
                 return true;
             }
         }
@@ -96,7 +96,7 @@ public class MRSerie implements Comparable<MRSerie> {
     @Override
     public int compareTo(MRSerie anotherSerie) {
         int result = this.getSeriesDate().compareTo(anotherSerie.getSeriesDate());
-        if(result == 0) {
+        if (result == 0) {
             result = this.getSerieId().compareTo(anotherSerie.getSerieId());
         }
         return result;

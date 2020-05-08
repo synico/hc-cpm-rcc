@@ -9,6 +9,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
 
+/**
+ * @author 212706300
+ */
+
 @Data
 @Entity
 @Table(name = "ct_serie")
@@ -96,6 +100,25 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "create_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
+
+    @Override
+    public int hashCode() {
+        return this.getSerieKey().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (this == anObject) {
+            return true;
+        }
+        if (anObject instanceof CTSerie) {
+            CTSerie anotherSerie = (CTSerie)anObject;
+            if (this.serieKey.equals(anotherSerie.serieKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public int compareTo(CTSerie anotherSerie) {

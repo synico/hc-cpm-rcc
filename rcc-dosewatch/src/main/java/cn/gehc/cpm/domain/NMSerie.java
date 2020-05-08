@@ -56,4 +56,23 @@ public class NMSerie {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
+    @Override
+    public int hashCode() {
+        return this.serieKey.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (this == anObject) {
+            return true;
+        }
+        if (anObject instanceof NMSerie) {
+            NMSerie anotherSerie = (NMSerie)anObject;
+            if (this.serieKey.equals(anotherSerie.serieKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

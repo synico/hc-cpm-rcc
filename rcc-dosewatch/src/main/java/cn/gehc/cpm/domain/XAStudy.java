@@ -43,4 +43,23 @@ public class XAStudy {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
+    @Override
+    public int hashCode() {
+        return this.studyKey.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (this == anObject) {
+            return true;
+        }
+        if (anObject instanceof XAStudy) {
+            XAStudy anotherXAStudy = (XAStudy) anObject;
+            if (this.studyKey.equals(anotherXAStudy.studyKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

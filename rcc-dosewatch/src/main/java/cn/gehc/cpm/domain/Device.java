@@ -68,6 +68,11 @@ public class Device {
     private String site;
 
     @Override
+    public int hashCode() {
+        return this.deviceKey.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         boolean isEqual = Boolean.FALSE;
         if(obj instanceof Device) {

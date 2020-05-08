@@ -7,6 +7,10 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * @author 212706300
+ */
+
 @Data
 @Embeddable
 public class StudyKey implements Serializable {
