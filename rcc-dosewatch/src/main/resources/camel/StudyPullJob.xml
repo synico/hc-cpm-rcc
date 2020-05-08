@@ -726,13 +726,13 @@
                     from nm_serie nmse join serie se on nmse.id=se.id
                         join study s on s.id=se.study_key
                         join nm_study nms on s.id=nms.id
-                        join nm_radioisotope_mapping nrm on nms.radioisotope_mapping_key = nrm.id
+                        left join nm_radioisotope_mapping nrm on nms.radioisotope_mapping_key = nrm.id
                         join study_description sdesc on s.sd_key=sdesc.id
                         join series_description sedesc on se.series_description_key=sedesc.id
                         join ae on ae.id=s.ae_key
                         join facility fac on ae.facility_key = fac.id
                         join protocol pl on nmse.protocol_key=pl.id
-                        join patient pt on s.patient_key=pt.id
+                        left join patient pt on s.patient_key=pt.id
                         left join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(se.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and s.study_date is not null
