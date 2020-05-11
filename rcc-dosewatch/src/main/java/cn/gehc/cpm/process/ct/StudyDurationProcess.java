@@ -12,7 +12,7 @@ import java.util.*;
 
 /**
  * This process is used for updating fields:
- * study.study_start_time, study.study_end_time, study.published
+ * study.study_start_time, study.study_end_time, study.published, study.study_date
  *
  * @author 212706300
  */
@@ -72,6 +72,10 @@ public class StudyDurationProcess implements StudyPostProcess<Study, CTSerie> {
                 study.setStudyStartTime(firstCTSerie.getSeriesDate());
                 // update end time of study
                 study.setStudyEndTime(DataUtil.getLastSerieDate(lastCTSerie));
+                // update study_date to study start time if study_date is null
+                if (study.getStudyDate() == null) {
+                    study.setStudyDate(study.getStudyStartTime());
+                }
             }
         }
 
