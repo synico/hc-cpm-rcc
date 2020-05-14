@@ -3,10 +3,9 @@ ALTER TABLE device
     ADD COLUMN purchase_price numeric(10,2) default 0.0,
     ADD COLUMN salvage_value numeric(10,2) default 0.0,
     ADD COLUMN lifecycle int4 default 1,
-    ADD COLUMN depreciation_method int4 default 1;
-
-alter table device add column province varchar(255);
-alter table device add column city varchar(255);
+    ADD COLUMN depreciation_method int4 default 1,
+    add column province varchar(255),
+    add column city varchar(255);
 
 CREATE TABLE body_part_mapping (
     org_id integer NOT NULL,
@@ -16,4 +15,4 @@ CREATE TABLE body_part_mapping (
     protocol_name varchar(255) NOT NULL,
     body_category varchar(255) NOT NULL,
     device_key varchar(255) NOT NULL
-)
+);

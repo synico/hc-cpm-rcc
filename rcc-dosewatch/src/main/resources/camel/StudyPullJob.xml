@@ -63,10 +63,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -140,10 +140,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -217,10 +217,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -294,10 +294,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -371,10 +371,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -448,10 +448,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -525,10 +525,10 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join patient pt on s.patient_key=pt.id
-                    join protocol pl on cts.protocol_key=pl.id
-                    join protocol sepl on ctse.protocol_key=sepl.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join patient pt on s.patient_key=pt.id
+                    left join protocol pl on cts.protocol_key=pl.id
+                    left join protocol sepl on ctse.protocol_key=sepl.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
@@ -595,11 +595,11 @@
                     join study_description sdesc on s.sd_key=sdesc.id
                     join ae on ae.id=s.ae_key
                     join facility fac on ae.facility_key = fac.id
-                    join protocol pl on mrse.protocol_key=pl.id
-                    join patient pt on s.patient_key=pt.id
                     join supported_device_model sdm on ae.sdm_key=sdm.id
                     join manufacturer m on sdm.manufacturer_key=m.id
                     join series_description sd on se.series_description_key=sd.id
+                    left join protocol pl on mrse.protocol_key=pl.id
+                    left join patient pt on s.patient_key=pt.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
@@ -666,8 +666,8 @@
                         join series_description sedesc on se.series_description_key=sedesc.id
                         join ae on ae.id=s.ae_key
                         join facility fac on ae.facility_key = fac.id
-                        join protocol pl on xase.protocol_key=pl.id
-                        join patient pt on s.patient_key=pt.id
+                        left join protocol pl on xase.protocol_key=pl.id
+                        left join patient pt on s.patient_key=pt.id
                         left join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and se.series_date is not null and xase.exposure_time is not null
@@ -726,12 +726,12 @@
                     from nm_serie nmse join serie se on nmse.id=se.id
                         join study s on s.id=se.study_key
                         join nm_study nms on s.id=nms.id
-                        left join nm_radioisotope_mapping nrm on nms.radioisotope_mapping_key = nrm.id
                         join study_description sdesc on s.sd_key=sdesc.id
                         join series_description sedesc on se.series_description_key=sedesc.id
                         join ae on ae.id=s.ae_key
                         join facility fac on ae.facility_key = fac.id
-                        join protocol pl on nmse.protocol_key=pl.id
+                        left join nm_radioisotope_mapping nrm on nms.radioisotope_mapping_key = nrm.id
+                        left join protocol pl on nmse.protocol_key=pl.id
                         left join patient pt on s.patient_key=pt.id
                         left join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(se.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}

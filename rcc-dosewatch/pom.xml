@@ -63,6 +63,7 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>application.yml</exclude>
+					<exclude>logback-spring.xml</exclude>
 					<exclude>datasource/*</exclude>
 					<exclude>sql/*</exclude>
 					<exclude>camel/*</exclude>
