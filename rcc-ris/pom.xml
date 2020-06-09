@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>cn.gehc.cpm</groupId>
 	<artifactId>rcc-ris</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.9</version>
 	<name>rcc-ris</name>
 	<description>Pull data from RIS to rcc database</description>
 
