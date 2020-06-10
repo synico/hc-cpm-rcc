@@ -70,7 +70,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -147,7 +147,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cas.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -224,7 +224,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -301,7 +301,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(cse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -378,7 +378,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -455,7 +455,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(sse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -532,7 +532,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(us.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and se.series_date is not null
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="ctSeriePullJob" method="insertData"/>
         <bean ref="ctSeriePullJob" method="endDBReadJob"/>
@@ -603,7 +603,7 @@
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                 and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
-            order by joint_key asc limit 500?dataSource=dwDS"/>
+            order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="mrSeriePullJob" method="insertData"/>
         <bean ref="mrSeriePullJob" method="endDBReadJob"/>
@@ -671,7 +671,7 @@
                         left join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(xase.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and se.series_date is not null and xase.exposure_time is not null
-                order by joint_key asc limit 500?dataSource=dwDS"/>
+                order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="xaSeriePullJob" method="insertData"/>
         <bean ref="xaSeriePullJob" method="endDBReadJob"/>
@@ -736,7 +736,7 @@
                         left join physician ph on s.performing_physician_key=ph.id
                 where (unix_timestamp(se.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
                     and s.study_date is not null
-                order by joint_key asc limit 500?dataSource=dwDS"/>
+                order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="nmSeriePullJob" method="insertData"/>
         <bean ref="nmSeriePullJob" method="endDBReadJob"/>
@@ -770,7 +770,7 @@
                         join facility fac on ae.facility_key = fac.id
                     where ae.deleted = 0
                         and ae.dt_last_update > :#${headers[JobObject].lastPolledValue}
-                    order by ae.dt_last_update asc;?dataSource=dwDS"/>
+                    order by ae.dt_last_update asc;?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="devicePullJob" method="insertData"/>
         <bean ref="devicePullJob" method="endDBReadJob"/>
@@ -795,7 +795,7 @@
                         fac.code as facility_code
                     from study s join ae on s.ae_key=ae.id
                         join facility fac on ae.facility_key = fac.id
-                    where date_format(study_date,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d');?dataSource=dwDS"/>
+                    where date_format(study_date,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d');?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="studyCleanJob" method="cleanStudies"/>
         <bean ref="studyCleanJob" method="endDBReadJob"/>
