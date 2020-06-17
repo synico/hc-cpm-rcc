@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes xmlns="http://camel.apache.org/schema/spring">
+    
+    <route id="pullExamByPreExamDateJob">
+        <from uri="timer://PullExamData?fixedRate=true&amp;period=1m"/>
+        <setHeader headerName="JobName">
+            <constant>pullExamByPreExamDateJob</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="examPullJob" method="startDBReadJob"/>
+        <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
+        <to uri="sql:select
+                requisition_id,
+                sheetid,
+                pre_exam_doctor_id,
+                pre_exam_doctor_name,
+                pre_exam_from_dept_id,
+                pre_exam_from_dept,
+                date_format(pre_exam_date, '%Y-%m-%d %T') as pre_exam_date,
+                patient_card_num,
+                patient_id,
+                patient_name,
+                patient_sex,
+                date_format(patient_birth, '%Y-%m-%d') as patient_birth,
+                exam_dept_id,
+                exam_dept,
+                pre_exam_from_type,
+                is_canceled,
+                date_format(exam_cancel_date, '%Y-%m-%d %T') as exam_cancel_date,
+                date_format(pre_exam_schedule_submit_date, '%Y-%m-%d %T') as pre_exam_schedule_submit_date,
+                date_format(pre_exam_schedule_date, '%Y-%m-%d %T') as pre_exam_schedule_date,
+                pre_exam_schedule_duration,
+                exam_place,
+                is_schedule_canceled,
+                date_format(pre_exam_schedule_cancel_date, '%Y-%m-%d %T') as pre_exam_schedule_cancel_date,
+                pre_exam_device_type,
+                pre_exam_body_part,
+                pre_exam_method,
+                accession_number,
+                device_type,
+                actual_exam_place,
+                exam_method,
+                exam_body_part,
+                study_uid,
+                date_format(pre_registe_date, '%Y-%m-%d %T') as pre_registe_date,
+                date_format(exam_date, '%Y-%m-%d %T') as exam_date,
+                technician_id,
+                technician_name,
+                date_format(post_exam_out_date, '%Y-%m-%d %T') as post_exam_out_date,
+                date_format(submit_report_time, '%Y-%m-%d %T') as submit_report_time,
+                post_exam_reporter_id,
+                post_exam_reporter_name,
+                date_format(approve_report_time, '%Y-%m-%d %T') as approve_report_time,
+                post_exam_reviewer_id,
+                post_exam_reviewer_name,
+                exam_result,
+                post_exam_approval_status,
+                'ris' as source_system
+            from ris_exam
+            where pre_exam_date is not null and pre_exam_date >=:#${headers[JobObject].lastPolledValue}
+            order by pre_exam_dte asc limit 500?dataSource=${mysqlDS}" />
+
+        <log message="pullExamByPreExamDateJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
+        <log message="pullExamByPreExamDateJob get ${body}" loggingLevel="DEBUG"/>
+
+        <bean ref="examPullJob" method="processData"/>
+        <bean ref="examPullJob" method="endDBReadJob"/>
+
+        <log message="pullExamByPreExamDate finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="pullExamByExamDateJob">
+        <from uri="timer://PullExamData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>pullExamByExamDateJob</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="examPullJob" method="startDBReadJob"/>
+        <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
+        <to uri="sql:select
+                requisition_id,
+                sheetid,
+                pre_exam_doctor_id,
+                pre_exam_doctor_name,
+                pre_exam_from_dept_id,
+                pre_exam_from_dept,
+                date_format(pre_exam_date, '%Y-%m-%d %T') as pre_exam_date,
+                patient_card_num,
+                patient_id,
+                patient_name,
+                patient_sex,
+                date_format(patient_birth, '%Y-%m-%d') as patient_birth,
+                exam_dept_id,
+                exam_dept,
+                pre_exam_from_type,
+                is_canceled,
+                date_format(exam_cancel_date, '%Y-%m-%d %T') as exam_cancel_date,
+                date_format(pre_exam_schedule_submit_date, '%Y-%m-%d %T') as pre_exam_schedule_submit_date,
+                date_format(pre_exam_schedule_date, '%Y-%m-%d %T') as pre_exam_schedule_date,
+                pre_exam_schedule_duration,
+                exam_place,
+                is_schedule_canceled,
+                date_format(pre_exam_schedule_cancel_date, '%Y-%m-%d %T') as pre_exam_schedule_cancel_date,
+                pre_exam_device_type,
+                pre_exam_body_part,
+                pre_exam_method,
+                accession_number,
+                device_type,
+                actual_exam_place,
+                exam_method,
+                exam_body_part,
+                study_uid,
+                date_format(pre_registe_date, '%Y-%m-%d %T') as pre_registe_date,
+                date_format(exam_date, '%Y-%m-%d %T') as exam_date,
+                technician_id,
+                technician_name,
+                date_format(post_exam_out_date, '%Y-%m-%d %T') as post_exam_out_date,
+                date_format(submit_report_time, '%Y-%m-%d %T') as submit_report_time,
+                post_exam_reporter_id,
+                post_exam_reporter_name,
+                date_format(approve_report_time, '%Y-%m-%d %T') as approve_report_time,
+                post_exam_reviewer_id,
+                post_exam_reviewer_name,
+                exam_result,
+                post_exam_approval_status,
+                'ris' as source_system
+            from ris_exam
+            where pre_exam_date is null
+             and exam_date is not null and exam_date >=:#${headers[JobObject].lastPolledValue}
+            order by exam_date asc limit 500?dataSource=${mysqlDS}" />
+
+        <log message="pullExamByExamDateJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
+        <log message="pullExamByExamDateJob get ${body}" loggingLevel="DEBUG"/>
+
+        <bean ref="examPullJob" method="processData"/>
+        <bean ref="examPullJob" method="endDBReadJob"/>
+
+        <log message="pullExamByExamDateJob finished" loggingLevel="INFO"/>
+    </route>
+
+</routes>
+
+
+    

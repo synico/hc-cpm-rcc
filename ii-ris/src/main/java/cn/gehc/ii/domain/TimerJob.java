@@ -25,7 +25,8 @@ public class TimerJob {
     }
     
     public enum JobType {
-        ReadDoseDB
+        ReadDoseDB,
+        ReadExamDB
     }
     
     @Id

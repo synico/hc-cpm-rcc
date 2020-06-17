@@ -11,7 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface ReadTimerJobRepository extends PagingAndSortingRepository<TimerJob, String> {
     
-    @Query("select o from TimerJob o where o.jobType='ReadDoseDB'")
+    @Query("select o from TimerJob o where o.jobType='ReadExamDB'")
     List<TimerJob> findAllReadDBJobs();
     
     TimerJob findByJobName(String name);

@@ -1,6 +1,7 @@
 package cn.gehc.ii.jobs;
 
 import cn.gehc.ii.domain.TimerJob;
+import cn.gehc.ii.domain.TimerJob.JobType;
 import cn.gehc.ii.repository.ReadTimerJobRepository;
 import org.apache.camel.Headers;
 import org.apache.logging.log4j.util.Strings;
@@ -41,7 +42,7 @@ public class TimerDBReadJob {
     protected TimerJob initJobObject(@Headers Map<String, Object> headers){
         TimerJob job = new TimerJob();
         job.setJobName(headers.get("JobName").toString());
-        job.setJobType(TimerJob.JobType.ReadDoseDB.toString());
+        job.setJobType(JobType.ReadExamDB.toString());
         job.setStatus(TimerJob.JobStatus.End.toString());
         job.setLastPolledValue(headers.get("DefaultStartPollValue").toString());
         return job;

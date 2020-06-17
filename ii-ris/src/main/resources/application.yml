@@ -1,7 +1,7 @@
 camel:
     springboot:
         main-run-controller: true
-        xml-routes: classpath:camel/StudyPullJob.xml
+        xml-routes: classpath:camel/ExamPullJob.mysql.xml
 
 spring:
     jpa:

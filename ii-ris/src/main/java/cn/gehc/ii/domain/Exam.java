@@ -1,7 +1,7 @@
 package cn.gehc.ii.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.sql.Date;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;

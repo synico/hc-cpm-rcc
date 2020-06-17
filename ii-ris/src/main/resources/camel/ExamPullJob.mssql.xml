@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes xmlns="http://camel.apache.org/schema/spring">
+    
+    <route id="pullExamByPreExamDateJob">
+        <from uri="timer://PullExamData?fixedRate=true&amp;period=1m"/>
+        <setHeader headerName="JobName">
+            <constant>pullExamByPreExamDateJob</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="examPullJob" method="startDBReadJob"/>
+        <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
+        <to uri="sql:select
+                top 500
+                requisition_id,
+                sheetid,
+                pre_exam_doctor_id,
+                pre_exam_doctor_name,
+                pre_exam_from_dept_id,
+                pre_exam_from_dept,
+                CONVERT(varchar(100), pre_exam_date, 120) as pre_exam_date,
+                patient_card_num,
+                patient_id,
+                patient_name,
+                patient_sex,
+                CONVERT(varchar(100), patient_birth, 23) as patient_birth,
+                exam_dept_id,
+                exam_dept,
+                pre_exam_from_type,
+                is_canceled,
+                CONVERT(varchar(100), exam_cancel_date, 120) as exam_cancel_date,
+                CONVERT(varchar(100), pre_exam_schedule_submit_date, 120) as pre_exam_schedule_submit_date,
+                CONVERT(varchar(100), pre_exam_schedule_date, 120) as pre_exam_schedule_date,
+                pre_exam_schedule_duration,
+                exam_place,
+                is_schedule_canceled,
+                CONVERT(varchar(100), pre_exam_schedule_cancel_date, 120) as pre_exam_schedule_cancel_date,
+                pre_exam_device_type,
+                pre_exam_body_part,
+                pre_exam_method,
+                accession_number,
+                device_type,
+                actual_exam_place,
+                exam_method,
+                exam_body_part,
+                study_uid,
+                CONVERT(varchar(100), pre_registe_date, 120) as pre_registe_date,
+                CONVERT(varchar(100), exam_date, 120) as exam_date,
+                technician_id,
+                technician_name,
+                CONVERT(varchar(100), post_exam_out_date, 120) as post_exam_out_date,
+                CONVERT(varchar(100), submit_report_time, 120) as submit_report_time,
+                post_exam_reporter_id,
+                post_exam_reporter_name,
+                CONVERT(varchar(100), approve_report_time, 120) as approve_report_time,
+                post_exam_reviewer_id,
+                post_exam_reviewer_name,
+                exam_result,
+                post_exam_approval_status,
+                'ris' as source_system
+            from RIS_EXAM
+            where isnull(Pre_Exam_Date,'')!='' and Pre_Exam_Data >=:#${headers[JobObject].lastPolledValue}
+            order by Pre_Exam_Data ASC?dataSource=${sqlServerDS}" />
+
+        <log message="pullExamByPreExamDateJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
+        <log message="pullExamByPreExamDateJob get ${body}" loggingLevel="DEBUG"/>
+
+        <bean ref="examPullJob" method="processData"/>
+        <bean ref="examPullJob" method="endDBReadJob"/>
+
+        <log message="pullExamByPreExamDate finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="pullExamByExamDateJob">
+        <from uri="timer://PullExamData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>pullExamByExamDateJob</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1</constant>
+        </setHeader>
+        <bean ref="examPullJob" method="startDBReadJob"/>
+        <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
+        <to uri="sql:select
+                top 500
+                requisition_id,
+                sheetid,
+                pre_exam_doctor_id,
+                pre_exam_doctor_name,
+                pre_exam_from_dept_id,
+                pre_exam_from_dept,
+                CONVERT(varchar(100), pre_exam_date, 120) as pre_exam_date,
+                patient_card_num,
+                patient_id,
+                patient_name,
+                patient_sex,
+                CONVERT(varchar(100), patient_birth, 23) as patient_birth,
+                exam_dept_id,
+                exam_dept,
+                pre_exam_from_type,
+                is_canceled,
+                CONVERT(varchar(100), exam_cancel_date, 120) as exam_cancel_date,
+                CONVERT(varchar(100), pre_exam_schedule_submit_date, 120) as pre_exam_schedule_submit_date,
+                CONVERT(varchar(100), pre_exam_schedule_date, 120) as pre_exam_schedule_date,
+                pre_exam_schedule_duration,
+                exam_place,
+                is_schedule_canceled,
+                CONVERT(varchar(100), pre_exam_schedule_cancel_date, 120) as pre_exam_schedule_cancel_date,
+                pre_exam_device_type,
+                pre_exam_body_part,
+                pre_exam_method,
+                accession_number,
+                device_type,
+                actual_exam_place,
+                exam_method,
+                exam_body_part,
+                study_uid,
+                CONVERT(varchar(100), pre_registe_date, 120) as pre_registe_date,
+                CONVERT(varchar(100), exam_date, 120) as exam_date,
+                technician_id,
+                technician_name,
+                CONVERT(varchar(100), post_exam_out_date, 120) as post_exam_out_date,
+                CONVERT(varchar(100), submit_report_time, 120) as submit_report_time,
+                post_exam_reporter_id,
+                post_exam_reporter_name,
+                CONVERT(varchar(100), approve_report_time, 120) as approve_report_time,
+                post_exam_reviewer_id,
+                post_exam_reviewer_name,
+                exam_result,
+                post_exam_approval_status,
+                'ris' as source_system
+            from RIS_EXAM
+            where isnull(Pre_Exam_Date,'')==''
+             and isnull(Exam_Data,'')!='' and Exam_Date >=:#${headers[JobObject].lastPolledValue}
+            order by Exam_Date ASC?dataSource=${sqlServerDS}ExamPullJob.mssql.xml" />
+
+        <log message="pullExamByExamDateJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
+        <log message="pullExamByExamDateJob get ${body}" loggingLevel="DEBUG"/>
+
+        <bean ref="examPullJob" method="processData"/>
+        <bean ref="examPullJob" method="endDBReadJob"/>
+
+        <log message="pullExamByExamDateJob finished" loggingLevel="INFO"/>
+    </route>
+
+</routes>
+
+
+    
