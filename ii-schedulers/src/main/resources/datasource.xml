@@ -8,9 +8,9 @@
         http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
         http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="rccDS" class="com.zaxxer.hikari.HikariDataSource" primary="true">
+    <bean id="iiDS" class="com.zaxxer.hikari.HikariDataSource" primary="true">
         <property name="driverClassName" value="org.postgresql.Driver" />
-        <property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/cpm_rcc" />
+        <property name="jdbcUrl" value="jdbc:postgresql://192.168.56.102:54321/rjyy_rcc" />
         <property name="username" value="postgres" />
         <property name="password" value="root" />
         <property name="connectionTimeout" value="30000" />
@@ -19,22 +19,11 @@
         <property name="maximumPoolSize" value="4" />
     </bean>
 
-    <bean id="sqlServerDS" class="com.zaxxer.hikari.HikariDataSource">
-        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-        <property name="jdbcUrl" value="jdbc:sqlserver://${ip}:1433;databaseName=RIS_BASIC;ApplicationIntent=ReadOnly" />
-        <property name="username" value="GE_Login" />
-        <property name="password" value="GE_Login" />
-        <property name="connectionTimeout" value="30000" />
-        <property name="idleTimeout" value="60000" />
-        <property name="maxLifetime" value="180000" />
-        <property name="maximumPoolSize" value="4" />
-    </bean>
-
-    <bean id="mysqlServerDS" class="com.zaxxer.hikari.HikariDataSource">
-        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://${ip}}:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
-        <property name="username" value="root" />
-        <property name="password" value="Stra67000" />
+    <bean id="dwDS" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="jdbcUrl" value="jdbc:postgresql://192.168.56.102:54321/wxsy_rcc" />
+        <property name="username" value="postgres" />
+        <property name="password" value="root" />
         <property name="connectionTimeout" value="30000" />
         <property name="idleTimeout" value="60000" />
         <property name="maxLifetime" value="180000" />

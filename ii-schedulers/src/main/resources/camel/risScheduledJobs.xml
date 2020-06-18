@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <route id="firstJob" >
+    <from uri="quartz2://risJobs/firstBoold?cron=0+0/1+*+*+*+?"/>
+    <setHeader headerName="JobName">
+      <constant>fristBoold</constant>
+    </setHeader>
+    <setHeader headerName="JobType">
+      <constant>risScheduledJob</constant>
+    </setHeader>
+    <setHeader headerName="DefaultStartPollValue">
+      <constant>1</constant>
+    </setHeader>
+
+    <to uri="sql:select
+                * from study limit 500?dataSource=dwDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="INFO"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+</routes>

@@ -6,7 +6,7 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-    <bean id="rccDS" class="com.zaxxer.hikari.HikariDataSource">
+    <bean id="rccDS" class="com.zaxxer.hikari.HikariDataSource" primary="true">
         <property name="driverClassName" value="org.postgresql.Driver" />
         <property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/cpm_rcc" />
         <property name="username" value="postgres" />
