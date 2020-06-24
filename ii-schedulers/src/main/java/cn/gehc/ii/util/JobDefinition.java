@@ -15,7 +15,8 @@ public enum JobDefinition {
     JOB_NAME("triggerName"),
     JOB_TYPE("job_type"),
     JOB_GROUP("triggerGroup"),
-    LAST_FIRE_TIME("scheduledFireTime");
+    LAST_FIRE_TIME("scheduledFireTime"),
+    IS_ACTIVE("is_active");
 
     private String code;
 

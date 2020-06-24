@@ -26,12 +26,12 @@ public class AggregateDataJob {
     @Autowired
     private DataStoreRepository dataStoreRepository;
 
-    public void processData(@Headers Map<String, Object> headers, @Body List<Map<String, String>> body) {
+    public synchronized void processData(@Headers Map<String, Object> headers, @Body List<Map<String, String>> body) {
         log.info("receive [ {} ] aggregated data", body.size());
 
         List<DataStore> dataList = new ArrayList<>(body.size());
 
-        DataStore dataStore;
+        DataStore dataStore = null;
         for(Map<String, String> aggData : body) {
             dataStore = convertMap2DataStore(headers, aggData);
             dataList.add(dataStore);
@@ -40,8 +40,17 @@ public class AggregateDataJob {
         if(dataList.isEmpty()) {
             log.info("No data will be saved");
         } else {
+            dataStoreRepository.deactivateDataByJobGroupAndName(dataStore.getJobGroup(), dataStore.getJobName());
             dataStoreRepository.saveAll(dataList);
         }
+    }
+
+    public void cleanData(@Headers Map<String, Object> headers, @Body List<Map<String, String>> body) {
+        String jobGroup = headers.get(JOB_GROUP.getCode()).toString();
+        String jobName = headers.get(JOB_NAME.getCode()).toString();
+        log.info("will clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);
+        dataStoreRepository.deleteDataByJobGroupAndName(jobGroup, jobName);
+        log.info("end to clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);
     }
 
     private DataStore convertMap2DataStore(Map<String, Object> headers, Map<String, String> aggData) {

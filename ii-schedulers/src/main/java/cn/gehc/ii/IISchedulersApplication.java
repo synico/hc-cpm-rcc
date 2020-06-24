@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource(locations = "datasourceCfg.xml")
+@ImportResource(locations = "datasource.xml")
 public class IISchedulersApplication {
 
     public static void main(String[] args) {

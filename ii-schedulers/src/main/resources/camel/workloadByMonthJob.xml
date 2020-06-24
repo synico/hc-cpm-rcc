@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 放射科数据概览 -->
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <route id="workloadByMonthJob/examAmountByMonth" >
+    <from uri="quartz2://workloadByMonthJob/examAmountByMonth?cron=0+0+3+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run workloadByMonthJob/examAmountByMonth"/>
+
+    <to uri="sql:SELECT device_type as column1,
+            exam_method as column2,
+            pre_exam_from_type as column3,
+            exam_year as column4,
+            exam_month_of_year as column5,
+            COUNT(*)||'' as column6
+            FROM (
+            select
+            CASE
+              WHEN pre_exam_from_type = '0' THEN '门诊'
+              WHEN pre_exam_from_type = '2' THEN '住院'
+            END as pre_exam_from_type,
+            actual_exam_place,device_type,
+            CASE
+              WHEN position('平扫' in exam_method) > 0 THEN '平扫'
+              WHEN position('增强' in exam_method) > 0 THEN '增强'
+            END as exam_method,
+            to_char(exam_date, 'yyyy') as exam_year,
+            to_char(exam_date, 'yyyy-MM') as exam_month,
+            to_char(exam_date, 'MM')||'月' as exam_month_of_year,
+            to_char(exam_date, 'hh24') as exam_hour_of_day
+            from v_exam
+            where device_type in ('CT','MR')
+            and pre_exam_from_type in ('0','2')
+            and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
+            ) cb_view
+            GROUP BY exam_year, exam_month_of_year,device_type,exam_method,pre_exam_from_type?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+</routes>

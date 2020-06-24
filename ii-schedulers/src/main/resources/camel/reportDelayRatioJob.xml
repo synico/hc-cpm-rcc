@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 报告超时比率 -->
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <route id="reportDelayRatioJob/examByAngiography" >
+    <from uri="quartz2://reportDelayRatioJob/examByAngiography?cron=0+0+2+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run reportDelayRatioJob/examByAngiography"/>
+
+    <to uri="sql:SELECT patient_from_type as column1,
+        device_type as column2,
+        exam_method as column3,
+        exam_month as column4,
+        round(sum(gt2_count)::numeric * 100 / (count(*))::numeric, 2)||'' as column5,
+        round(sum(gt7_count)::numeric * 100 / (count(*))::numeric, 2)||'' as column6,
+        COUNT(*)||'' as column7
+        FROM (
+        select his.sheetid,ris.accession_num,to_char(ris.exam_date,'yyyy-MM') as exam_month,
+        his.pre_exam_from_type,submit_report_time,approve_report_time,
+        extract(EPOCH from (approve_report_time - submit_report_time))/3600 as wait_hour,
+        CASE
+        WHEN position('CTA' in ris.exam_body_part) > 0 THEN 'CTA'
+        WHEN position('MRA' in ris.exam_body_part) > 0 THEN 'MRA'
+        END as exam_method,
+        ris.device_type,
+        CASE
+        WHEN extract(EPOCH from (approve_report_time - submit_report_time)) > 172800 THEN 1
+        ELSE 0
+        END as gt2_count,
+        CASE
+        WHEN extract(EPOCH from (approve_report_time - submit_report_time)) > 604800 THEN 1
+        ELSE 0
+        END as gt7_count,
+        CASE
+        WHEN his.pre_exam_from_type = '0' THEN '门诊'
+        WHEN his.pre_exam_from_type = '1' THEN '急诊'
+        WHEN his.pre_exam_from_type = '2' THEN '住院'
+        END as patient_from_type
+        from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+        where ris.pre_registe_date is not null and ris.exam_date is not null
+        and his.pre_exam_from_type in ('0','1','2')
+        and (position('CTA' in ris.exam_body_part) > 0 or position('MRA' in ris.exam_body_part) > 0)
+        ) cb_view
+        GROUP BY patient_from_type, exam_month, device_type, exam_method?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+  <route id="reportDelayRatioJob/examByOtherMethods" >
+    <from uri="quartz2://reportDelayRatioJob/examByOtherMethods?cron=0+30+2+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run reportDelayRatioJob/examByOtherMethods"/>
+
+    <to uri="sql:SELECT patient_from_type as column1,
+        device_type as column2,
+        exam_method as column3,
+        exam_month as column4,
+        round(sum(gt2_count)::numeric * 100 / (count(*))::numeric, 2)||'' as column5,
+        round(sum(gt7_count)::numeric * 100 / (count(*))::numeric, 2)||'' as column6,
+        COUNT(*)||'' as column7
+        FROM (
+        select his.sheetid,ris.accession_num,to_char(ris.exam_date,'yyyy-MM') as exam_month,
+        his.pre_exam_from_type,submit_report_time,approve_report_time,
+        extract(EPOCH from (approve_report_time - submit_report_time))/3600 as wait_hour,
+        CASE
+        WHEN position('平扫' in exam_method) > 0 THEN '平扫'
+        WHEN position('增强' in exam_method) > 0 THEN '增强'
+        END as exam_method,
+        ris.device_type,
+        CASE
+        WHEN extract(EPOCH from (approve_report_time - submit_report_time)) > 172800 THEN 1
+        ELSE 0
+        END as gt2_count,
+        CASE
+        WHEN extract(EPOCH from (approve_report_time - submit_report_time)) > 604800 THEN 1
+        ELSE 0
+        END as gt7_count,
+        CASE
+        WHEN his.pre_exam_from_type = '0' THEN '门诊'
+        WHEN his.pre_exam_from_type = '1' THEN '急诊'
+        WHEN his.pre_exam_from_type = '2' THEN '住院'
+        END as patient_from_type
+        from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+        where ris.pre_registe_date is not null and ris.exam_date is not null
+        and his.pre_exam_from_type in ('0','1','2')
+        and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
+        ) cb_view
+        GROUP BY patient_from_type, exam_month, device_type, exam_method?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+</routes>

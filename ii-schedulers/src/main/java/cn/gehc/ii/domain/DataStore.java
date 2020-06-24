@@ -18,7 +18,7 @@ public class DataStore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer jobId;
+    private Long jobId;
 
     private String jobName;
 
@@ -29,6 +29,8 @@ public class DataStore {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastFireTime;
+
+    private Boolean isActive = Boolean.TRUE;
 
     private String column1;
 
