@@ -16,8 +16,6 @@ create or replace view public.v_study as
         d.station_name as device_number,
         d.mf_code as manufacture,
         d.photo_link,
-        d.province,
-        d.city,
         s.prev_local_study_id,
         ps.study_end_time as last_study_time,
         s.next_local_study_id,
@@ -36,6 +34,8 @@ create or replace view public.v_study as
         COALESCE(d.prepare_time1, 0) * 60 as prepare_sec1,
         COALESCE(d.prepare_time2, 0) * 60 as prepare_sec2,
         COALESCE(cts.protocol_name, mrs.protocol_name, xas.protocol_name, '') as protocol_name,
+        d.province,
+        d.city,
         d.org_id,
         s.local_study_id
         from study s left join device d on s.aet = d.aet and s.modality = d.device_type and s.org_id = d.org_id
