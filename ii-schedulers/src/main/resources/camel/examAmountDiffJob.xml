@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 放射科机房科室工作效率24H分析 -->
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <route id="examAmountDiffJob/fromOutpatientDept" >
+    <from uri="quartz2://examAmountDiffJob/fromOutpatientDept?cron=0+0+5+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run examAmountDiffJob/fromOutpatientDept"/>
+
+    <to uri="sql:select exam_category as column1,
+              count(*)||'' as column2,
+              round((sum(wait_time)/count(*))::numeric,2)||'' as column3,
+              exam_month as column4
+              from
+              (
+              select his.sheetid,ris.accession_num,his.pre_exam_schedule_date,ris.pre_registe_date,
+              ris.exam_date,to_char(ris.exam_date,'yyyy-MM') as exam_month,
+              CASE
+                WHEN his.pre_exam_schedule_date is null THEN extract(EPOCH from (ris.exam_date - ris.pre_registe_date))
+                WHEN his.pre_exam_schedule_date > ris.pre_registe_date THEN extract(EPOCH from (ris.exam_date - ris.pre_registe_date))
+                ELSE extract(EPOCH from (ris.exam_date - his.pre_exam_schedule_date))
+              END as wait_time,
+              m.exam_category
+              from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+              join exam_category_mapping m on ris.exam_body_part=m.exam_body_part
+              where ris.pre_registe_date is not null and ris.exam_date is not null
+              and his.pre_exam_from_type='0'
+              ) v_exam_wait
+              where wait_time > 0
+              group by exam_month,exam_category?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+  <route id="examAmountDiffJob/fromInpatientDept" >
+    <from uri="quartz2://examAmountDiffJob/fromInpatientDept?cron=0+10+5+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run examAmountDiffJob/fromInpatientDept"/>
+
+    <to uri="sql:select exam_category as column1,
+              count(*)||'' as column2,
+              round((sum(wait_time)/count(*))::numeric,2)||'' as column3,
+              exam_month as column4
+              from
+              (
+              select his.sheetid,ris.accession_num,his.pre_exam_schedule_date,ris.pre_registe_date,
+              ris.exam_date,to_char(ris.exam_date,'yyyy-MM') as exam_month,
+              CASE
+                WHEN his.pre_exam_schedule_date is null THEN extract(EPOCH from (ris.exam_date - ris.pre_registe_date))
+                WHEN his.pre_exam_schedule_date > ris.pre_registe_date THEN extract(EPOCH from (ris.exam_date - ris.pre_registe_date))
+                ELSE extract(EPOCH from (ris.exam_date - his.pre_exam_schedule_date))
+              END as wait_time,
+              m.exam_category
+              from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+              join exam_category_mapping m on ris.exam_body_part=m.exam_body_part
+              where ris.pre_registe_date is not null and ris.exam_date is not null
+              and his.pre_exam_from_type='2'
+              ) v_exam_wait
+              where wait_time > 0
+              group by exam_month,exam_category?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+  <route id="examAmountDiffJob/fromEmergencyDept" >
+    <from uri="quartz2://examAmountDiffJob/fromEmergencyDept?cron=0+20+5+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run examAmountDiffJob/fromEmergencyDept"/>
+
+    <to uri="sql:select exam_category as column1,
+              count(*)||'' as column2,
+              round((sum(wait_time)/count(*))::numeric,2)||'' as column3,
+              exam_month as column4
+              from
+              (
+              select his.sheetid,ris.accession_num,his.pre_exam_schedule_date,ris.pre_registe_date,
+              ris.exam_date,to_char(ris.exam_date,'yyyy-MM') as exam_month,
+              CASE
+                WHEN his.pre_exam_schedule_date is null THEN extract(EPOCH from (ris.exam_date - ris.pre_registe_date))
+                WHEN his.pre_exam_schedule_date > ris.pre_registe_date THEN extract(EPOCH from (ris.exam_date - ris.pre_registe_date))
+                ELSE extract(EPOCH from (ris.exam_date - his.pre_exam_schedule_date))
+              END as wait_time,
+              m.exam_category
+              from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+              join exam_category_mapping m on ris.exam_body_part=m.exam_body_part
+              where ris.pre_registe_date is not null and ris.exam_date is not null
+              and his.pre_exam_from_type='1'
+              ) v_exam_wait
+              where wait_time > 0
+              group by exam_month,exam_category?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+</routes>
