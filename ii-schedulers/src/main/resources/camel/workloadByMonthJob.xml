@@ -46,4 +46,49 @@
     <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
   </route>
 
+  <route id="workloadByMonthJob/angiographyExamAmountByMonth" >
+    <from uri="quartz2://workloadByMonthJob/angiographyExamAmountByMonth?cron=0+10+3+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>RIS_DAILY</constant>
+    </setHeader>
+
+    <log message="start to run workloadByMonthJob/angiographyExamAmountByMonth"/>
+
+    <to uri="sql:SELECT device_type as column1,
+            exam_method as column2,
+            pre_exam_from_type as column3,
+            exam_year as column4,
+            exam_month_of_year as column5,
+            COUNT(*)||'' as column6
+            FROM (
+            select
+            CASE
+            WHEN his.pre_exam_from_type = '0' THEN '门诊'
+            WHEN his.pre_exam_from_type = '2' THEN '住院'
+            END as pre_exam_from_type,
+            ris.actual_exam_place,ris.device_type,
+            CASE
+            WHEN position('CTA' in ris.exam_body_part) > 0 THEN 'CTA'
+            WHEN position('MRA' in ris.exam_body_part) > 0 THEN 'MRA'
+            END as exam_method,
+            to_char(ris.exam_date, 'yyyy') as exam_year,
+            to_char(ris.exam_date, 'yyyy-MM') as exam_month,
+            to_char(ris.exam_date, 'MM')||'月' as exam_month_of_year,
+            to_char(ris.exam_date, 'hh24') as exam_hour_of_day
+            from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+            where ris.device_type in ('CT','MR')
+            and his.pre_exam_from_type in ('0','2')
+            and (position('CTA' in ris.exam_body_part) > 0 or position('MRA' in ris.exam_body_part) > 0)
+            ) cb_view
+            GROUP BY exam_year, exam_month_of_year,device_type,exam_method,pre_exam_from_type?dataSource=iiDS"/>
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
 </routes>
