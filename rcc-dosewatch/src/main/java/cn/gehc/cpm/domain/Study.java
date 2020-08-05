@@ -42,6 +42,9 @@ public class Study implements Comparable<Study> {
     @Column(name = "PATIENT_AGE")
     private Integer patientAge;
 
+    @Column(name = "PATIENT_NAME")
+    private String patientName;
+
     @Column(name = "STUDY_ID")
     private String studyId;
 

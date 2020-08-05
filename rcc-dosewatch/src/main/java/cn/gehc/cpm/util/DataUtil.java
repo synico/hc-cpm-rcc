@@ -144,6 +144,7 @@ public class DataUtil {
         study.setPatientId(getStringFromProperties(studyProps, "patient_id"));
         study.setPatientSex(getStringFromProperties(studyProps, "patient_sex"));
         study.setPatientAge(getIntegerFromProperties(studyProps, "patient_age"));
+        study.setPatientName(getStringFromProperties(studyProps, "patient_name"));
         study.setStudyId(getStringFromProperties(studyProps, "study_id"));
         study.setStudyInstanceUid(getStringFromProperties(studyProps, "study_instance_uid"));
         study.setStudyDate(getDateFromProperties(studyProps, "study_date"));
