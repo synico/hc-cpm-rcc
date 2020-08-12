@@ -3,15 +3,14 @@ package cn.gehc.cpm.process.mr;
 import cn.gehc.cpm.domain.MRSerie;
 import cn.gehc.cpm.domain.MRStudy;
 import cn.gehc.cpm.process.StudyPostProcess;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeSet;
 
 /**
  * This process is used for updating fields:
@@ -42,12 +41,12 @@ public class MRStudyProtocolProcess implements StudyPostProcess<MRStudy, MRSerie
      * @param studyWithSeriesMap
      */
     @Override
-    public void process(Collection<MRStudy> studyList, Map<String, TreeSet<MRSerie>> studyWithSeriesMap) {
+    public void process(Collection<MRStudy> studyList, Map<String, Set<MRSerie>> studyWithSeriesMap) {
         log.info("start to process mr studies and retrieve protocol , priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (MRStudy mrStudy : studyList) {
-            TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(mrStudy.getLocalStudyId());
+            Set<MRSerie> serieSet = studyWithSeriesMap.get(mrStudy.getLocalStudyId());
             MRSerie firstMRSerie = null;
             // select first serie of mr study
             Iterator<MRSerie> ascItr = serieSet.iterator();

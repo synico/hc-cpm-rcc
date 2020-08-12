@@ -4,13 +4,18 @@ import cn.gehc.cpm.domain.MRSerie;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.process.StudyPostProcess;
 import cn.gehc.cpm.repository.MRSerieRepository;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This process is used for updating fields:
@@ -42,12 +47,12 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, MRSerie
     * @param studyWithSeriesMap
     */
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<MRSerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, Set<MRSerie>> studyWithSeriesMap) {
         log.info("start to process studies if study has repeated series, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (Study study : studyList) {
-            TreeSet<MRSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            Set<MRSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             // exclude series without slice location
             Set<MRSerie> filteredSeries = serieSet.stream()
                     .filter(serie -> serie.getStartSliceLocation() != null)

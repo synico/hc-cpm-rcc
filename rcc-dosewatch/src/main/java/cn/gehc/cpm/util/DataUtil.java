@@ -84,6 +84,15 @@ public class DataUtil {
         return result;
     }
 
+    public static Boolean getBooleanFromProperties(Map<String, Object> props, String key) {
+        Boolean result = Boolean.FALSE;
+        Object value = props.get(key);
+        if (value != null) {
+            result = Boolean.valueOf(value.toString());
+        }
+        return result;
+    }
+
     public static String convertDate2String(Date date, DatabaseType dbType) {
         String result = null;
         if(date != null) {
@@ -153,6 +162,11 @@ public class DataUtil {
         study.setPerformingPhysician(getStringFromProperties(studyProps, "performing_physician"));
         study.setCreateTime(Date.from(Instant.now()));
 
+        if(getBooleanFromProperties(studyProps, "study_processed_by_rdsr")) {
+            study.setStudyStartTime(getDateFromProperties(studyProps, "start_of_xray_irradiation"));
+            study.setStudyEndTime(getDateFromProperties(studyProps, "end_of_xray_irradiation"));
+        }
+
         return study;
     }
 
@@ -162,6 +176,8 @@ public class DataUtil {
         ctStudy.setStudyKey(studyKey);
 
         ctStudy.setLocalStudyId(studyKey.toString());
+        ctStudy.setStartOfXrayIrradiation(getDateFromProperties(studyProps, "start_of_xray_irradiation"));
+        ctStudy.setEndOfXrayIrradiation(getDateFromProperties(studyProps, "end_of_xray_irradiation"));
         ctStudy.setDlpTotal(getDoubleFromProperties(studyProps, "ct_dose_length_product_total"));
         ctStudy.setDlpSSDE(getDoubleFromProperties(studyProps, "dlp_ssde"));
         ctStudy.setExamCTDI(getDoubleFromProperties(studyProps, "exam_ctdi"));

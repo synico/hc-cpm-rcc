@@ -53,13 +53,14 @@ public class CTSeriePullJob extends TimerDBReadJob {
         Set<CTStudy> ctStudySet = new HashSet<>();
         Set<CTSerie> ctSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<CTSerie>> studyWithSeriesMap;
+        Map<String, Set<CTSerie>> studyWithSeriesMap;
 
         Long lastPolledValue = null;
         Study study;
         CTStudy ctStudy;
         CTSerie ctSerie;
         Long orgId = 0L;
+        Boolean studyProcessedByRDSR = "RDSR".equals(headers.get("StudyProcessMethod")) ? Boolean.TRUE : Boolean.FALSE;
         // save study, ct_study, ct_serie
         for (Map<String, Object> serieProps : body) {
             log.debug(serieProps.toString());
@@ -82,6 +83,7 @@ public class CTSeriePullJob extends TimerDBReadJob {
                 continue;
             }
             serieProps.put("org_id", orgId);
+            serieProps.put("study_processed_by_rdsr", studyProcessedByRDSR);
 
             study = DataUtil.convertProps2Study(serieProps);
             studiesFromJob.add(study);
@@ -111,8 +113,12 @@ public class CTSeriePullJob extends TimerDBReadJob {
 
         // since v1.1
         Set<Study> mergedStudies = super.mergeStudies(studiesFromJob);
-        studyWithSeriesMap = this.buildSeriesMap(mergedStudies);
-        studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
+        studyWithSeriesMap = this.buildSeriesMap(mergedStudies, !studyProcessedByRDSR);
+        if (studyProcessedByRDSR) {
+            // infer study duration by RDSR, instead of sorted series
+        } else {
+            studyDurationProcess.process(mergedStudies, studyWithSeriesMap);
+        }
         targetRegionCountProcess.process(mergedStudies, studyWithSeriesMap);
         repeatSeriesCheckProcess.process(mergedStudies, studyWithSeriesMap);
 
@@ -136,14 +142,14 @@ public class CTSeriePullJob extends TimerDBReadJob {
      * @return a Map, local study id as key, and series belong to the study
      * @since v1.1
      */
-    private Map<String, TreeSet<CTSerie>> buildSeriesMap(Set<Study> studySet) {
-        Map<String, TreeSet<CTSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
+    private Map<String, Set<CTSerie>> buildSeriesMap(Set<Study> studySet, Boolean sort) {
+        Map<String, Set<CTSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
         List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
         List<CTSerie> ctSeriesFromDb = ctSerieRepository.findByLocalStudyKeyIn(studyIds);
         for (CTSerie ctse : ctSeriesFromDb) {
-            TreeSet<CTSerie> ctSeries = studyWithSeriesMap.get(ctse.getLocalStudyKey());
+            Set<CTSerie> ctSeries = studyWithSeriesMap.get(ctse.getLocalStudyKey());
             if (ctSeries == null) {
-                ctSeries = new TreeSet<>();
+                ctSeries = sort ? new TreeSet<>() : new HashSet<>();
             }
             ctSeries.add(ctse);
             studyWithSeriesMap.put(ctse.getLocalStudyKey(), ctSeries);

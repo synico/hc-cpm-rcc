@@ -4,6 +4,7 @@ import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.domain.XASerie;
 import cn.gehc.cpm.process.StudyPostProcess;
 import cn.gehc.cpm.util.DataUtil;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,12 +34,12 @@ public class StudyDurationProcess implements StudyPostProcess<Study, XASerie> {
     }
 
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<XASerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, Set<XASerie>> studyWithSeriesMap) {
         log.info("start to process studies for study duration, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (Study study : studyList) {
-            TreeSet<XASerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            TreeSet<XASerie> serieSet = (TreeSet<XASerie>) studyWithSeriesMap.get(study.getLocalStudyId());
             if (serieSet != null && !serieSet.isEmpty()) {
                 XASerie firstXASerie = null, lastXASerie = null;
                 // select first serie of study

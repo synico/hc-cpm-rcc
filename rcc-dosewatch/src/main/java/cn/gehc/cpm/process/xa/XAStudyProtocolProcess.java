@@ -3,6 +3,7 @@ package cn.gehc.cpm.process.xa;
 import cn.gehc.cpm.domain.XASerie;
 import cn.gehc.cpm.domain.XAStudy;
 import cn.gehc.cpm.process.StudyPostProcess;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +34,12 @@ public class XAStudyProtocolProcess implements StudyPostProcess<XAStudy, XASerie
     }
 
     @Override
-    public void process(Collection<XAStudy> studyList, Map<String, TreeSet<XASerie>> studyWithSeriesMap) {
+    public void process(Collection<XAStudy> studyList, Map<String, Set<XASerie>> studyWithSeriesMap) {
         log.info("start to process xa studies and retrieve protocol , priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (XAStudy xaStudy : studyList) {
-            TreeSet<XASerie> serieSet = studyWithSeriesMap.get(xaStudy.getLocalStudyId());
+            Set<XASerie> serieSet = studyWithSeriesMap.get(xaStudy.getLocalStudyId());
             XASerie firstXASerie = null;
             // select first serie of xa study
             Iterator<XASerie> ascItr = serieSet.iterator();

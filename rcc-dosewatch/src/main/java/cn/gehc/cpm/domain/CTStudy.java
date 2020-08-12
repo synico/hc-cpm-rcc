@@ -23,6 +23,12 @@ public class CTStudy {
     @Column(name = "local_study_id")
     private String localStudyId;
 
+    @Column(name = "START_OF_XRAY_IRRADIATION")
+    private Date startOfXrayIrradiation;
+
+    @Column(name = "END_OF_XRAY_IRRADIATION")
+    private Date endOfXrayIrradiation;
+
     @Column(name = "CT_DOSE_LENGTH_PRODUCT_TOTAL")
     private Double dlpTotal;
 

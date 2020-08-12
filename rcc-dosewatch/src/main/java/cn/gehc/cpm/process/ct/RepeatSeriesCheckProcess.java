@@ -43,12 +43,12 @@ public class RepeatSeriesCheckProcess implements StudyPostProcess<Study, CTSerie
     * @param studyWithSeriesMap
     */
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<CTSerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, Set<CTSerie>> studyWithSeriesMap) {
         log.info("start to process studies if study has repeated series, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (Study study : studyList) {
-            TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            Set<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             // exclude series without slice location
             Set<CTSerie> filteredSeries = serieSet.stream()
                   .filter(serie -> serie.getStartSliceLocation() != null)

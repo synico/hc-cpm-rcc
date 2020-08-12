@@ -1,14 +1,10 @@
 package cn.gehc.cpm.repository;
 
-import cn.gehc.cpm.domain.DeviceKey;
 import cn.gehc.cpm.domain.Study;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface StudyRepository extends PagingAndSortingRepository<Study, String> {
 

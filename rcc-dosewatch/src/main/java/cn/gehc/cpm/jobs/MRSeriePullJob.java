@@ -11,7 +11,13 @@ import cn.gehc.cpm.process.mr.TargetRegionCountProcess;
 import cn.gehc.cpm.repository.MRSerieRepository;
 import cn.gehc.cpm.repository.MRStudyRepository;
 import cn.gehc.cpm.util.DataUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author 212706300
@@ -58,7 +61,7 @@ public class MRSeriePullJob extends TimerDBReadJob {
         Set<MRStudy> mrStudySet = new HashSet<>();
         Set<MRSerie> mrSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<MRSerie>> studyWithSeriesMap;
+        Map<String, Set<MRSerie>> studyWithSeriesMap;
 
         Long lastPolledValue = null;
         Study study;
@@ -143,12 +146,12 @@ public class MRSeriePullJob extends TimerDBReadJob {
      * @return a Map, local study id as key, and series belong to the study
      * @since v1.1
      */
-    private Map<String, TreeSet<MRSerie>> buildSeriesMap(Set<Study> studySet) {
-        Map<String, TreeSet<MRSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
+    private Map<String, Set<MRSerie>> buildSeriesMap(Set<Study> studySet) {
+        Map<String, Set<MRSerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
         List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
         List<MRSerie> ctSeriesFromDb = mrSerieRepository.findByLocalStudyKeyIn(studyIds);
         for (MRSerie mrse : ctSeriesFromDb) {
-            TreeSet<MRSerie> mrSeries = studyWithSeriesMap.get(mrse.getLocalStudyKey());
+            Set<MRSerie> mrSeries = studyWithSeriesMap.get(mrse.getLocalStudyKey());
             if (mrSeries == null) {
                 mrSeries = new TreeSet<>();
             }

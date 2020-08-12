@@ -34,12 +34,12 @@ public class StudyDurationProcess implements StudyPostProcess<Study, CTSerie> {
      * @param studyWithSeriesMap
      */
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<CTSerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, Set<CTSerie>> studyWithSeriesMap) {
         log.info("start to process studies for study duration, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (Study study : studyList) {
-            TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            TreeSet<CTSerie> serieSet = (TreeSet<CTSerie>) studyWithSeriesMap.get(study.getLocalStudyId());
             if (serieSet != null && !serieSet.isEmpty()) {
                 CTSerie firstCTSerie = null, lastCTSerie = null;
                 // select first serie of study

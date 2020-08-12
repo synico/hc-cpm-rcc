@@ -10,9 +10,9 @@
 
     <bean id="dwMaster" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/serphydose?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.56.102:33061/xd_master?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL" />
         <property name="username" value="root" />
-        <property name="password" value="Stra67000" />
+        <property name="password" value="123456" />
         <property name="connectionTimeout" value="30000" />
         <property name="idleTimeout" value="60000" />
         <property name="maxLifetime" value="180000" />

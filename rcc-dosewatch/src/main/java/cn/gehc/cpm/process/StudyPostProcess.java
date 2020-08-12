@@ -2,7 +2,7 @@ package cn.gehc.cpm.process;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
 /**
  * @author 212706300
@@ -23,7 +23,7 @@ public interface StudyPostProcess<T1, T2> {
      * @param studyList
      * @param studyWithSeriesMap
      */
-    void process(Collection<T1> studyList, Map<String, TreeSet<T2>> studyWithSeriesMap);
+    void process(Collection<T1> studyList, Map<String, Set<T2>> studyWithSeriesMap);
 
     /**
      * return priority of process

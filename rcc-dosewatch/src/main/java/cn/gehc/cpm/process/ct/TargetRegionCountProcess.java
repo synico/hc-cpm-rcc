@@ -4,14 +4,13 @@ import cn.gehc.cpm.domain.CTSerie;
 import cn.gehc.cpm.domain.Study;
 import cn.gehc.cpm.process.StudyPostProcess;
 import cn.gehc.cpm.util.SerieType;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeSet;
 
 /**
  * This process is used for updating fields:
@@ -37,12 +36,12 @@ public class TargetRegionCountProcess implements StudyPostProcess<Study, CTSerie
      * @param studyWithSeriesMap
      */
     @Override
-    public void process(Collection<Study> studyList, Map<String, TreeSet<CTSerie>> studyWithSeriesMap) {
+    public void process(Collection<Study> studyList, Map<String, Set<CTSerie>> studyWithSeriesMap) {
         log.info("start to process studies for target region count, priority of process: {}, num of studies: {}",
                 this.priority, studyList.size());
 
         for (Study study : studyList) {
-            TreeSet<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
+            Set<CTSerie> serieSet = studyWithSeriesMap.get(study.getLocalStudyId());
             // to calculate target region count by serie
             Long targetRegionCount = serieSet.stream()
                     .filter(serie -> StringUtils.isNotBlank(serie.getTargetRegion()))

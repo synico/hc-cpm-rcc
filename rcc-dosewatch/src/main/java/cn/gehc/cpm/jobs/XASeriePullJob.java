@@ -46,7 +46,7 @@ public class XASeriePullJob extends TimerDBReadJob {
         Set<XAStudy> xaStudySet = new HashSet<>();
         Set<XASerie> xaSerieSet = new HashSet<>();
 
-        Map<String, TreeSet<XASerie>> studyWithSerieMap;
+        Map<String, Set<XASerie>> studyWithSerieMap;
 
         Long lastPolledValue = null;
         Study study;
@@ -133,12 +133,12 @@ public class XASeriePullJob extends TimerDBReadJob {
      * @return a Map, local study id as key, and series belong to the study
      * @since v1.1
      */
-    private Map<String, TreeSet<XASerie>> buildSeriesMap(Set<Study> studySet) {
-        Map<String, TreeSet<XASerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
+    private Map<String, Set<XASerie>> buildSeriesMap(Set<Study> studySet) {
+        Map<String, Set<XASerie>> studyWithSeriesMap = new HashMap<>(studySet.size());
         List<String> studyIds = studySet.stream().map(s -> s.getLocalStudyId()).collect(Collectors.toList());
         List<XASerie> xaSeriesFromDb = xaSerieRepository.findByLocalStudyKeyIn(studyIds);
         for (XASerie xase : xaSeriesFromDb) {
-            TreeSet<XASerie> xaSeries = studyWithSeriesMap.get(xase.getLocalStudyKey());
+            Set<XASerie> xaSeries = studyWithSeriesMap.get(xase.getLocalStudyKey());
             if (xaSeries == null) {
                 xaSeries = new TreeSet<>();
             }
