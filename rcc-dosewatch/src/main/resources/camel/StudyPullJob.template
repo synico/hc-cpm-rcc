@@ -802,10 +802,12 @@
         <to uri="sql:select ae.aet,
                         s.modality,
                         s.id as dw_study_id,
-                        fac.code as facility_code
+                        fac.code as facility_code,
+                        date_format(study_date,'%Y-%m-%d') as study_date_str
                     from study s join ae on s.ae_key=ae.id
                         join facility fac on ae.facility_key = fac.id
-                    where date_format(study_date,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d');?dataSource=dwMaster"/>
+                    where study_date > date_sub(now(), interval 3 day) and
+                        study_date &lt; now();?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="studyCleanJob" method="cleanStudies"/>
         <bean ref="studyCleanJob" method="endDBReadJob"/>

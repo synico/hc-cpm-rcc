@@ -31,14 +31,12 @@ public class StudyCleanJob extends TimerDBReadJob {
 
         Set<String> localStudyIdsInDW = new HashSet<>();
         Set<DeviceKey> aeKeys = new HashSet<>();
-
-        LocalDate todayDate = LocalDate.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String todayStr = dateTimeFormatter.format(todayDate);
+        Map<DeviceKey, Set<String>> aeStudyDateMap = new HashMap<>();
 
         String localStudyId;
         Long orgId = 0L;
         DeviceKey deviceKey;
+        String studyDateStr;
         for (Map<String, Object> studiesInDW : body) {
             log.debug(studiesInDW.toString());
 
@@ -61,6 +59,18 @@ public class StudyCleanJob extends TimerDBReadJob {
                     DataUtil.getStringFromProperties(studiesInDW, "aet"),
                     DataUtil.getStringFromProperties(studiesInDW, "modality"));
             aeKeys.add(deviceKey);
+
+            studyDateStr = DataUtil.getStringFromProperties(studiesInDW, "study_date_str");
+            Set<String> studyDateSet;
+            if (aeStudyDateMap.containsKey(deviceKey)) {
+                studyDateSet = aeStudyDateMap.get(deviceKey);
+                studyDateSet.add(studyDateStr);
+            } else {
+                studyDateSet = new HashSet<>();
+                studyDateSet.add(studyDateStr);
+                aeStudyDateMap.put(deviceKey, studyDateSet);
+            }
+
             localStudyId = deviceKey.toString() + "|" + DataUtil.getStringFromProperties(studiesInDW, "dw_study_id");
 
             localStudyIdsInDW.add(localStudyId);
@@ -69,18 +79,21 @@ public class StudyCleanJob extends TimerDBReadJob {
         List<Study> localStudies;
         List<Study> studies2Delete = new ArrayList<>();
         for (DeviceKey aeKey : aeKeys) {
-            localStudies = studyRepository.findByAEAndStudyDateChar(aeKey.getOrgId(),
+            Set<String> studyDateSet = aeStudyDateMap.get(aeKey);
+            for (String dateStr : studyDateSet) {
+                localStudies = studyRepository.findByAEAndStudyDateChar(aeKey.getOrgId(),
                     aeKey.getAet(),
                     aeKey.getDeviceType(),
-                    todayStr);
-            for (Study study : localStudies) {
-                log.debug("study: [ {} ] and published: [ {} ]", study.getLocalStudyId(), study.getPublished());
-                if (localStudyIdsInDW.contains(study.getLocalStudyId())) {
-                    //do nothing
-                } else {
-                    log.info("study will be marked to deletion: [ {} ]", study.getLocalStudyId());
-                    study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
-                    studies2Delete.add(study);
+                    dateStr);
+                for (Study study : localStudies) {
+                    log.debug("study: [ {} ] and published: [ {} ]", study.getLocalStudyId(), study.getPublished());
+                    if (localStudyIdsInDW.contains(study.getLocalStudyId())) {
+                        //do nothing
+                    } else {
+                        log.info("study will be marked to deletion: [ {} ]", study.getLocalStudyId());
+                        study.setPublished(Study.StudyStatus.MARK_FOR_DELETION.getStatusId());
+                        studies2Delete.add(study);
+                    }
                 }
             }
         }
