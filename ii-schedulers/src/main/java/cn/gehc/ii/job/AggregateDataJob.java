@@ -44,9 +44,13 @@ public class AggregateDataJob {
             log.info("No data will be saved");
         } else {
             if (JobTypeEnum.HOURLY.getCode().equals(jobType)) {
-                dataStoreRepository.deleteDataByJobGroupAndName(dataStore.getJobGroup(),
+                log.info("will deactivate data for jobGroup: {}, jobName: {}, date: {}",
+                        dataStore.getJobGroup(), dataStore.getJobName(), dataStore.getColumn1());
+                dataStoreRepository.deactivateDataByJobGroupAndName(dataStore.getJobGroup(),
                         dataStore.getJobName(), dataStore.getColumn1());
             } else {
+                log.info("will deactivate data for jobGroup: {}, jobName: {}",
+                        dataStore.getJobGroup(), dataStore.getJobName());
                 dataStoreRepository.deactivateDataByJobGroupAndName(dataStore.getJobGroup(), dataStore.getJobName());
             }
             dataStoreRepository.saveAll(dataList);
@@ -62,10 +66,12 @@ public class AggregateDataJob {
             DataStore dataStore = convertMap2DataStore(headers, body.get(0));
             examDay = dataStore.getColumn1();
         }
-        log.info("will clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);
+
         if (JobTypeEnum.HOURLY.getCode().equals(jobType)) {
+            log.info("will clean data for jobGroup: {}, jobName: {}, date: {}", jobGroup, jobName, examDay);
             dataStoreRepository.deleteDataByJobGroupAndName(jobGroup, jobName, examDay);
         } else {
+            log.info("will clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);
             dataStoreRepository.deleteDataByJobGroupAndName(jobGroup, jobName);
         }
         log.info("end to clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);

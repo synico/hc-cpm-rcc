@@ -63,7 +63,7 @@
         device_type as column1,
         exam_method as column2,
         pre_exam_from_type as column3,
-        exam_day as colunm4,
+        exam_day as column4,
         exam_day_of_week as column5,
         index_of_week as column6,
         count(*)||'' as column7
