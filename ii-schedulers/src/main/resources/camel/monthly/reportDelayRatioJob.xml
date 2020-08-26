@@ -5,7 +5,7 @@
     <from uri="quartz2://reportDelayRatioJob/examByAngiography?cron=0+0+2+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run reportDelayRatioJob/examByAngiography"/>
@@ -58,7 +58,7 @@
     <from uri="quartz2://reportDelayRatioJob/examByOtherMethods?cron=0+30+2+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run reportDelayRatioJob/examByOtherMethods"/>

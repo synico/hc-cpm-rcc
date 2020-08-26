@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--  -->
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <description>放射科机房科室工作效率24H分析 - 实时 (每日) </description>
+  <route id="workloadByHoursDailyJob/workloadByHours" >
+    <from uri="quartz2://workloadByHoursDailyJob/workloadByHours?cron=0+0/15+*+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>HOURLY</constant>
+    </setHeader>
+
+    <log message="start to run workloadByHoursDailyJob/workloadByHours"/>
+
+    <to uri="sql:
+      SELECT
+        exam_day as column1,
+        actual_exam_place as column2,
+        exam_hour_of_day as column3,
+        COUNT(*)||'' as column4
+      FROM (
+        select actual_exam_place,device_type,
+          to_char(exam_date,'yyyy') as exam_year,to_char(exam_date,'MM') as exam_month_of_year,
+          to_char(exam_date,'yyyy-MM-dd') as exam_day,to_char(exam_date,'hh24') as exam_hour_of_day
+        from ris_exam
+        where device_type in ('CT','MR')
+          and actual_exam_place is not null
+          and to_char(exam_date,'yyyy-MM-dd') = to_char(now(),'yyyy-MM-dd')
+      ) cb_view
+      GROUP BY exam_hour_of_day, actual_exam_place, exam_day?dataSource=iiDS"/>
+
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+</routes>

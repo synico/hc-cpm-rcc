@@ -10,7 +10,7 @@
   </parent>
   <groupId>cn.gehc.rcc</groupId>
   <artifactId>ii-schedulers</artifactId>
-  <version>0.9</version>
+  <version>1.0</version>
   <name>ii-schedulers</name>
   <description>Scheduler jobs for data view</description>
 

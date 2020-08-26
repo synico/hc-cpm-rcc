@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <description>检查等待时间分析 - 实时 (每日) </description>
+  <route id="waitForExamTimeDailyJob/examByAngiography" >
+    <description>每个整点04分运行</description>
+    <from uri="quartz2://waitForExamTimeDailyJob/examByAngiography?cron=0+4+0/1+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>HOURLY</constant>
+    </setHeader>
+
+    <log message="start to run waitForExamTimeDailyJob/examByAngiography ${headers[job_type]}"/>
+
+    <to uri="sql:
+      select
+        exam_day as column1,
+        pre_exam_from_type as column2,
+        exam_method as column3,
+        round(avg(wait_sec/86400)::numeric, 2)||'' as column4,
+        count(*)||'' as column5
+      from (
+        select his.sheetid,ris.accession_num,his.pre_exam_schedule_submit_date,
+          ris.pre_registe_date,ris.exam_date,to_char(ris.exam_date,'yyyy-MM-dd') as exam_day,
+          his.pre_exam_from_type,
+          extract(EPOCH from(exam_date - pre_exam_schedule_submit_date)) as wait_sec,
+          CASE
+            WHEN position('CTA' in ris.exam_body_part) > 0 THEN 'CTA'
+            WHEN position('MRA' in ris.exam_body_part) > 0 THEN 'MRA'
+          END as exam_method
+        from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+        where his.pre_exam_schedule_submit_date is not null and ris.exam_date is not null
+          and ris.exam_date > his.pre_exam_schedule_submit_date
+          and pre_exam_from_type is not null
+          and to_char(ris.exam_date,'yyyy-MM-dd') = to_char(now(),'yyyy-MM-dd')
+      ) v_exam
+      where exam_method is not null
+      group by exam_method,pre_exam_from_type,exam_day?dataSource=iiDS"/>
+
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+  <route id="waitForExamTimeDailyJob/examByOtherMethods" >
+    <description>每个整点06分运行</description>
+    <from uri="quartz2://waitForExamTimeDailyJob/examByOtherMethods?cron=0+6+0/1+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>HOURLY</constant>
+    </setHeader>
+
+    <log message="start to run waitForExamTimeDailyJob/examByOtherMethods ${headers[job_type]}"/>
+
+    <to uri="sql:
+      select
+        exam_day as column1,
+        pre_exam_from_type as column2,
+        device_type||' '||exam_method as column3,
+        round(avg(wait_sec/86400)::numeric, 2)||'' as column4,
+        count(*)||'' as column5
+      from (
+        select his.sheetid,ris.accession_num,his.pre_exam_schedule_date,ris.pre_registe_date,
+          ris.exam_date,to_char(ris.exam_date,'yyyy-MM-dd') as exam_day,
+          his.pre_exam_from_type,
+          extract(EPOCH from(exam_date - pre_exam_schedule_submit_date)) as wait_sec,
+          CASE
+            WHEN position('平扫' in exam_method) > 0 THEN '平扫'
+            WHEN position('增强' in exam_method) > 0 THEN '增强'
+          END as exam_method,
+          ris.device_type
+        from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+        where his.pre_exam_schedule_submit_date is not null and ris.exam_date is not null
+          and ris.exam_date > his.pre_exam_schedule_submit_date
+          and pre_exam_from_type is not null
+          and to_char(ris.exam_date,'yyyy-MM-dd') = to_char(now(),'yyyy-MM-dd')
+      ) v_exam
+      where exam_method is not null
+      group by device_type,exam_method,pre_exam_from_type,exam_day?dataSource=iiDS"/>
+
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+  <route id="waitForExamTimeDailyJob/examByXRay" >
+    <description>每个整点08分运行</description>
+    <from uri="quartz2://waitForExamTimeDailyJob/examByXRay?cron=0+8+0/1+*+*+?"/>
+
+    <setHeader headerName="job_type">
+      <constant>HOURLY</constant>
+    </setHeader>
+
+    <log message="start to run waitForExamTimeDailyJob/examByXRay ${headers[job_type]}"/>
+
+    <to uri="sql:
+      select
+        exam_day as column1,
+        pre_exam_from_type as column2,
+        exam_method as column3,
+        round(avg(wait_sec/86400)::numeric, 2)||'' as column4,
+        count(*)||'' as column5
+      from (
+        select his.sheetid,ris.accession_num,his.pre_exam_schedule_date,ris.pre_registe_date,
+          ris.exam_date,to_char(ris.exam_date,'yyyy-MM-dd') as exam_day,
+          his.pre_exam_from_type,
+          extract(EPOCH from(exam_date - pre_exam_schedule_submit_date)) as wait_sec,
+          ris.device_type as exam_method,
+          ris.device_type
+        from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
+        where his.pre_exam_schedule_submit_date is not null and ris.exam_date is not null
+          and ris.device_type='X-RAY'
+          and ris.exam_date > his.pre_exam_schedule_submit_date
+          and pre_exam_from_type is not null
+          and to_char(ris.exam_date,'yyyy-MM-dd') = to_char(now(),'yyyy-MM-dd')
+      ) v_exam
+      where exam_method is not null
+      group by device_type,exam_method,pre_exam_from_type,exam_day?dataSource=iiDS"/>
+
+    <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+    <bean ref="aggregateDataJob" method="processData"/>
+
+    <bean ref="aggregateDataJob" method="cleanData"/>
+
+    <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+  </route>
+
+</routes>

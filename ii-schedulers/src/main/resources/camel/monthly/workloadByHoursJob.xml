@@ -5,7 +5,7 @@
     <from uri="quartz2://workloadByHoursJob/workloadByHours?cron=0+0+4+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run workloadByHours/workloadByHours"/>

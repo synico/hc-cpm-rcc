@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 放射科机房科室工作效率24H分析 -->
+<!-- 放射科四象限图 -->
 <routes xmlns="http://camel.apache.org/schema/spring">
   <route id="examAmountDiffJob/fromOutpatientDept" >
     <from uri="quartz2://examAmountDiffJob/fromOutpatientDept?cron=0+0+5+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run examAmountDiffJob/fromOutpatientDept"/>
@@ -44,7 +44,7 @@
     <from uri="quartz2://examAmountDiffJob/fromInpatientDept?cron=0+10+5+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run examAmountDiffJob/fromInpatientDept"/>
@@ -83,7 +83,7 @@
     <from uri="quartz2://examAmountDiffJob/fromEmergencyDept?cron=0+20+5+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run examAmountDiffJob/fromEmergencyDept"/>

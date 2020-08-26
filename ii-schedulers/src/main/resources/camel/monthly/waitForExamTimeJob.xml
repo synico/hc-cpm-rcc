@@ -5,7 +5,7 @@
     <from uri="quartz2://waitForExamTimeJob/examByAngiography?cron=0+0+1+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run waitForExamTimeJob/examByAngiography"/>
@@ -45,7 +45,7 @@
     <from uri="quartz2://waitForExamTimeJob/examByOtherMethods?cron=0+20+1+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run waitForExamTimeJob/examByOtherMethods"/>
@@ -87,7 +87,7 @@
     <from uri="quartz2://waitForExamTimeJob/examByXRay?cron=0+40+1+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run waitForExamTimeJob/examByXRay"/>

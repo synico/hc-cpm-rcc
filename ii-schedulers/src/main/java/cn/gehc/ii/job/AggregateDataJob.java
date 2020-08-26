@@ -5,6 +5,8 @@ import cn.gehc.ii.repository.DataStoreRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import cn.gehc.ii.util.JobTypeEnum;
 import org.apache.camel.Body;
 import org.apache.camel.Headers;
 import org.slf4j.Logger;
@@ -30,6 +32,7 @@ public class AggregateDataJob {
         log.info("receive [ {} ] aggregated data", body.size());
 
         List<DataStore> dataList = new ArrayList<>(body.size());
+        String jobType = headers.get(JOB_TYPE.getCode()).toString();
 
         DataStore dataStore = null;
         for(Map<String, String> aggData : body) {
@@ -40,7 +43,12 @@ public class AggregateDataJob {
         if(dataList.isEmpty()) {
             log.info("No data will be saved");
         } else {
-            dataStoreRepository.deactivateDataByJobGroupAndName(dataStore.getJobGroup(), dataStore.getJobName());
+            if (JobTypeEnum.HOURLY.getCode().equals(jobType)) {
+                dataStoreRepository.deleteDataByJobGroupAndName(dataStore.getJobGroup(),
+                        dataStore.getJobName(), dataStore.getColumn1());
+            } else {
+                dataStoreRepository.deactivateDataByJobGroupAndName(dataStore.getJobGroup(), dataStore.getJobName());
+            }
             dataStoreRepository.saveAll(dataList);
         }
     }
@@ -48,8 +56,18 @@ public class AggregateDataJob {
     public void cleanData(@Headers Map<String, Object> headers, @Body List<Map<String, String>> body) {
         String jobGroup = headers.get(JOB_GROUP.getCode()).toString();
         String jobName = headers.get(JOB_NAME.getCode()).toString();
+        String jobType = headers.get(JOB_TYPE.getCode()).toString();
+        String examDay = null;
+        if (!body.isEmpty()) {
+            DataStore dataStore = convertMap2DataStore(headers, body.get(0));
+            examDay = dataStore.getColumn1();
+        }
         log.info("will clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);
-        dataStoreRepository.deleteDataByJobGroupAndName(jobGroup, jobName);
+        if (JobTypeEnum.HOURLY.getCode().equals(jobType)) {
+            dataStoreRepository.deleteDataByJobGroupAndName(jobGroup, jobName, examDay);
+        } else {
+            dataStoreRepository.deleteDataByJobGroupAndName(jobGroup, jobName);
+        }
         log.info("end to clean data for jobGroup: {}, jobName: {}", jobGroup, jobName);
     }
 

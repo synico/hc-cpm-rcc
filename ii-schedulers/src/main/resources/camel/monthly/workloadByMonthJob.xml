@@ -5,7 +5,7 @@
     <from uri="quartz2://workloadByMonthJob/examAmountByMonth?cron=0+0+3+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run workloadByMonthJob/examAmountByMonth"/>
@@ -50,7 +50,7 @@
     <from uri="quartz2://workloadByMonthJob/angiographyExamAmountByMonth?cron=0+10+3+*+*+?"/>
 
     <setHeader headerName="job_type">
-      <constant>RIS_DAILY</constant>
+      <constant>DAILY</constant>
     </setHeader>
 
     <log message="start to run workloadByMonthJob/angiographyExamAmountByMonth"/>
