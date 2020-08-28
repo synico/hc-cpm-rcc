@@ -8,7 +8,7 @@ insert into data_store
     exam_day_of_week as column5,
     index_of_week as column6,
     count(*)||'' as column7,
-    true as is_active,
+    true as is_active
     'workloadDailyJob' as job_group,
     'examAmount' as job_name,
     'DAILY' as job_type,

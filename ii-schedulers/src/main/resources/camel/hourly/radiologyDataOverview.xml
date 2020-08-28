@@ -34,7 +34,7 @@
         from v_exam
         where device_type in ('CT', 'MR')
         and pre_exam_from_type is not null
-        and exam_date > (current_date - interval '30 days')
+        and exam_date > (current_date - interval '27 days')
         and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
       ) view
       group by device_type,pre_exam_from_type,exam_method,exam_day,exam_day_of_week,index_of_week?dataSource=iiDS"/>
@@ -81,7 +81,7 @@
         from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
         where ris.device_type in ('CT', 'MR')
         and his.pre_exam_from_type is not null
-        and ris.exam_date > (current_date - interval '30 days')
+        and ris.exam_date > (current_date - interval '27 days')
         and (position('CTA' in ris.exam_body_part) > 0 or position('MRA' in exam_body_part) > 0)
       ) view
       group by device_type,pre_exam_from_type,exam_method,exam_day,exam_day_of_week,index_of_week?dataSource=iiDS"/>

@@ -32,9 +32,9 @@
 放射科数据概览|workloadDailyJob|angiographyExamAmount|仅处理CTA和MRA检查|每小时|每个整点02分
 放射科检查等待时间分析|waitForExamTimeDailyJob|examByAngiography|仅处理CTA和MRA检查|每小时|每个整点04分
 放射科检查等待时间分析|waitForExamTimeDailyJob|examByOtherMethods|仅处理CT和MR扫描类型为平扫或增强检查|每小时|每个整点06分
-放射科检查等待时间分析|waitForExamTimeDailyJob|examByAngiography|仅处理XRay检查|每小时|每个整点08分
+放射科检查等待时间分析|waitForExamTimeDailyJob|examByXray|仅处理XRay检查|每小时|每个整点08分
 报告超时比率|reportDelayRatioDailyJob|examByAngiography|仅处理CTA和MRA检查|每个时|每个整点10分
-报告超时比率|reportDelayRatioDailyJob|examByOtherMethods|仅处理CTA和MRA检查|每个时|每个整点12分
+报告超时比率|reportDelayRatioDailyJob|examByOtherMethods|仅处理CT和MR检查|每个时|每个整点12分
 放射科机房科室工作量24h分析|workloadByHoursDailyJob|workloadByHours||每15分钟|
 
 ***

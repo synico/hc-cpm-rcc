@@ -20,7 +20,9 @@
             select
             CASE
               WHEN pre_exam_from_type = '0' THEN '门诊'
+              WHEN pre_exam_from_type = '1' THEN '急诊'
               WHEN pre_exam_from_type = '2' THEN '住院'
+              WHEN pre_exam_from_type = '3' THEN '体检'
             END as pre_exam_from_type,
             actual_exam_place,device_type,
             CASE
@@ -33,7 +35,7 @@
             to_char(exam_date, 'hh24') as exam_hour_of_day
             from v_exam
             where device_type in ('CT','MR')
-            and pre_exam_from_type in ('0','2')
+            and pre_exam_from_type in is not null
             and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
             ) cb_view
             GROUP BY exam_year, exam_month_of_year,device_type,exam_method,pre_exam_from_type?dataSource=iiDS"/>
@@ -64,8 +66,10 @@
             FROM (
             select
             CASE
-            WHEN his.pre_exam_from_type = '0' THEN '门诊'
-            WHEN his.pre_exam_from_type = '2' THEN '住院'
+              WHEN his.pre_exam_from_type = '0' THEN '门诊'
+              WHEN his.pre_exam_from_type = '1' THEN '急诊'
+              WHEN his.pre_exam_from_type = '2' THEN '住院'
+              WHEN his.pre_exam_from_type = '3' THEN '体检'
             END as pre_exam_from_type,
             ris.actual_exam_place,ris.device_type,
             CASE
@@ -78,7 +82,7 @@
             to_char(ris.exam_date, 'hh24') as exam_hour_of_day
             from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
             where ris.device_type in ('CT','MR')
-            and his.pre_exam_from_type in ('0','2')
+            and his.pre_exam_from_type is not null
             and (position('CTA' in ris.exam_body_part) > 0 or position('MRA' in ris.exam_body_part) > 0)
             ) cb_view
             GROUP BY exam_year, exam_month_of_year,device_type,exam_method,pre_exam_from_type?dataSource=iiDS"/>

@@ -1,9 +1,10 @@
 insert into data_store
   (column1, column2, column3, column4, is_active, job_group, job_name,job_type,last_fire_time)
-  SELECT actual_exam_place as column1,
-    exam_day as column2,
+  SELECT exam_day as column1,
+    actual_exam_place as column2,
     exam_hour_of_day as column3,
     COUNT(*)||'' as column4,
+    true as is_active,
     'workloadByHoursDailyJob' as job_group,
     'workloadByHours' as job_name,
     'HOURLY' as job_type,

@@ -35,13 +35,14 @@
         ELSE 0
         END as gt7_count,
         CASE
-        WHEN his.pre_exam_from_type = '0' THEN '门诊'
-        WHEN his.pre_exam_from_type = '1' THEN '急诊'
-        WHEN his.pre_exam_from_type = '2' THEN '住院'
+          WHEN his.pre_exam_from_type = '0' THEN '门诊'
+          WHEN his.pre_exam_from_type = '1' THEN '急诊'
+          WHEN his.pre_exam_from_type = '2' THEN '住院'
+          WHEN his.pre_exam_from_type = '3' THEN '体检'
         END as patient_from_type
         from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
         where ris.pre_registe_date is not null and ris.exam_date is not null
-        and his.pre_exam_from_type in ('0','1','2')
+        and his.pre_exam_from_type is not null
         and (position('CTA' in ris.exam_body_part) > 0 or position('MRA' in ris.exam_body_part) > 0)
         ) cb_view
         GROUP BY patient_from_type, exam_month, device_type, exam_method?dataSource=iiDS"/>
@@ -88,13 +89,14 @@
         ELSE 0
         END as gt7_count,
         CASE
-        WHEN his.pre_exam_from_type = '0' THEN '门诊'
-        WHEN his.pre_exam_from_type = '1' THEN '急诊'
-        WHEN his.pre_exam_from_type = '2' THEN '住院'
+          WHEN his.pre_exam_from_type = '0' THEN '门诊'
+          WHEN his.pre_exam_from_type = '1' THEN '急诊'
+          WHEN his.pre_exam_from_type = '2' THEN '住院'
+          WHEN his.pre_exam_from_type = '3' THEN '体检'
         END as patient_from_type
         from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
         where ris.pre_registe_date is not null and ris.exam_date is not null
-        and his.pre_exam_from_type in ('0','1','2')
+        and his.pre_exam_from_type is not null
         and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
         ) cb_view
         GROUP BY patient_from_type, exam_month, device_type, exam_method?dataSource=iiDS"/>
