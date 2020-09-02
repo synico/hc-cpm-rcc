@@ -2,12 +2,8 @@ package cn.gehc.ii.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
+
 import lombok.Data;
 
 @Data
@@ -15,18 +11,20 @@ import lombok.Data;
 @Table(name = "nis_exam")
 public class NisExam {
 
+    @EmbeddedId
+    private NisExamKey nisExamKey;
+
     /**
      * 检查流水号，唯一
      */
-    @Id
     @Column(name = "requisition_id")
     private String requisitionId;
 
-    /**
-     * 检查单号，唯一，某些情况下可能为空
-     */
-    @Column(name = "sheetid")
-    private String sheetId;
+//    /**
+//     * 检查单号，唯一，某些情况下可能为空
+//     */
+//    @Column(name = "sheetid")
+//    private String sheetId;
 
     /**
      * 开单医师ID
@@ -66,11 +64,11 @@ public class NisExam {
     @Column(name = "patient_card_num")
     private String patientCardNum;
 
-    /**
-     * 患者编号
-     */
-    @Column(name = "patient_id")
-    private String patientId;
+//    /**
+//     * 患者编号
+//     */
+//    @Column(name = "patient_id")
+//    private String patientId;
 
     /**
      * 患者姓名
@@ -318,5 +316,17 @@ public class NisExam {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastUpdateDate;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if(obj instanceof NisExam) {
+            NisExam anotherNisExam = (NisExam)obj;
+            return this.getNisExamKey().equals(anotherNisExam.getNisExamKey());
+        }
+        return false;
+    }
 
 }

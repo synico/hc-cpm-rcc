@@ -9,9 +9,8 @@
     </appender>
 
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./log/ii_schedulers.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>ii_schedulers.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>./log/ii_schedulers.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>14</maxHistory>
             <totalSizeCap>300MB</totalSizeCap>
         </rollingPolicy>

@@ -34,7 +34,7 @@ public class ExamPullJob extends TimerDBReadJob {
 
         for (Map<String, Object> examProps : body) {
             NisExam exam = DataUtil.convertRow2Exam(examProps);
-            log.debug("sheetid: [ {} ] is being processed, last update date: [ {} ]", exam.getSheetId(), exam.getLastUpdateDate());
+            log.debug("sheetid: [ {} ] is being processed, last update date: [ {} ]", exam.getNisExamKey(), exam.getLastUpdateDate());
             examList.add(exam);
             if (maxDateInBatch != null) {
                 maxDateInBatch = maxDateInBatch.compareTo(exam.getLastUpdateDate()) > 0 ? maxDateInBatch : exam.getLastUpdateDate();

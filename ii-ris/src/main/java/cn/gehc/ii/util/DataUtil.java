@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+
+import cn.gehc.ii.domain.NisExamKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,15 +68,18 @@ public class DataUtil {
 
     public static NisExam convertRow2Exam(Map<String, Object> row) {
         NisExam exam = new NisExam();
+        NisExamKey nisExamKey = new NisExamKey();
+        nisExamKey.setSheetId(getValueFromProperties(row, "sheetid", String.class));
+        nisExamKey.setPatientId(getValueFromProperties(row, "patient_id", String.class));
+        exam.setNisExamKey(nisExamKey);
+
         exam.setRequisitionId(getValueFromProperties(row, "requisition_id", String.class));
-        exam.setSheetId(getValueFromProperties(row, "sheetid", String.class));
         exam.setPreExamDoctorId(getValueFromProperties(row, "pre_exam_doctor_id", String.class));
         exam.setPreExamDoctorName(getValueFromProperties(row, "pre_exam_doctor_name", String.class));
         exam.setPreExamFromDeptId(getValueFromProperties(row, "pre_exam_from_dept_id", String.class));
         exam.setPreExamFromDept(getValueFromProperties(row, "pre_exam_from_dept", String.class));
         exam.setPreExamDate(getValueFromProperties(row, "pre_exam_date", java.util.Date.class));
         exam.setPatientCardNum(getValueFromProperties(row, "patient_card_num", String.class));
-        exam.setPatientId(getValueFromProperties(row, "patient_id", String.class));
         exam.setPatientName(getValueFromProperties(row, "patient_name", String.class));
         exam.setPatientSex(getValueFromProperties(row, "patient_sex", String.class));
         exam.setPatientBirth(getValueFromProperties(row, "patient_birth", java.util.Date.class));
