@@ -12,8 +12,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "exam")
-public class Exam {
+@Table(name = "nis_exam")
+public class NisExam {
 
     /**
      * 检查流水号，唯一
@@ -313,5 +313,10 @@ public class Exam {
      */
     @Column(name = "source_system")
     private String sourceSystem;
+
+    @Column(name = "last_update_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date lastUpdateDate;
 
 }

@@ -584,7 +584,7 @@
                 m.code as mf_code,
                 CASE
                   WHEN mrse.column_09 is not null THEN CONVERT(CAST(CONVERT(mrse.column_09,decimal(14)) AS CHAR), DATETIME)
-                  WHEN mrse.acquisition_datetime is not null THEN mrse.acquisition_datetime
+                  WHEN se.acquisition_datetime is not null THEN se.acquisition_datetime
                 END as acquisition_datetime,
                 CASE
                   WHEN 'SIEMENS'=m.code THEN IFNULL(mrse.column_02, 0)
@@ -610,7 +610,7 @@
                     left join patient pt on s.patient_key=pt.id
                     left join physician ph on s.performing_physician_key=ph.id
             where (unix_timestamp(mrse.dt_last_update) + se.id) > :#${headers[JobObject].lastPolledValue}
-                and (mrse.column_09 is not null or mrse.acquisition_datetime is not null)
+                and (mrse.column_09 is not null or se.acquisition_datetime is not null)
             order by joint_key asc limit 500?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="mrSeriePullJob" method="insertData"/>

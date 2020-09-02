@@ -1,7 +1,7 @@
 package cn.gehc.ii.util;
 
-import cn.gehc.ii.domain.Exam;
-import java.time.Instant;
+import cn.gehc.ii.domain.NisExam;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -64,8 +64,8 @@ public class DataUtil {
         return result;
     }
 
-    public static Exam convertRow2Exam(Map<String, Object> row) {
-        Exam exam = new Exam();
+    public static NisExam convertRow2Exam(Map<String, Object> row) {
+        NisExam exam = new NisExam();
         exam.setRequisitionId(getValueFromProperties(row, "requisition_id", String.class));
         exam.setSheetId(getValueFromProperties(row, "sheetid", String.class));
         exam.setPreExamDoctorId(getValueFromProperties(row, "pre_exam_doctor_id", String.class));
@@ -112,6 +112,7 @@ public class DataUtil {
         exam.setExamResult(getValueFromProperties(row, "exam_result", String.class));
         exam.setPostExamApprovalStatus(getValueFromProperties(row, "post_exam_approval_status", String.class));
         exam.setSourceSystem(getValueFromProperties(row, "source_system", String.class));
+        exam.setLastUpdateDate(getValueFromProperties(row, "last_update_date", java.util.Date.class));
 
         return exam;
     }

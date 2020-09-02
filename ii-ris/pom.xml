@@ -31,7 +31,7 @@
     </dependency>
   </dependencies>
 
-  <!--<build>
+  <build>
     <resources>
       <resource>
         <filtering>true</filtering>
@@ -45,6 +45,6 @@
         </excludes>
       </resource>
     </resources>
-  </build>-->
+  </build>
 
 </project>
