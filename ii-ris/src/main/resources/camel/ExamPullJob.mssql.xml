@@ -74,20 +74,20 @@
         <log message="pullExamFromNMCJob finished" loggingLevel="INFO"/>
     </route>
 
-    <!--<route id="pullExamFromPTCJob">
-        <from uri="timer://pullExamFromPTCJob?fixedRate=true&amp;period=5m"/>
+    <route id="pullExamFromPTCJob">
+        <from uri="timer://pullExamFromPTCJob?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>pullExamFromPTCJob</constant>
         </setHeader>
         <setHeader headerName="DefaultStartPollValue">
-            <constant>1</constant>
+            <constant>2007-01-01 00:00:00</constant>
         </setHeader>
         <bean ref="examPullJob" method="startDBReadJob"/>
         <log message="lastPolledValue: ${headers[JobObject].lastPolledValue}" loggingLevel="INFO"/>
         <to uri="sql:select
-                top 500
+                top 100
                 requisition_id,
-                sheet_id,
+                sheet_id as sheetid,
                null as pre_exam_doctor_id,
                 pre_exam_doctor_name,
                null as pre_exam_from_dept_id,
@@ -97,7 +97,7 @@
                 patient_id,
                 patient_name,
                 patient_sex,
-                CONVERT(varchar(100), patient_birth, 23) as patient_birth,
+                CONCAT(patient_birth,' 00:00:00') as patient_birth,
                 exam_dept_id,
                 exam_dept,
                 pre_exam_from_type,
@@ -105,7 +105,7 @@
                null as exam_cancel_date,
                 CONVERT(varchar(100), pre_exam_schedule_submit_date, 120) as pre_exam_schedule_submit_date,
                null as pre_exam_schedule_date,
-                pre_exam_schedule_duration,
+               null as pre_exam_schedule_duration,
                 exam_place,
                null as is_schedule_canceled,
                null as pre_exam_schedule_cancel_date,
@@ -116,7 +116,7 @@
                 device_type,
                 actual_exam_place,
                 exam_method,
-                exam_body_part,
+               null as exam_body_part,
                 study_uid,
                 CONVERT(varchar(100), pre_registe_date, 120) as pre_registe_date,
                 CONVERT(varchar(100), exam_date, 120) as exam_date,
@@ -131,25 +131,11 @@
                 post_exam_reviewer_name,
                null as exam_result,
                 post_exam_approval_status,
-                CASE
-                  WHEN EXAM_DATE >= ISNULL(PRE_REGISTE_DATE, CAST('1970-01-01 00:00:00' AS datetime))
-                    and EXAM_DATE >= ISNULL(SUBMIT_REPORT_TIME, CAST('1970-01-01 00:00:00' AS datetime))
-                    and EXAM_DATE >= ISNULL(APPROVE_REPORT_TIME, '1970-01-01 00:00:00' AS datetime)) THEN EXAM_DATE
-                  WHEN ISNULL(PRE_REGISTE_DATE,'')!=''
-                    and PRE_REGISTE_DATE >= EXAM_DATE
-                    and PRE_REGISTE_DATE >= ISNULL(SUBMIT_REPORT_TIME, CAST('1970-01-01 00:00:00' AS datetime))
-                    and PRE_REGISTE_DATE >= ISNULL(APPROVE_REPORT_TIME, CAST('1970-01-01 00:00:00' AS datetime)) THEN PRE_REGISTE_DATE
-                  WHEN ISNULL(SUBMIT_REPORT_TIME,'')!=''
-                    and SUBMIT_REPORT_TIME >= EXAM_DATE
-                    and SUBMIT_REPORT_TIME >= ISNULL(PRE_REGISTE_DATE, CAST('1970-01-01 00:00:00' AS datetime))
-                    and SUBMIT_REPORT_TIME >= ISNULL(APPROVE_REPORT_TIME, CAST('1970-01-01 00:00:00' AS datetime)) THEN SUBMIT_REPORT_TIME
-                  WHEN ISNULL(APPROVE_REPORT_TIME,'')!=''
-                    and APPROVE_REPORT_TIME >= EXAM_DATE
-                    and APPROVE_REPORT_TIME >= ISNULL(PRE_REGISTE_DATE, CAST('1970-01-01 00:00:00' AS datetime))
-                    and APPROVE_REPORT_TIME >= ISNULL(SUBMIT_REPORT_TIME, CAST('1970-01-01 00:00:00' AS datetime)) THEN APPROVE_REPORT_TIME
-                END as last_update_date
+                'PTC' as source_system,
+                CONVERT(varchar(100), last_update_date, 120) as last_update_date
             from ScheduleInfo
-            order by Exam_Date ASC?dataSource=${sqlServerDS}ExamPullJob.mssql.xml" />
+            where last_update_date >=:#${headers[JobObject].lastPolledValue}
+            order by last_update_date ASC?dataSource=ptcDS" />
 
         <log message="pullExamFromPTCJob processing...grep ${headers[CamelSqlRowCount]} data" loggingLevel="INFO"/>
         <log message="pullExamFromPTCJob get ${body}" loggingLevel="DEBUG"/>
@@ -158,7 +144,7 @@
         <bean ref="examPullJob" method="endDBReadJob"/>
 
         <log message="pullExamFromPTCJob finished" loggingLevel="INFO"/>
-    </route>-->
+    </route>
 
 </routes>
 
