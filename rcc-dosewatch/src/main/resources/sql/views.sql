@@ -38,7 +38,7 @@ create or replace view public.v_study as
         d.city,
         d.org_id,
         s.local_study_id,
-	    s.device_key
+	      s.device_key
         from study s left join device d on s.aet = d.aet and s.modality = d.device_type and s.org_id = d.org_id
         left join study ps on s.prev_local_study_id = ps.local_study_id
         left join study ns on s.next_local_study_id = ns.local_study_id
