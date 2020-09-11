@@ -91,7 +91,7 @@
                null as pre_exam_doctor_id,
                 pre_exam_doctor_name,
                null as pre_exam_from_dept_id,
-               null as pre_exam_from_dept,
+                [pre_ exam_from_dept] as pre_exam_from_dept,
                null as pre_exam_date,
                 patient_card_num,
                 patient_id,
