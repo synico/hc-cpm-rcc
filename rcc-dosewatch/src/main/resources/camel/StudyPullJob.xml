@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
-    <route id="spiralSeriePullJob" >
+    <!--<route id="spiralSeriePullJob" >
         <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
@@ -785,7 +785,7 @@
         <bean ref="devicePullJob" method="insertData"/>
         <bean ref="devicePullJob" method="endDBReadJob"/>
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
-    </route>
+    </route>-->
 
     <route id="studyCleanJob">
         <from uri="timer://PullStudies?fixedRate=true&amp;period=1m"/>
@@ -806,7 +806,7 @@
                         date_format(study_date,'%Y-%m-%d') as study_date_str
                     from study s join ae on s.ae_key=ae.id
                         join facility fac on ae.facility_key = fac.id
-                    where study_date > date_sub(now(), interval 3 day) and
+                    where study_date > date_sub(current_date, interval 7 day) and
                         study_date &lt; now();?dataSource=dwMaster"/>
         <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
         <bean ref="studyCleanJob" method="cleanStudies"/>
