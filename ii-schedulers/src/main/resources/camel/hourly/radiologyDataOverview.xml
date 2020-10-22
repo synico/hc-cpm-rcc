@@ -28,13 +28,14 @@
             WHEN position('增强' in exam_method) > 0 THEN '增强'
           END as exam_method,
           pre_exam_from_type,
+          extract(week from exam_date) as exam_week_of_year,
           to_char(exam_date,'yyyy-MM-dd') as exam_day,
           ((to_number(to_char(exam_date, 'D'),'99')+6)%7)||'' as exam_day_of_week,
-          (abs(ceil(((extract(doy from current_date) - extract(doy from exam_date)) + 1)/7) - 5))||'' as index_of_week
+          (extract(week from exam_date) - extract(week from current_date) + 4)||'' as index_of_week
         from v_exam
         where device_type in ('CT', 'MR')
         and pre_exam_from_type is not null
-        and exam_date > (current_date - interval '27 days')
+        and (to_char(exam_date,'yyyy')=to_char(current_date,'yyyy') and extract(week from exam_date) > extract(week from current_date) - 4)
         and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
       ) view
       group by device_type,pre_exam_from_type,exam_method,exam_day,exam_day_of_week,index_of_week?dataSource=iiDS"/>
@@ -75,13 +76,14 @@
             WHEN position('MRA' in ris.exam_body_part) > 0 THEN 'MRA'
           END as exam_method,
           his.pre_exam_from_type,
+          extract(week from ris.exam_date) as exam_week_of_year,
           to_char(ris.exam_date,'yyyy-MM-dd') as exam_day,
-          ((to_number(to_char(ris.exam_date, 'D'),'99')+6)%7)||'' as exam_day_of_week,
-          (abs(ceil(((extract(doy from current_date) - extract(doy from ris.exam_date)) + 1)/7) - 5))||'' as index_of_week
+          (to_number(to_char(ris.exam_date, 'D'),'99')+6)%7)||'' as exam_day_of_week,
+          (extract(week from ris.exam_date) - extract(week from current_date) + 4)||'' as index_of_week
         from ris_exam ris join his_exam his on ris.sheetid=his.sheetid
         where ris.device_type in ('CT', 'MR')
         and his.pre_exam_from_type is not null
-        and ris.exam_date > (current_date - interval '27 days')
+        and (to_char(ris.exam_date,'yyyy')=to_char(current_date,'yyyy') and extract(week from ris.exam_date) > extract(week from current_date) - 4)
         and (position('CTA' in ris.exam_body_part) > 0 or position('MRA' in exam_body_part) > 0)
       ) view
       group by device_type,pre_exam_from_type,exam_method,exam_day,exam_day_of_week,index_of_week?dataSource=iiDS"/>

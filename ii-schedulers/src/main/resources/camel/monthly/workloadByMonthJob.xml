@@ -35,7 +35,7 @@
             to_char(exam_date, 'hh24') as exam_hour_of_day
             from v_exam
             where device_type in ('CT','MR')
-            and pre_exam_from_type in is not null
+            and pre_exam_from_type is not null
             and (position('平扫' in exam_method) > 0 or position('增强' in exam_method) > 0)
             ) cb_view
             GROUP BY exam_year, exam_month_of_year,device_type,exam_method,pre_exam_from_type?dataSource=iiDS"/>

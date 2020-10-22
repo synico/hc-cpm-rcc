@@ -45,4 +45,4 @@ create or replace view public.v_study as
         left join ct_study cts on s.local_study_id = cts.local_study_id
         left join mr_study mrs on s.local_study_id = mrs.local_study_id
         left join xa_study xas on s.local_study_id = xas.local_study_id
-    where s.study_date is not null and s.study_start_time is not null and s.study_end_time is not null;
+    where s.study_date is not null and s.study_start_time is not null and s.study_end_time is not null and s.published=1;

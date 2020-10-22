@@ -4,6 +4,7 @@ camel:
         xml-routes: classpath:camel/StudyPullJob.xml
 
 spring:
+    jmx.unique-names: true
     jpa:
         hibernate:
             ddl-auto: update
@@ -16,3 +17,8 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQL95Dialect
                 temp:
                     use_jdbc_metadata_defaults: false
+
+management:
+    server.port: 9090
+    security.enabled: false
+    endpoints.jmx.domain: rcc-dosewatch
