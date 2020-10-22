@@ -28,8 +28,7 @@ public class DataMockApplication implements SchedulingConfigurer {
 
     @Bean(destroyMethod = "shutdown")
     public Executor taskExecutor() {
-        Executor taskExecutor = new ScheduledThreadPoolExecutor(2,
-                new BasicThreadFactory.Builder().namingPattern("schedule-pool-%d").daemon(true).build());
+        Executor taskExecutor = new ScheduledThreadPoolExecutor(2);
         return taskExecutor;
     }
 

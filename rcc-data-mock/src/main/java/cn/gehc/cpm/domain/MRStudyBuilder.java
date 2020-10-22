@@ -1,5 +1,6 @@
 package cn.gehc.cpm.domain;
 
+import cn.gehc.cpm.utils.DeviceConstant;
 import cn.gehc.cpm.utils.MRStudyUtils;
 import cn.gehc.cpm.utils.SerieConstant;
 
@@ -22,14 +23,17 @@ public class MRStudyBuilder {
             serieId++;
             mrSerie = new MRSerie();
             serieKey = new SerieKey();
+            serieKey.setOrgId(study.getStudyKey().getOrgId());
             serieKey.setAet(aet);
+            serieKey.setModality(study.getStudyKey().getModality());
             serieKey.setId(serieId);
+            serieKey.setDeviceKey(study.getStudyKey().getDeviceKey());
             mrSerie.setSerieKey(serieKey);
 
             mrSerie.setDType(SerieConstant.MR_SERIE_TYPE);
             mrSerie.setDtLastUpdate(new Date());
 
-            mrSerie.setLocalSerieId(aet + "|" + serieId);
+            mrSerie.setLocalSerieId(study.getStudyKey().getDeviceKey() + "|" + serieId);
             mrSerie.setLocalStudyKey(study.getLocalStudyId());
 
             Long protocolKey = MRStudyUtils.generateSerieProtocolKey();

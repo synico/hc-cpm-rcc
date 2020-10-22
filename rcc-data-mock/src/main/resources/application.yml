@@ -1,20 +1,13 @@
 spring:
-#    datasource:
-#        url: jdbc:postgresql://localhost:54321/cpm_mock
-#        username: postgres
-#        password: root
-#        driver-class-name: org.postgresql.Driver
-#        type: com.zaxxer.hikari.HikariDataSource
     jpa:
-        show_sql: true
         hibernate:
             ddl-auto: update
         properties:
             hibernate:
+                show_sql: true
                 dialect: org.hibernate.dialect.PostgreSQL95Dialect
                 connection:
                     charSet: UTF-8
                     useUnicode: true
-                show_sql: false
                 temp:
                     use_jdbc_metadata_defaults: false

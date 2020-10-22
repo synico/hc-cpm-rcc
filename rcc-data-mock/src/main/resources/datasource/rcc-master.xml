@@ -8,9 +8,9 @@
 
     <bean id="rccDS" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClassName" value="org.postgresql.Driver" />
-        <property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/cpm_mock" />
+        <property name="jdbcUrl" value="jdbc:postgresql://localhost:54322/cpm_mock" />
         <property name="username" value="postgres" />
-        <property name="password" value="GehcDi9it@l" />
+        <property name="password" value="root" />
         <property name="connectionTimeout" value="30000" />
         <property name="idleTimeout" value="60000" />
         <property name="maxLifetime" value="180000" />

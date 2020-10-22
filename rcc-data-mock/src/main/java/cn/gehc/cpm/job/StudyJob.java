@@ -30,15 +30,32 @@ public class StudyJob {
 
         Long currentMaxStudyId = this.getMaxStudyId();
         StudyKey studyKey = new StudyKey();
-        studyKey.setId(currentMaxStudyId + 1);
+        studyKey.setOrgId(DeviceConstant.ORG_ID);
         studyKey.setAet(ae.getAet());
+        studyKey.setModality(ae.getType());
+        studyKey.setDeviceKey(ae.getDeviceKey(studyKey.getOrgId()));
+        studyKey.setId(currentMaxStudyId + 1);
 
         Study study = new Study();
         study.setStudyKey(studyKey);
+
+        switch (ae.getType()) {
+            case CT:
+                study.setDType(StudyConstant.Type.CTSTUDY.getName());
+                study.setTargetRegionCount(StudyUtils.generateTargetRegionCount(StudyConstant.Type.CTSTUDY));
+                study.setStudyDescription(StudyUtils.generateStudyDesc(StudyConstant.Type.CTSTUDY));
+                break;
+            case MR:
+                study.setDType(StudyConstant.Type.MRSTUDY.getName());
+                study.setTargetRegionCount(StudyUtils.generateTargetRegionCount(StudyConstant.Type.MRSTUDY));
+                study.setStudyDescription(StudyUtils.generateStudyDesc(StudyConstant.Type.MRSTUDY));
+                break;
+        }
+
         study.setAccessionNumber(StudyUtils.generateAccessionNumber(ae.name()));
         study.setDtLastUpdate(new Date());
         study.setHasRepeatedSeries(Boolean.FALSE);
-        study.setLocalStudyId(ae.getAet() + "|" + studyKey.getId());
+        study.setLocalStudyId(studyKey.getDeviceKey() + "|" + studyKey.getId());
         study.setPatientAge(StudyUtils.generatePatientAge());
         study.setPatientId(StudyUtils.generatePatientId());
         study.setPatientSex(StudyUtils.generatePatientSex());
@@ -48,21 +65,6 @@ public class StudyJob {
         study.setStudyDate(studyDate);
         study.setStudyStartTime(StudyUtils.generateStudyStartTime(studyDate.toInstant()));
         study.setStudyEndTime(StudyUtils.generateStudyEndTime(studyDate.toInstant(), ae.getType()));
-
-        switch (ae.getType()) {
-            case CT:
-                study.setDType(StudyConstant.Type.CTSTUDY.getName());
-                study.setModality(StudyConstant.MODALITY.CT.name());
-                study.setTargetRegionCount(StudyUtils.generateTargetRegionCount(StudyConstant.Type.CTSTUDY));
-                study.setStudyDescription(StudyUtils.generateStudyDesc(StudyConstant.Type.CTSTUDY));
-                break;
-            case MR:
-                study.setDType(StudyConstant.Type.MRSTUDY.getName());
-                study.setModality(StudyConstant.MODALITY.MR.name());
-                study.setTargetRegionCount(StudyUtils.generateTargetRegionCount(StudyConstant.Type.MRSTUDY));
-                study.setStudyDescription(StudyUtils.generateStudyDesc(StudyConstant.Type.MRSTUDY));
-                break;
-        }
 
         // update previous study and current study
         Study prevStudy = this.findPrevStudy(study);
@@ -89,10 +91,10 @@ public class StudyJob {
 
     private Study findPrevStudy(Study study) {
         LocalDate localDate = LocalDate.now();
-        String aet = study.getStudyKey().getAet();
+        String dk = study.getStudyKey().getDeviceKey();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        Long prevStudyId = studyRepository.getMaxStudyIdByAetAndDate(aet, dateTimeFormatter.format(localDate));
-        String prevLocalStudyId = aet + "|" + prevStudyId;
+        Long prevStudyId = studyRepository.getMaxStudyIdByDkAndDate(dk, dateTimeFormatter.format(localDate));
+        String prevLocalStudyId = dk + "|" + prevStudyId;
         Optional<Study> prevStudy = studyRepository.findByLocalStudyId(prevLocalStudyId);
         return prevStudy.isPresent() ? prevStudy.get() : null;
     }

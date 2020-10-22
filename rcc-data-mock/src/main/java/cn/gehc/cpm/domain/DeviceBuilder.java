@@ -11,7 +11,7 @@ public class DeviceBuilder {
         DeviceKey deviceKey = new DeviceKey();
         deviceKey.setOrgId(1L);
         deviceKey.setAet(aet);
-//        deviceKey.setDeviceType(type);
+        deviceKey.setDeviceType(type);
 
         Device device = new Device();
         device.setDeviceKey(deviceKey);
@@ -21,7 +21,6 @@ public class DeviceBuilder {
         device.setName(name);
         device.setStationName(stationName);
         device.setTimezone(DeviceConstant.TIMEZONE);
-        device.setDeviceType(type);
 
         return device;
     }

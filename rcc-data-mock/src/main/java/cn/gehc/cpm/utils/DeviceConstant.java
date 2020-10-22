@@ -10,6 +10,8 @@ public class DeviceConstant {
 
     public static final String TIMEZONE = "Asia/Shanghai";
 
+    public static final Long ORG_ID = 1L;
+
     public static final String CT = "CT";
 
     public static final String MR = "MR";
@@ -28,16 +30,20 @@ public class DeviceConstant {
         ;
 
         @Getter
-        private String aet;
+        public String aet;
 
         @Getter
-        private Long aeKey;
+        public Long aeKey;
 
         @Getter
-        private String type;
+        public String type;
 
         @Getter
-        private String mfCode;
+        public String mfCode;
+
+        public String getDeviceKey(Long orgId) {
+            return orgId + "|" + aet + "|" + type;
+        }
 
         AE(String aet, Long aeKey, String type, String mfCode) {
             this.aet = aet;

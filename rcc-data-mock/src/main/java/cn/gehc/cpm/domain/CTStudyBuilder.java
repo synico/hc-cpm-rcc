@@ -19,12 +19,15 @@ public class CTStudyBuilder {
         for(CTSerie ctSerie : serieList) {
             serieId++;
             serieKey = new SerieKey();
+            serieKey.setOrgId(study.getStudyKey().getOrgId());
             serieKey.setAet(aet);
+            serieKey.setModality(study.getStudyKey().getModality());
             serieKey.setId(serieId);
+            serieKey.setDeviceKey(study.getStudyKey().getDeviceKey());
             ctSerie.setSerieKey(serieKey);
 
             ctSerie.setDtLastUpdate(new Date());
-            ctSerie.setLocalSerieId(aet + "|" + serieId);
+            ctSerie.setLocalSerieId(study.getStudyKey().getDeviceKey() + "|" + serieId);
             ctSerie.setLocalStudyKey(study.getLocalStudyId());
         }
         return serieList;

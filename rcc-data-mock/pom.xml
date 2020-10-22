@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rcc-data-mock</artifactId>
+    <version>1.1</version>
 
     <dependencies>
         <dependency>
@@ -25,7 +26,7 @@
         <dependency>
             <groupId>cn.gehc.cpm</groupId>
             <artifactId>dw-pojo</artifactId>
-            <version>0.9</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -36,12 +37,20 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>application.yml</exclude>
+                    <exclude>logback-spring.xml</exclude>
+                    <exclude>datasource/*</exclude>
+                    <exclude>sql/*</exclude>
+                    <exclude>camel/*</exclude>
+                    <exclude>camel/*/*</exclude>
+                </excludes>
+            </resource>
+        </resources>
     </build>
 
 </project>
