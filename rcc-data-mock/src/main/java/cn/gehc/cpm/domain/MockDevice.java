@@ -27,4 +27,10 @@ public class MockDevice {
     @Column(name = "depreciation_method")
     private Integer depreciationMethod = 1;
 
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "city")
+    private String city;
+
 }
