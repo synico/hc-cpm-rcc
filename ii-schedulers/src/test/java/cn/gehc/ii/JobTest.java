@@ -1,9 +1,9 @@
 package cn.gehc.ii;
 
-import cn.gehc.ii.util.JobDefinition;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import static cn.gehc.ii.util.JobDefinition.*;
+
+import static cn.gehc.ii.util.JobDefinition.JOB_NAME;
 
 @Slf4j
 public class JobTest {

@@ -24,6 +24,11 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
     </dependency>
+    <dependency>
+      <groupId>cn.gehc.cpm</groupId>
+      <artifactId>dw-pojo</artifactId>
+      <version>1.1</version>
+    </dependency>
   </dependencies>
 
   <build>

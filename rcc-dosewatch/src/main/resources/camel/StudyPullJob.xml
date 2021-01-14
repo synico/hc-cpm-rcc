@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
-    <!--<route id="spiralSeriePullJob" >
+    <route id="spiralSeriePullJob" >
         <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
@@ -785,7 +785,7 @@
         <bean ref="devicePullJob" method="insertData"/>
         <bean ref="devicePullJob" method="endDBReadJob"/>
         <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
-    </route>-->
+    </route>
 
     <route id="studyCleanJob">
         <from uri="timer://PullStudies?fixedRate=true&amp;period=1m"/>

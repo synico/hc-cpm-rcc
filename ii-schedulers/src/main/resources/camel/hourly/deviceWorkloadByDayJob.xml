@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring">
+    <description>备日使用率</description>
+
+    <route id="deviceWorkloadByDayJob/procesHistoricalData">
+        <description>处理历史数据，仅运行1次</description>
+        <from uri="timer://processHistoricalData?repeatCount=1"/>
+
+        <setHeader headerName="triggerGroup">
+            <constant>deviceWorkloadByDayJob</constant>
+        </setHeader>
+        <setHeader headerName="triggerName">
+            <constant>procesHistoricalData</constant>
+        </setHeader>
+        <setHeader headerName="job_type">
+            <constant>YEARLY</constant>
+        </setHeader>
+
+        <log message="start to run deviceWorkloadByDayJob/processHistoricalData"/>
+
+        <to uri="sql:
+            SELECT sv.device_key, sv.study_date_str, sv.study_time||'' as study_time,
+                sv.study_total, dv.device_type, dv.site,
+                COALESCE(dv.opening_hours, '07:00') as opening_hours,
+                COALESCE(dv.closing_hours, '20:00') as closing_hours
+            FROM (
+                select device_key,
+                    to_char(study_date,'yyyy-MM-dd') as study_date_str,
+                    EXTRACT(EPOCH FROM sum(study_end_time - study_start_time)) as study_time,
+                    count(*) as study_total
+                from study
+                where published=1
+                group by device_key, study_date_str
+            ) sv left join
+                (
+                select d.device_type, d.site, dws.device_key,
+                    dws.opening_hours, dws.closing_hours
+                from device d left join device_working_schedule dws
+                    on dws.device_key=(d.org_id||'|'||d.aet||'|'||d.device_type)
+            ) dv on sv.device_key=dv.device_key
+            ?dataSource=iiDS"/>
+
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+        <bean ref="deviceWorkingloadByDayJob" method="processData"/>
+
+        <log message="end to run deviceWorkloadByDayJob/processHistoricalData"/>
+
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="deviceWorkloadByDayJob/processTodayData">
+        <description>处理当日数据，每小时运行1次</description>
+        <from uri="quartz2://deviceWorkloadByDayJob/processTodayData?cron=0+10+0/1+*+*+?"/>
+
+        <setHeader headerName="job_type">
+            <constant>HOURLY</constant>
+        </setHeader>
+
+        <log message="start to run deviceWorkloadByDayJob/processTodayData"/>
+
+        <to uri="sql:
+            SELECT sv.device_key, sv.study_date_str, sv.study_time||'' as study_time,
+                sv.study_total, dv.device_type, dv.site,
+                COALESCE(dv.opening_hours, '07:00') as opening_hours,
+                COALESCE(dv.closing_hours, '20:00') as closing_hours
+            FROM (
+                select device_key,
+                    to_char(study_date,'yyyy-MM-dd') as study_date_str,
+                    EXTRACT(EPOCH FROM sum(study_end_time - study_start_time)) as study_time,
+                    count(*) as study_total
+                from study
+                where published=1
+                    and to_char(study_date,'yyyy-MM-dd')=to_char(now(),'yyyy-MM-dd')
+                group by device_key, study_date_str
+            ) sv left join
+                (
+                select d.device_type, d.site, dws.device_key,
+                    dws.opening_hours, dws.closing_hours
+                from device d left join device_working_schedule dws
+                    on dws.device_key=(d.org_id||'|'||d.aet||'|'||d.device_type)
+            ) dv on sv.device_key=dv.device_key
+            ?dataSource=iiDS"/>
+
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+
+        <bean ref="deviceWorkingloadByDayJob" method="processData"/>
+
+        <log message="end to run deviceWorkloadByDayJob/processHistoricalData"/>
+
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+</routes>

@@ -2,6 +2,8 @@ package cn.gehc.ii.util;
 
 public enum JobTypeEnum {
 
+    YEARLY("YEARLY"),
+    MONTHLY("MONTHLY"),
     DAILY("DAILY"),
     HOURLY("HOURLY");
 

@@ -23,6 +23,11 @@ public interface DataStoreRepository extends PagingAndSortingRepository<DataStor
 
     @Modifying
     @Transactional
+    @Query("update DataStore ds set ds.isActive = false where ds.jobGroup = ?1 and ds.jobName = ?2 and ds.jobType = ?3")
+    int deactivateDataByJobGroupNameAndType(String jobGroup, String jobName, String jobType);
+
+    @Modifying
+    @Transactional
     @Query("update DataStore ds set ds.isActive = false where ds.jobGroup = ?1 and ds.jobName = ?2 and ds.column1 = ?3")
     int deactivateDataByJobGroupAndName(String jobGroup, String jobName, String examDay);
 
