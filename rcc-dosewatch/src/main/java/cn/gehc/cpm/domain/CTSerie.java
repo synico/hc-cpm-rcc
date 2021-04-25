@@ -93,6 +93,18 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "protocol_name")
     private String protocolName;
 
+    @Column(name = "mean_vtdi_dlp")
+    private Double meanVtdiDlp;
+
+    @Column(name = "tube_current")
+    private Double tubeCurrent;
+
+    @Column(name = "max_tube_current")
+    private Double maxTubeCurrent;
+
+    @Column(name = "exposure_time_per_rotation")
+    private Double exposureTimePerRotation;
+
     @Column(name = "dt_last_update")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtLastUpdate;

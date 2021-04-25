@@ -63,6 +63,12 @@ public class MRSerie implements Comparable<MRSerie> {
     @Column(name = "series_description")
     private String seriesDescription;
 
+    @Column(name = "mr_acquisition_type")
+    private String mrAcquisitionType;
+
+    @Column(name = "acceleration_method")
+    private String accelerationMethod;
+
     @Column(name = "is_repeated")
     private Boolean isRepeated = Boolean.FALSE;
 

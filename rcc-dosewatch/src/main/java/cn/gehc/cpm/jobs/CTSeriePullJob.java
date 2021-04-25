@@ -61,6 +61,9 @@ public class CTSeriePullJob extends TimerDBReadJob {
         CTSerie ctSerie;
         Long orgId = 0L;
         Boolean studyProcessedByRDSR = "RDSR".equals(headers.get("StudyProcessMethod")) ? Boolean.TRUE : Boolean.FALSE;
+        if (studyProcessedByRDSR) {
+            log.info("******studies will be processed by RDSR method******");
+        }
         // save study, ct_study, ct_serie
         for (Map<String, Object> serieProps : body) {
             log.debug(serieProps.toString());

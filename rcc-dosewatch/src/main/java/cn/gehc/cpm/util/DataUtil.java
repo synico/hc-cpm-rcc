@@ -255,6 +255,10 @@ public class DataUtil {
         ctSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
         ctSerie.setProtocolKey(getLongFromProperties(serieProps, "series_protocol_key"));
         ctSerie.setProtocolName(getStringFromProperties(serieProps, "series_protocol_name"));
+        ctSerie.setMeanVtdiDlp(getDoubleFromProperties(serieProps, "mean_vtdi_dlp"));
+        ctSerie.setTubeCurrent(getDoubleFromProperties(serieProps, "tube_current"));
+        ctSerie.setMaxTubeCurrent(getDoubleFromProperties(serieProps, "max_tube_current"));
+        ctSerie.setExposureTimePerRotation(getDoubleFromProperties(serieProps, "exposure_time_per_rotation"));
         ctSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
         ctSerie.setCreateTime(Date.from(Instant.now()));
 
@@ -278,6 +282,8 @@ public class DataUtil {
         mrSerie.setStartSliceLocation(getDoubleFromProperties(serieProps, "start_slice_location"));
         mrSerie.setEndSliceLocation(getDoubleFromProperties(serieProps, "end_slice_location"));
         mrSerie.setSeriesDescription(getStringFromProperties(serieProps, "series_description"));
+        mrSerie.setMrAcquisitionType(getStringFromProperties(serieProps, "mr_acquisition_type"));
+        mrSerie.setAccelerationMethod(getStringFromProperties(serieProps, "acceleration_method"));
         mrSerie.setDtLastUpdate(getDateFromProperties(serieProps, "dt_last_update"));
         mrSerie.setCreateTime(Date.from(Instant.now()));
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="spiralSeriePullJob" >
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>spiralSeriePullJob</constant>
         </setHeader>
@@ -57,6 +57,11 @@
                 sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dlp,
+                sse.mean_vtdi_dlp,
+                sse.kvp as tube_voltage,
+                sse.xray_tube_current as tube_current,
+                sse.maximum_tube_current as max_tube_current,
+                sse.exposure_time_per_rotation,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
@@ -83,7 +88,7 @@
     </route>
 
     <route id="constantAngleSeriePullJob">
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>constantAngleSeriePullJob</constant>
         </setHeader>
@@ -138,7 +143,12 @@
                 ctse.protocol_key as series_protocol_key,
                 sepl.name as series_protocol_name,
                 cas.exposure_time,
-                IFNULL(cas.dlp, 0),
+                cas.dlp,
+                cas.mean_vtdi_dlp,
+                cas.kvp as tube_voltage,
+                cas.xray_tube_current as tube_current,
+                cas.maximum_tube_current as max_tube_current,
+                cas.exposure_time_per_rotation,
                 cas.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
@@ -165,7 +175,7 @@
     </route>
 
     <route id="stationarySeriePullJob">
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>stationarySeriePullJob</constant>
         </setHeader>
@@ -222,6 +232,11 @@
                 sse.exposure_time,
                 sse.dt_last_update,
                 sse.dlp,
+                sse.mean_vtdi_dlp,
+                sse.kvp as tube_voltage,
+                sse.xray_tube_current as tube_current,
+                sse.maximum_tube_current as max_tube_current,
+                sse.exposure_time_per_rotation,
                 pl.name as protocol_name,
                 sd.name as series_description,
                 CONCAT(ph.last_name, ph.first_name) as performing_physician,
@@ -247,7 +262,7 @@
     </route>
 
     <route id="cineSeriePullJob">
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>cineSeriePullJob</constant>
         </setHeader>
@@ -303,6 +318,11 @@
                 sepl.name as series_protocol_name,
                 cse.exposure_time,
                 cse.dlp,
+                cse.mean_vtdi_dlp,
+                cse.kvp as tube_voltage,
+                cse.tube_current as tube_current,
+                cse.maximum_tube_current as max_tube_current,
+                cse.exposure_time_per_rotation,
                 cse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
@@ -329,7 +349,7 @@
     </route>
 
     <route id="sequencedSeriePullJob">
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>sequencedSeriePullJob</constant>
         </setHeader>
@@ -385,6 +405,11 @@
                 sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dlp,
+                sse.mean_vtdi_dlp,
+                sse.kvp as tube_voltage,
+                sse.tube_current as tube_current,
+                sse.maximum_tube_current as max_tube_current,
+                sse.exposure_time_per_rotation,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
@@ -411,7 +436,7 @@
     </route>
 
     <route id="smartprepSeriePullJob">
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>smartprepSeriePullJob</constant>
         </setHeader>
@@ -467,6 +492,11 @@
                 sepl.name as series_protocol_name,
                 sse.exposure_time,
                 sse.dlp,
+                sse.mean_vtdi_dlp,
+                sse.kvp as tube_voltage,
+                sse.tube_current as tube_current,
+                sse.maximum_tube_current as max_tube_current,
+                sse.exposure_time_per_rotation,
                 sse.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
@@ -493,7 +523,7 @@
     </route>
 
     <route id="undefinedSeriePullJob">
-        <from uri="timer://PullCTData?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullCTData?fixedRate=true&amp;period=3m"/>
         <setHeader headerName="JobName">
             <constant>undefinedSeriePullJob</constant>
         </setHeader>
@@ -549,6 +579,11 @@
                 sepl.name as series_protocol_name,
                 us.exposure_time,
                 us.dlp,
+                us.mean_vtdi_dlp,
+                us.kvp as tube_voltage,
+                us.tube_current as tube_current,
+                us.maximum_tube_current as max_tube_current,
+                us.exposure_time_per_rotation,
                 us.dt_last_update,
                 pl.name as protocol_name,
                 sd.name as series_description,
@@ -609,7 +644,7 @@
     </route>
 
     <route id="studyCleanJob">
-        <from uri="timer://PullStudies?fixedRate=true&amp;period=1m"/>
+        <from uri="timer://PullStudies?fixedRate=true&amp;period=30m"/>
         <setHeader headerName="JobName">
             <constant>studyCleanJob</constant>
         </setHeader>
