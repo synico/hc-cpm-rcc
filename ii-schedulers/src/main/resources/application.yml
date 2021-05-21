@@ -1,7 +1,7 @@
 camel:
     springboot:
         main-run-controller: true
-        xml-routes: classpath:camel/*/*.xml
+        xml-routes: classpath:camel/transfer/*.xml
 
 spring:
     jpa:
@@ -16,3 +16,6 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQL95Dialect
                 temp:
                     use_jdbc_metadata_defaults: false
+
+custom:
+    url: http://39.100.126.234:11002/contentListener

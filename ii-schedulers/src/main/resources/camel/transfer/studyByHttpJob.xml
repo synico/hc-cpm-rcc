@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring">
+
+    <route id="transferCTSerieJob" >
+        <from uri="timer://PostCTData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>transferCTSerieJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>PostStudyData</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1970-01-01 00:00:00</constant>
+        </setHeader>
+        <bean ref="dataTransferJob" method="startDBReadJob"/>
+        <to uri="sql:select *,dt_last_update + make_interval(secs => id) as joint_key from ct_serie
+            where dt_last_update + make_interval(secs => id) >
+                to_timestamp(:#${headers[JobObject].lastPolledValue}, 'yyyy-MM-dd hh24:mi:ss')
+            order by dt_last_update,id asc limit 5?dataSource=iiDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="dataTransferJob" method="insertData"/>
+        <bean ref="dataTransferJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="transferCTStudyJob" >
+        <from uri="timer://PostCTData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>transferCTStudyJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>PostStudyData</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1970-01-01 00:00:00</constant>
+        </setHeader>
+        <bean ref="dataTransferJob" method="startDBReadJob"/>
+        <to uri="sql:select *,dt_last_update + make_interval(secs => id) as joint_key from ct_study
+            where dt_last_update + make_interval(secs => id) >
+                to_timestamp(:#${headers[JobObject].lastPolledValue}, 'yyyy-MM-dd hh24:mi:ss')
+            order by dt_last_update,id asc limit 5?dataSource=iiDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="dataTransferJob" method="insertData"/>
+        <bean ref="dataTransferJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="transferMRSerieJob" >
+        <from uri="timer://PostMRData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>transferMRSerieJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>PostStudyData</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1970-01-01 00:00:00</constant>
+        </setHeader>
+        <bean ref="dataTransferJob" method="startDBReadJob"/>
+        <to uri="sql:select *,dt_last_update + make_interval(secs => id) as joint_key from mr_serie
+            where dt_last_update + make_interval(secs => id) >
+                to_timestamp(:#${headers[JobObject].lastPolledValue}, 'yyyy-MM-dd hh24:mi:ss')
+            order by dt_last_update,id asc limit 5?dataSource=iiDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="dataTransferJob" method="insertData"/>
+        <bean ref="dataTransferJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="transferMRStudyJob" >
+        <from uri="timer://PostMRData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>transferMRStudyJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>PostStudyData</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1970-01-01 00:00:00</constant>
+        </setHeader>
+        <bean ref="dataTransferJob" method="startDBReadJob"/>
+        <to uri="sql:select *,dt_last_update + make_interval(secs => id) as joint_key from mr_study
+            where dt_last_update + make_interval(secs => id) >
+                to_timestamp(:#${headers[JobObject].lastPolledValue}, 'yyyy-MM-dd hh24:mi:ss')
+            order by dt_last_update,id asc limit 5?dataSource=iiDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="dataTransferJob" method="insertData"/>
+        <bean ref="dataTransferJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="transferStudyJob" >
+        <from uri="timer://PostStudyData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>transferStudyJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>PostStudyData</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1970-01-01 00:00:00</constant>
+        </setHeader>
+        <bean ref="dataTransferJob" method="startDBReadJob"/>
+        <to uri="sql:select *,dt_last_update + make_interval(secs => id) as joint_key from study
+            where dt_last_update + make_interval(secs => id) >
+                to_timestamp(:#${headers[JobObject].lastPolledValue}, 'yyyy-MM-dd hh24:mi:ss')
+            order by dt_last_update,id asc limit 5?dataSource=iiDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="dataTransferJob" method="insertData"/>
+        <bean ref="dataTransferJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+    <route id="transferDeviceJob" >
+        <from uri="timer://PostDeviceData?fixedRate=true&amp;period=5m"/>
+        <setHeader headerName="JobName">
+            <constant>transferDeviceJob</constant>
+        </setHeader>
+        <setHeader headerName="JobType">
+            <constant>PostStudyData</constant>
+        </setHeader>
+        <setHeader headerName="DefaultStartPollValue">
+            <constant>1970-01-01 00:00:00</constant>
+        </setHeader>
+        <bean ref="dataTransferJob" method="startDBReadJob"/>
+        <to uri="sql:select *,dt_last_update + make_interval(secs => id) as joint_key from device
+            where dt_last_update + make_interval(secs => id) >
+                to_timestamp(:#${headers[JobObject].lastPolledValue}, 'yyyy-MM-dd hh24:mi:ss')
+            order by dt_last_update,id asc limit 5?dataSource=iiDS"/>
+        <log message="${headers[JobName]} get ${body}" loggingLevel="DEBUG"/>
+        <bean ref="dataTransferJob" method="insertData"/>
+        <bean ref="dataTransferJob" method="endDBReadJob"/>
+        <log message="${headers[JobName]} finished" loggingLevel="INFO"/>
+    </route>
+
+</routes>
