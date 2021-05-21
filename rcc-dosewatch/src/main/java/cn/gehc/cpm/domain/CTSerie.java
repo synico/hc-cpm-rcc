@@ -93,8 +93,8 @@ public class CTSerie implements Comparable<CTSerie> {
     @Column(name = "protocol_name")
     private String protocolName;
 
-    @Column(name = "mean_vtdi_dlp")
-    private Double meanVtdiDlp;
+    @Column(name = "mean_ctdi_vol")
+    private Double meanCtdiVol;
 
     @Column(name = "tube_current")
     private Double tubeCurrent;

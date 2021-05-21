@@ -255,7 +255,7 @@ public class DataUtil {
         ctSerie.setEffectiveDose(getDoubleFromProperties(serieProps, "effective_dose_in_msv"));
         ctSerie.setProtocolKey(getLongFromProperties(serieProps, "series_protocol_key"));
         ctSerie.setProtocolName(getStringFromProperties(serieProps, "series_protocol_name"));
-        ctSerie.setMeanVtdiDlp(getDoubleFromProperties(serieProps, "mean_vtdi_dlp"));
+        ctSerie.setMeanCtdiVol(getDoubleFromProperties(serieProps, "mean_ctdi_vol"));
         ctSerie.setTubeCurrent(getDoubleFromProperties(serieProps, "tube_current"));
         ctSerie.setMaxTubeCurrent(getDoubleFromProperties(serieProps, "max_tube_current"));
         ctSerie.setExposureTimePerRotation(getDoubleFromProperties(serieProps, "exposure_time_per_rotation"));

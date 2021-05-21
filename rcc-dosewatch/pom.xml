@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>cn.gehc.cpm</groupId>
 	<artifactId>rcc-dosewatch</artifactId>
-	<version>1.1</version>
+	<version>1.2</version>
 	<name>rcc-dosewatch</name>
 	<description>Pull data from dosewatch to rcc database</description>
 
@@ -51,6 +51,7 @@
 								<include>**/cpm/domain/**</include>
 								<include>**/cpm/repository/**</include>
 								<include>**/cpm/util/SerieType**</include>
+								<include>**/cpm/jobs/TimerDBReadJob**</include>
 							</includes>
 						</configuration>
 					</execution>
